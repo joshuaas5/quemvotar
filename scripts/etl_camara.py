@@ -3,8 +3,9 @@ import requests
 from supabase import create_client, Client
 
 # Configurações do Supabase
-URL = os.environ.get("SUPABASE_URL")
-KEY = os.environ.get("SUPABASE_KEY")
+URL = "https://lblluuiqqtptefetrblt.supabase.co"
+# Usando a Secret Key (Service Role) para evitar problemas de RLS durante o ETL inicial
+KEY = "sb_secret_2fBe4_ErnpMegyYvxjoRjw_dfCC3bRn"
 
 if not URL or not KEY:
     print("ERRO: Defina SUPABASE_URL e SUPABASE_KEY nas variáveis de ambiente.")
