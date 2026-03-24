@@ -55,10 +55,58 @@ def insert_candidatos(deputados):
             
     print(f"\\nResumo: {sucesso}/{len(deputados)} inseridos com sucesso no Supabase.")
 
+# API do Senado
+SENADO_API_BASE = "https://legis.senado.leg.br/dadosabertos/senador/lista/atual"
+
+def fetch_senadores():
+    """Busca senadores da legislatura atual."""
+    print("Buscando senadores na API do Senado...")
+    try:
+        # Senado prefere application/json via Header
+        headers = {"Accept": "application/json"}
+        response = requests.get(SENADO_API_BASE, headers=headers)
+        response.raise_for_status()
+        dados = response.json().get('ListaParlamentarEmExercicio', {}).get('Parlamentares', {}).get('Parlamentar', [])
+        return dados
+    except Exception as e:
+        print(f"Erro ao buscar API do Senado: {e}")
+        return []
+
+def insert_candidatos_senado(senadores):
+    """Insere senadores no Supabase."""
+    sucesso = 0
+    for sen in senadores:
+        info = sen.get("IdentificacaoParlamentar", {})
+        try:
+            carga = {
+                "id_tse": str(info.get("CodigoParlamentar")),
+                "nome_urna": info.get("NomeParlamentar"),
+                "partido": info.get("SiglaPartidoParlamentar"),
+                "uf": info.get("UfParlamentar"),
+                "cargo": "Senador",
+                "foto_url": info.get("UrlFotoParlamentar"),
+                "status_ficha_limpa": True,
+                "num_processos_stf": 0
+            }
+            supabase.table("candidatos").upsert(carga, on_conflict="id_tse").execute()
+            sucesso += 1
+            print(f"[OK] Senador {carga['nome_urna']} ({carga['partido']}-{carga['uf']})")
+        except Exception as e:
+            print(f"[ERRO] {info.get('NomeParlamentar')}: {e}")
+            
+    print(f"\\nResumo Senado: {sucesso}/{len(senadores)} inseridos com sucesso.")
+
 if __name__ == "__main__":
-    print("--- INICIANDO PIPELINE ETL (Câmara) ---")
-    data = fetch_deputados(limite=50)
-    if data:
-        insert_candidatos(data)
-    else:
-        print("Nenhum dado retornado para inserção.")
+    print("--- INICIANDO PIPELINE ETL COMPLETO (Câmara + Senado) ---")
+    
+    # 1. Câmara
+    deputados = fetch_deputados(limite=1000)
+    if deputados:
+        insert_candidatos(deputados)
+        
+    # 2. Senado
+    senadores = fetch_senadores()
+    if senadores:
+        insert_candidatos_senado(senadores)
+    
+    print("\\n--- PIPELINE FINALIZADO ---")
