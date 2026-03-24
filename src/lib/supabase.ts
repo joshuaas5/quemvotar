@@ -2,10 +2,12 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const hasSupabaseCredentials = Boolean(supabaseUrl && supabaseAnonKey);
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('⚠️ Credenciais do Supabase ausentes no .env.local. A conexão com o banco pode falhar.');
+if (!hasSupabaseCredentials) {
+  console.warn('Credenciais do Supabase ausentes no .env.local. O app vai priorizar APIs oficiais e estados seguros.');
 }
 
-// Inicializa e exporta o cliente do Supabase
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = hasSupabaseCredentials
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;

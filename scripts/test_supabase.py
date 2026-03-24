@@ -1,14 +1,16 @@
 import os
 from supabase import create_client, Client
 
-url = "https://lblluuiqqtptefetrblt.supabase.co"
-key = "sb_secret_2fBe4_ErnpMegyYvxjoRjw_dfCC3bRn"
+url = os.getenv("SUPABASE_URL")
+key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 
 try:
-    print(f"Testando conexão com Supabase URL: {url}...")
+    if not url or not key:
+        raise RuntimeError("Defina SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY antes de testar.")
+
+    print(f"Testando conexao com Supabase URL: {url}...")
     supabase: Client = create_client(url, key)
-    # Tentando listar a tabela de candidatos (pode falhar se a tabela nao existir ou a chave for invalida)
     response = supabase.table("candidatos").select("*").limit(1).execute()
     print("Sucesso ao conectar!", response)
-except Exception as e:
-    print(f"Erro na conexão com as chaves fornecidas: {e}")
+except Exception as exc:
+    print(f"Erro na conexao com as chaves fornecidas: {exc}")
