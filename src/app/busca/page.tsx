@@ -34,8 +34,7 @@ export default async function BuscaPage({
             Resultados para: <span className="bg-primary-container px-2">{q || 'Busca'}</span>
           </h1>
           <p className="font-body font-bold uppercase text-sm opacity-70 mb-10">
-            O buscador retorna perfis a partir do espelho local do projeto ou diretamente das APIs
-            oficiais da Camara e do Senado.
+            O buscador retorna perfis diretamente das APIs oficiais da Câmara e do Senado.
           </p>
 
           {resultados.length === 0 ? (
@@ -82,7 +81,7 @@ export default async function BuscaPage({
 
           <div className="mt-12 text-center">
             <Link href="/" className="inline-block font-headline font-black uppercase text-xl border-b-4 border-black hover:text-primary-container transition-colors">
-              Voltar ao inicio
+              Voltar ao início
             </Link>
           </div>
         </div>

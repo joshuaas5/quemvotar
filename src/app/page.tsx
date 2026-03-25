@@ -1,7 +1,6 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import Highlights from "@/components/Highlights";
-import Methodology from "@/components/Methodology";
 import QuizBand from "@/components/QuizBand";
 import StatsDashboard from "@/components/StatsDashboard";
 import Footer from "@/components/Footer";
@@ -18,7 +17,6 @@ export default function Home() {
         <Highlights />
         <QuizBand />
         <StatsDashboard />
-        <Methodology />
       </main>
 
       <Footer />

@@ -1,0 +1,168 @@
+import { cache } from 'react';
+import { fetchDeputados } from './camara';
+import { searchCnjProcessByNumber } from './cnj';
+import { fetchSenadores } from './senado';
+import { fetchTseCandidateDatasets } from './tse';
+import type {
+  CnjProcessoResumo,
+  FonteStatus,
+  PanoramaDados,
+  PerfilPublico,
+  TseDataset,
+} from './types';
+
+export type { CnjProcessoResumo, FonteStatus, PanoramaDados, PerfilPublico, TseDataset };
+
+export const OFFICIAL_SOURCE_LINKS = [
+  {
+    id: 'camara',
+    label: 'API oficial da Câmara dos Deputados',
+    href: 'https://dadosabertos.camara.leg.br/swagger/api.html',
+  },
+  {
+    id: 'senado',
+    label: 'Dados Abertos do Senado Federal',
+    href: 'https://legis.senado.leg.br/dadosabertos/senador/lista/atual',
+  },
+  {
+    id: 'tse',
+    label: 'Portal de Dados Abertos do TSE',
+    href: 'https://dadosabertos.tse.jus.br/',
+  },
+  {
+    id: 'cnj',
+    label: 'API Pública DataJud do CNJ',
+    href: 'https://datajud-wiki.cnj.jus.br/api-publica/exemplos/',
+  },
+] as const;
+
+export const fetchOfficialCongressProfiles = cache(async (): Promise<PerfilPublico[]> => {
+  const [deputados, senadores] = await Promise.all([
+    fetchDeputados(),
+    fetchSenadores(),
+  ]);
+
+  return [...deputados, ...senadores].sort((a, b) =>
+    a.nome_urna.localeCompare(b.nome_urna, 'pt-BR'),
+  );
+});
+
+export async function searchOfficialCongressProfiles(
+  query: string,
+  limit = 10,
+): Promise<PerfilPublico[]> {
+  const normalizedQuery = query.trim().toLowerCase();
+
+  if (!normalizedQuery) {
+    return [];
+  }
+
+  const profiles = await fetchOfficialCongressProfiles();
+
+  return profiles
+    .filter((perfil) => {
+      const searchable = [
+        perfil.nome_urna,
+        perfil.partido,
+        perfil.uf ?? '',
+        perfil.cargo,
+      ]
+        .join(' ')
+        .toLowerCase();
+
+      return searchable.includes(normalizedQuery);
+    })
+    .slice(0, limit);
+}
+
+export async function getOfficialPanoramaDados(): Promise<PanoramaDados> {
+  try {
+    const [deputados, senadores] = await Promise.all([
+      fetchDeputados(),
+      fetchSenadores(),
+    ]);
+
+    const parlamentares = [...deputados, ...senadores];
+
+    return {
+      totalParlamentares: parlamentares.length,
+      totalDeputados: deputados.length,
+      totalSenadores: senadores.length,
+      totalUfs: new Set(
+        parlamentares
+          .map((perfil) => perfil.uf)
+          .filter((uf): uf is string => Boolean(uf)),
+      ).size,
+      fonteAtual: 'apis_oficiais',
+    };
+  } catch (error) {
+    console.error('Erro ao montar panorama oficial:', error);
+    return {
+      totalParlamentares: null,
+      totalDeputados: null,
+      totalSenadores: null,
+      totalUfs: null,
+      fonteAtual: 'indisponivel',
+    };
+  }
+}
+
+export async function getOfficialSourceStatus(): Promise<FonteStatus[]> {
+  const [camara, senado, tse] = await Promise.allSettled([
+    fetchDeputados(),
+    fetchSenadores(),
+    fetchTseCandidateDatasets(3),
+  ]);
+
+  return [
+    {
+      id: 'camara',
+      nome: 'Câmara dos Deputados',
+      status: camara.status === 'fulfilled' ? 'ok' : 'indisponivel',
+      detalhes:
+        camara.status === 'fulfilled'
+          ? `${camara.value.length} deputados carregados da API oficial.`
+          : 'Falha ao consultar a API oficial da Câmara.',
+      href: 'https://dadosabertos.camara.leg.br/swagger/api.html',
+    },
+    {
+      id: 'senado',
+      nome: 'Senado Federal',
+      status: senado.status === 'fulfilled' ? 'ok' : 'indisponivel',
+      detalhes:
+        senado.status === 'fulfilled'
+          ? `${senado.value.length} senadores carregados da API oficial.`
+          : 'Falha ao consultar a API oficial do Senado.',
+      href: 'https://legis.senado.leg.br/dadosabertos/senador/lista/atual',
+    },
+    {
+      id: 'tse',
+      nome: 'TSE Dados Abertos',
+      status: tse.status === 'fulfilled' ? 'ok' : 'indisponivel',
+      detalhes:
+        tse.status === 'fulfilled'
+          ? `${tse.value.length} conjuntos de dados de candidatos identificados no portal oficial.`
+          : 'Falha ao consultar o CKAN oficial do TSE.',
+      href: 'https://dadosabertos.tse.jus.br/',
+    },
+    {
+      id: 'cnj',
+      nome: 'CNJ DataJud',
+      status: 'parcial',
+      detalhes:
+        'Integração segura disponível por número de processo e tribunal. Correspondência automática por nome ainda não será feita.',
+      href: 'https://datajud-wiki.cnj.jus.br/api-publica/exemplos/',
+    },
+  ];
+}
+
+export async function getTseDatasets(limit = 6): Promise<TseDataset[]> {
+  return fetchTseCandidateDatasets(limit);
+}
+
+export async function getCnjProcessoByNumero(
+  tribunalSlug: string,
+  numeroProcesso: string,
+): Promise<CnjProcessoResumo | null> {
+  return searchCnjProcessByNumber(tribunalSlug, numeroProcesso);
+}

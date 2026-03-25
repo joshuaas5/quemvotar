@@ -69,8 +69,6 @@
   :root {
     --background: #f5f6f7;
     --foreground: #2c2f30;
-    --font-space-grotesk: "Arial Black", "Segoe UI", sans-serif;
-    --font-work-sans: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   }
 
   body {
