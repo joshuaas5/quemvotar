@@ -84,7 +84,7 @@ function compact<T>(values: Array<T | null | undefined | false>): T[] {
 async function fetchRadar<T>(path: string): Promise<T> {
   const response = await fetch(`${RADAR_API_ROOT}${path}`, {
     headers: { Accept: 'application/json' },
-    cache: 'no-store',
+    next: { revalidate: 1800 },
   });
 
   if (!response.ok) {
@@ -97,7 +97,7 @@ async function fetchRadar<T>(path: string): Promise<T> {
 async function fetchCamara<T>(path: string): Promise<T> {
   const response = await fetch(`${CAMARA_API_ROOT}${path}`, {
     headers: { Accept: 'application/json' },
-    cache: 'no-store',
+    next: { revalidate: 1800 },
   });
 
   if (!response.ok) {

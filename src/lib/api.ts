@@ -1,4 +1,4 @@
-import {
+﻿import {
   fetchOfficialCongressProfiles,
   getLiderancasCongresso,
   getOfficialCongressProfile,
@@ -39,11 +39,11 @@ export {
 } from './official';
 
 export function getCasaBadge(perfil: PerfilPublico): string {
-  return perfil.casa === 'Senado Federal' ? 'SENADO FEDERAL' : 'CÂMARA DOS DEPUTADOS';
+  return perfil.casa === 'Senado Federal' ? 'SENADO' : 'CAMARA';
 }
 
 export function getFonteBadge(perfil: PerfilPublico): string {
-  return perfil.fonte === 'camara' ? 'FONTE OFICIAL: CÂMARA' : 'FONTE OFICIAL: SENADO';
+  return perfil.fonte === 'camara' ? 'FONTE OFICIAL: CÃ‚MARA' : 'FONTE OFICIAL: SENADO';
 }
 
 export async function getHighlights(): Promise<PerfilPublico[]> {
@@ -107,7 +107,7 @@ export async function getPerfilDetalhado(
             fonte: 'partido_e_votacoes',
             eixo: partidoResumo.espectroEixo,
             label: partidoResumo.espectro,
-            resumo: `Campo aproximado alinhado ao posicionamento público do ${perfil.partido}.`,
+            resumo: `Campo aproximado alinhado ao posicionamento pÃºblico do ${perfil.partido}.`,
           }
         : null,
     votacoes: perfil.votacoes.length > 0 ? perfil.votacoes : votacoesCamara,
@@ -133,3 +133,5 @@ export async function getRankingParlamentares(
 ): Promise<RankingListaItem[]> {
   return fetchRankingTop(limit, fonte);
 }
+
+

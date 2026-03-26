@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import { getPartidoPorSigla, getPerfilDetalhado } from '@/lib/api';
 import type { PartidoResumo, PerfilDetalhadoPublico, PerfilItemLista } from '@/lib/official';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 1800;
 
 function formatDate(value?: string | null) {
   if (!value) return null;
@@ -19,11 +19,6 @@ function formatDate(value?: string | null) {
   }
 
   return value;
-}
-
-function formatNumber(value?: number | null) {
-  if (typeof value !== 'number') return null;
-  return new Intl.NumberFormat('pt-BR').format(value);
 }
 
 function formatScore(value?: number | null) {
@@ -52,7 +47,7 @@ function renderListSection(title: string, description: string, items: PerfilItem
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {items.map((item, index) => (
             <article
-              key={`${title}-${item.titulo}-${item.data ?? index}`}
+              key={`${title}-${index}-${item.titulo}`}
               className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
             >
               <div className="flex flex-col gap-4">
@@ -141,7 +136,7 @@ function renderSobreSection(perfil: PerfilDetalhadoPublico) {
 function renderTopCards(perfil: PerfilDetalhadoPublico, partido: PartidoResumo | null) {
   const cards = [
     {
-      title: 'Nota',
+      title: 'NOTA',
       value: perfil.ranking ? formatScore(perfil.ranking.nota) : '—',
       helper: perfil.ranking?.rankingGeral ? `Ranking geral #${perfil.ranking.rankingGeral}` : 'Sem nota pública localizada',
       href: perfil.ranking?.fonteUrl,
@@ -157,7 +152,7 @@ function renderTopCards(perfil: PerfilDetalhadoPublico, partido: PartidoResumo |
       bg: 'bg-[#9bf6ff]',
     },
     {
-      title: 'Alinhamento',
+      title: 'ALINHAMENTO',
       value: perfil.governismo ? formatPercent(perfil.governismo.percentualFavoravel) : '—',
       helper: perfil.governismo ? 'Percentual de apoio ao governo nas votações monitoradas.' : 'Sem série localizada',
       href: perfil.governismo?.fonteUrl,
@@ -171,7 +166,7 @@ function renderTopCards(perfil: PerfilDetalhadoPublico, partido: PartidoResumo |
       bg: 'bg-[#caffbf]',
     },
     {
-      title: 'Partido',
+      title: 'PARTIDO',
       value: partido?.sigla ?? perfil.partido,
       helper: partido?.nome ?? perfil.partido,
       href: partido ? `/partidos/${partido.sigla}` : undefined,
@@ -313,6 +308,14 @@ export default async function PerfilPage({
                 </div>
 
                 <div>
+                  {partido?.logoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={partido.logoUrl}
+                      alt={partido.sigla}
+                      className="w-10 h-10 object-contain rounded-full bg-white border-2 border-black p-1 mb-2"
+                    />
+                  ) : null}
                   <p className="font-label font-bold uppercase text-sm opacity-90 mb-2">
                     {perfil.partido} {perfil.uf ? `• ${perfil.uf}` : ''} • {perfil.cargo}
                   </p>

@@ -2,7 +2,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { OFFICIAL_SOURCE_LINKS, getOfficialSourceStatus, getTseDatasets } from '@/lib/api';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 86400;
 
 const internalRoutes = [
   {

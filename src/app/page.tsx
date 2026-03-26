@@ -5,7 +5,7 @@ import QuizBand from "@/components/QuizBand";
 import StatsDashboard from "@/components/StatsDashboard";
 import Footer from "@/components/Footer";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 1800;
 
 export default function Home() {
   return (

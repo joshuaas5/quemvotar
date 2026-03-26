@@ -35,7 +35,7 @@ export const fetchTseCandidateDatasets = cache(
   async (limit = 6): Promise<TseDataset[]> => {
     const response = await fetch(TSE_CKAN_URL, {
       headers: { Accept: 'application/json' },
-      cache: 'no-store',
+      next: { revalidate: 86400 },
     });
 
     if (!response.ok) {
