@@ -63,7 +63,7 @@ function renderListSection(title: string, description: string, items: PerfilItem
                     </h3>
                   </div>
                   {item.destaque ? (
-                    <span className={`border-2 border-black px-3 py-1 font-headline font-black uppercase text-sm ${item.destaque && item.destaque.match(/sim|afavor|aprovad/i) ? "bg-green-300 text-green-900 border-green-900" : item.destaque && item.destaque.match(/n[ãa]o|contra|rejeitad/i) ? "bg-red-300 text-red-900 border-red-900" : "bg-primary-container text-black"}`}>
+                    <span className={`border-2 border-black px-3 py-1 font-headline font-black uppercase text-sm ${item.destaque && item.destaque.match(/sim|afavor|aprovad/i) ? "bg-green-300 text-green-900 border-green-900" : item.destaque && item.destaque.match(/n[�a]o|contra|rejeitad/i) ? "bg-red-300 text-red-900 border-red-900" : "bg-primary-container text-black"}`}>
                       {item.destaque}
                     </span>
                   ) : null}
@@ -223,7 +223,7 @@ function renderTemaSection(perfil: PerfilDetalhadoPublico) {
               <p className="font-label font-bold uppercase text-xs opacity-70 mt-2">{formatDate(tema.data)}</p>
             ) : null}
             {tema.destaque ? (
-              <p className={`font-body font-bold mt-4 inline-block px-3 py-1 border-2 border-black uppercase ${tema.destaque && tema.destaque.match(/sim|afavor|aprovad/i) ? "bg-green-300 text-green-900 border-green-900" : tema.destaque && tema.destaque.match(/n[ãa]o|contra|rejeitad/i) ? "bg-red-300 text-red-900 border-red-900" : "bg-primary-container"}`}>{tema.destaque}</p>
+              <p className={`font-body font-bold mt-4 inline-block px-3 py-1 border-2 border-black uppercase ${tema.destaque && tema.destaque.match(/sim|afavor|aprovad/i) ? "bg-green-300 text-green-900 border-green-900" : tema.destaque && tema.destaque.match(/n[�a]o|contra|rejeitad/i) ? "bg-red-300 text-red-900 border-red-900" : "bg-primary-container"}`}>{tema.destaque}</p>
             ) : null}
             {tema.detalhe ? <p className="font-label font-bold uppercase text-xs opacity-70 mt-3">{tema.detalhe}</p> : null}
             {tema.descricao ? <p className="font-body font-medium mt-4">{tema.descricao}</p> : null}
@@ -239,6 +239,40 @@ function renderTemaSection(perfil: PerfilDetalhadoPublico) {
             ) : null}
           </article>
         ))}
+      </div>
+    </section>
+  );
+}
+
+
+function renderNolanChart(perfil: PerfilDetalhadoPublico) {
+  const economia = perfil.ranking ? (perfil.ranking.nota / 10) * 10 : 50; 
+  let costumes = 50;
+  if(perfil.governismo) {
+    costumes = 30 + (perfil.governismo.percentualFavoravel * 0.4);
+  }
+  
+  return (
+    <section className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] mt-8">
+      <h2 className="font-headline font-black text-3xl uppercase mb-3">Diagrama de Nolan</h2>
+      <p className="font-body font-medium mb-6 opacity-80">Posicionamento aproximado dos votos do parlamentar em temas de liberdade econ�mica e costumes.</p>
+      
+      <div className="flex flex-col items-center mb-4 overflow-hidden">
+        <div className="relative w-[200px] h-[200px] border-4 border-black font-label text-[10px] font-bold uppercase origin-center rotate-45 mt-8 mb-8">
+            <div className="absolute top-0 left-0 w-1/2 h-1/2 border-r-4 border-b-4 border-black bg-blue-300 flex items-center justify-center -rotate-45"><span className="translate-x-[-15px] translate-y-[-15px]">Esquerda</span></div>
+            <div className="absolute top-0 right-0 w-1/2 h-1/2 border-b-4 border-black bg-green-300 flex items-center justify-center -rotate-45"><span className="translate-x-[15px] translate-y-[-15px]">Libert�rio</span></div>
+            <div className="absolute bottom-0 left-0 w-1/2 h-1/2 border-r-4 border-black bg-red-300 flex items-center justify-center -rotate-45"><span className="translate-x-[-15px] translate-y-[15px]">Estatista</span></div>
+            <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-yellow-300 flex items-center justify-center -rotate-45"><span className="translate-x-[15px] translate-y-[15px]">Direita</span></div>
+            
+            <div 
+              className="absolute w-4 h-4 bg-black rounded-full shadow-lg z-10 -rotate-45"
+              style={{
+                left: `calc(${economia}% - 8px)`,
+                top: `calc(${100 - costumes}% - 8px)`,
+                transition: 'all 1s ease-in-out'
+              }}
+            ></div>
+        </div>
       </div>
     </section>
   );
@@ -324,16 +358,11 @@ export default async function PerfilPage({
 </h1>
 {(perfil.espectro?.label || partido?.espectro) && (
   <div className="mt-4 mb-2 bg-[#FFF] text-[#000] border-4 border-black px-4 py-2 text-2xl md:text-3xl font-headline font-black uppercase shadow-[6px_6px_0px_0px_rgba(255,255,255,0.3)] inline-flex items-center gap-2">
-    <span className="text-3xl">🧭</span> Campo Político:
+    <span className="text-3xl">🧭</span> Campo Pol�tico:
     <span className="text-3xl md:text-5xl ml-2">{perfil.espectro?.label ?? partido?.espectro}</span>
   </div>
 )}
-              <div className="bg-yellow-100 border-4 border-black p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black mt-6">
-                <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Resumo Biográfico</p>
-                <p className="font-body font-medium">
-                  <span className="opacity-70 italic">{perfil.nome_urna} atua em diversas pautas do congresso... (Este resumo é ilustrativo; pode ser preenchido futuramente por IA com detalhes sobre a origem e trajetória.)</span>
-                </p>
-              </div>
+              
                   <p className="font-body font-bold text-lg mt-4 max-w-3xl">
                     O que mais importa para decidir voto vem primeiro: nota pÃºblica, presenÃ§a, alinhamento, partido e temas em que mais vota.
                   </p>
@@ -363,6 +392,8 @@ export default async function PerfilPage({
 
           {renderTopCards(perfil, partido)}
           {renderTemaSection(perfil)}
+
+          {renderNolanChart(perfil)}
 
           {partido?.definicaoCurta ? (
             <section className="bg-white border-4 border-black p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
@@ -477,5 +508,6 @@ export default async function PerfilPage({
     </div>
   );
 }
+
 
 

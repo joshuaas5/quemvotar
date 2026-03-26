@@ -1,4 +1,4 @@
-import {
+﻿import {
   fetchOfficialCongressProfiles,
   getLiderancasCongresso,
   getOfficialCongressProfile,
@@ -43,7 +43,7 @@ export function getCasaBadge(perfil: PerfilPublico): string {
 }
 
 export function getFonteBadge(perfil: PerfilPublico): string {
-  return perfil.fonte === 'camara' ? 'FONTE OFICIAL: CÂMARA' : 'FONTE OFICIAL: SENADO';
+  return perfil.fonte === 'camara' ? 'FONTE OFICIAL: CÃ‚MARA' : 'FONTE OFICIAL: SENADO';
 }
 
 export async function getHighlights(): Promise<PerfilPublico[]> {
@@ -98,18 +98,16 @@ export async function getPerfilDetalhado(
     }
   };
 
-  const [ranking, governismo, votacoesCamara] = await Promise.all([
-    withTimeout(fetchRankingForPerfil(perfil), null),
-    withTimeout(fetchGovernismoForPerfil(perfil), null),
+  const [ranking, governismo, votacoesCamara, presenca, partidoResumo, temasCamara] = await Promise.all([
+    withTimeout(fetchRankingForPerfil(perfil), null, 1500),
+    withTimeout(fetchGovernismoForPerfil(perfil), null, 1500),
     fonte === 'camara'
-      ? withTimeout(fetchCamaraVotesForPerfil(perfil), [] as PerfilDetalhadoPublico['votacoes'])
+      ? withTimeout(fetchCamaraVotesForPerfil(perfil), [] as PerfilDetalhadoPublico['votacoes'], 1500)
       : Promise.resolve([] as PerfilDetalhadoPublico['votacoes']),
-  ]);
-  const [presenca, partidoResumo, temasCamara] = await Promise.all([
-    withTimeout(fetchAssiduidadeForPerfil(perfil), null),
-    withTimeout(getPartido(perfil.partido), null),
+    withTimeout(fetchAssiduidadeForPerfil(perfil), null, 1500),
+    withTimeout(getPartido(perfil.partido), null, 1500),
     fonte === 'camara'
-      ? withTimeout(fetchCamaraVoteThemesForPerfil(perfil), [] as PerfilDetalhadoPublico['temasVotacao'])
+      ? withTimeout(fetchCamaraVoteThemesForPerfil(perfil), [] as PerfilDetalhadoPublico['temasVotacao'], 1500)
       : Promise.resolve([] as PerfilDetalhadoPublico['temasVotacao']),
   ]);
 
@@ -124,7 +122,7 @@ export async function getPerfilDetalhado(
             fonte: 'partido_e_votacoes',
             eixo: partidoResumo.espectroEixo,
             label: partidoResumo.espectro,
-            resumo: `Campo aproximado alinhado ao posicionamento público do ${perfil.partido}.`,
+            resumo: `Campo aproximado alinhado ao posicionamento pÃºblico do ${perfil.partido}.`,
           }
         : null,
     votacoes: perfil.votacoes.length > 0 ? perfil.votacoes : votacoesCamara,
@@ -150,6 +148,7 @@ export async function getRankingParlamentares(
 ): Promise<RankingListaItem[]> {
   return fetchRankingTop(limit, fonte);
 }
+
 
 
 
