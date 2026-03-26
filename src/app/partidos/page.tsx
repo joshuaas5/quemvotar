@@ -22,9 +22,12 @@ function getCasaLabel(casa: string) {
 
 export default async function PartidosPage() {
   const [partidos, liderancas, parlamentares] = await Promise.all([getPartidos(), getLiderancas(), getParlamentares()]);
-  const liderancasComFoto = liderancas.map(l => {
-    const p = parlamentares.find(p => p.nome.toLowerCase() === l.nomeParlamentar.toLowerCase().replace(/ \([^)]+\)/g, '') || p.nomeCivil?.toLowerCase() === l.nomeParlamentar.toLowerCase().replace(/ \([^)]+\)/g, ''));
-    return { ...l, foto: p?.foto, href: p ? getPerfilHref(p.fonte, p.id) : null };
+  const normalizeNome = (value: string) => value.toLowerCase().replace(/ \([^)]+\)/g, '').trim();
+
+  const liderancasComFoto = liderancas.map((l) => {
+    const alvo = normalizeNome(l.nomeParlamentar);
+    const p = parlamentares.find((parlamentar) => normalizeNome(parlamentar.nome_urna) === alvo);
+    return { ...l, foto: p?.foto_url, href: p ? getPerfilHref(p) : null };
   });
 
   return (
@@ -143,3 +146,4 @@ export default async function PartidosPage() {
     </div>
   );
 }
+
