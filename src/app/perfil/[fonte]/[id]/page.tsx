@@ -138,7 +138,7 @@ function renderTopCards(perfil: PerfilDetalhadoPublico, partido: PartidoResumo |
     {
       title: 'NOTA',
       value: perfil.ranking ? formatScore(perfil.ranking.nota) : 'â€”',
-      helper: perfil.ranking?.rankingGeral ? `Ranking geral #${perfil.ranking.rankingGeral}` : 'Sem nota pÃºblica localizada',
+      helper: perfil.ranking?.rankingGeral ? `Ranking geral #${perfil.ranking.rankingGeral}` : 'Sem nota pública localizada',
       href: perfil.ranking?.fonteUrl,
       bg: 'bg-[#ffe066]',
     },
@@ -146,22 +146,22 @@ function renderTopCards(perfil: PerfilDetalhadoPublico, partido: PartidoResumo |
       title: 'PresenÃ§a',
       value: perfil.presenca ? formatPercent(perfil.presenca.percentual) : 'â€”',
       helper: perfil.presenca
-        ? `${perfil.presenca.presencas}/${perfil.presenca.sessoesDeliberativas} sessÃµes no ano ${perfil.presenca.ano}`
-        : 'Sem sÃ©rie de presenÃ§a localizada',
+        ? `${perfil.presenca.presencas}/${perfil.presenca.sessoesDeliberativas} sessões no ano ${perfil.presenca.ano}`
+        : 'Sem série de presença localizada',
       href: perfil.presenca?.fonteUrl,
       bg: 'bg-[#9bf6ff]',
     },
     {
       title: 'ALINHAMENTO',
       value: perfil.governismo ? formatPercent(perfil.governismo.percentualFavoravel) : 'â€”',
-      helper: perfil.governismo ? 'Percentual de apoio ao governo nas votaÃ§Ãµes monitoradas.' : 'Sem sÃ©rie localizada',
+      helper: perfil.governismo ? 'Percentual de apoio ao governo nas votações monitoradas.' : 'Sem série localizada',
       href: perfil.governismo?.fonteUrl,
       bg: 'bg-[#ffd6a5]',
     },
     {
-      title: 'Campo polÃ­tico',
+      title: 'Campo político',
       value: perfil.espectro?.label ?? partido?.espectro ?? 'â€”',
-      helper: partido?.familiaPolitica ?? 'Sem classificaÃ§Ã£o aproximada disponÃ­vel',
+      helper: partido?.familiaPolitica ?? 'Sem classificação aproximada disponível',
       href: partido ? `/partidos/${partido.sigla}` : undefined,
       bg: 'bg-[#caffbf]',
     },
@@ -208,7 +208,7 @@ function renderTemaSection(perfil: PerfilDetalhadoPublico) {
       <div>
         <h2 className="font-headline font-black text-4xl uppercase">Como vota nos temas que pesam</h2>
         <p className="font-body font-bold uppercase text-sm opacity-70 mt-2">
-          Leitura rÃ¡pida das votaÃ§Ãµes recentes agrupadas por assunto.
+          Leitura rápida das votações recentes agrupadas por assunto.
         </p>
       </div>
 
@@ -234,7 +234,7 @@ function renderTemaSection(perfil: PerfilDetalhadoPublico) {
                 rel="noreferrer"
                 className="inline-block mt-4 font-headline font-black uppercase border-b-4 border-black"
               >
-                Ver matÃ©ria
+                Ver matéria
               </a>
             ) : null}
           </article>
@@ -246,32 +246,39 @@ function renderTemaSection(perfil: PerfilDetalhadoPublico) {
 
 
 function renderNolanChart(perfil: PerfilDetalhadoPublico) {
-  const economia = perfil.ranking ? (perfil.ranking.nota / 10) * 10 : 50; 
+  const economia = perfil.ranking ? (perfil.ranking.nota / 10) * 10 : 50;
   let costumes = 50;
-  if(perfil.governismo) {
-    costumes = 30 + (perfil.governismo.percentualFavoravel * 0.4);
-  }
-  
+  if(perfil.governismo) costumes = 30 + (perfil.governismo.percentualFavoravel * 0.4);
+  const xPos = 100 + (economia) - (costumes);
+  const yPos = 200 - (economia) - (costumes);
   return (
     <section className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] mt-8">
-      <h2 className="font-headline font-black text-3xl uppercase mb-3">Diagrama de Nolan</h2>
-      <p className="font-body font-medium mb-6 opacity-80">Posicionamento aproximado dos votos do parlamentar em temas de liberdade econ�mica e costumes.</p>
-      
-      <div className="flex flex-col items-center mb-4 overflow-hidden">
-        <div className="relative w-[200px] h-[200px] border-4 border-black font-label text-[10px] font-bold uppercase origin-center rotate-45 mt-8 mb-8">
-            <div className="absolute top-0 left-0 w-1/2 h-1/2 border-r-4 border-b-4 border-black bg-blue-300 flex items-center justify-center -rotate-45"><span className="translate-x-[-15px] translate-y-[-15px]">Esquerda</span></div>
-            <div className="absolute top-0 right-0 w-1/2 h-1/2 border-b-4 border-black bg-green-300 flex items-center justify-center -rotate-45"><span className="translate-x-[15px] translate-y-[-15px]">Libert�rio</span></div>
-            <div className="absolute bottom-0 left-0 w-1/2 h-1/2 border-r-4 border-black bg-red-300 flex items-center justify-center -rotate-45"><span className="translate-x-[-15px] translate-y-[15px]">Estatista</span></div>
-            <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-yellow-300 flex items-center justify-center -rotate-45"><span className="translate-x-[15px] translate-y-[15px]">Direita</span></div>
-            
-            <div 
-              className="absolute w-4 h-4 bg-black rounded-full shadow-lg z-10 -rotate-45"
-              style={{
-                left: `calc(${economia}% - 8px)`,
-                top: `calc(${100 - costumes}% - 8px)`,
-                transition: 'all 1s ease-in-out'
-              }}
-            ></div>
+      <h2 className="font-headline font-black text-3xl uppercase mb-3 text-center">Diagrama de Nolan</h2>
+      <p className="font-body font-medium mb-6 opacity-80 text-center max-w-2xl mx-auto">Posicionamento aproximado dos votos do parlamentar em temas de liberdade econômica e costumes.</p>
+      <div className="flex flex-col items-center mb-6 overflow-visible">
+        <svg viewBox="-20 -20 240 240" className="w-[100%] max-w-[340px] drop-shadow-md">
+          <polygon points="100,100 50,50 100,0 150,50" fill="#69db7c" />
+          <polygon points="100,100 150,50 200,100 150,150" fill="#4dabf7" />
+          <polygon points="100,100 150,150 100,200 50,150" fill="#e9ecef" />
+          <polygon points="100,100 50,150 0,100 50,50" fill="#ffa8a8" />
+          <line x1="100" y1="0" x2="100" y2="200" stroke="#000" strokeWidth="2" opacity="0.2" strokeDasharray="4 4" />
+          <line x1="0" y1="100" x2="200" y2="100" stroke="#000" strokeWidth="2" opacity="0.2" strokeDasharray="4 4" />
+          <polygon points="100,0 200,100 100,200 0,100" fill="none" stroke="#000" strokeWidth="4" strokeLinejoin="round" />
+          <g transform="translate(100, 30)"><rect x="-42" y="-12" width="84" height="18" fill="rgba(255,255,255,0.85)" rx="4"/><text x="0" y="2" textAnchor="middle" fill="#000" fontSize="11" fontWeight="900" className="font-headline" letterSpacing="1">LIBERTÁRIO</text></g>
+          <g transform="translate(165, 100)"><rect x="-30" y="-12" width="60" height="18" fill="rgba(255,255,255,0.85)" rx="4"/><text x="0" y="2" textAnchor="middle" fill="#000" fontSize="11" fontWeight="900" className="font-headline" letterSpacing="1">DIREITA</text></g>
+          <g transform="translate(100, 172)"><rect x="-38" y="-12" width="76" height="18" fill="rgba(255,255,255,0.85)" rx="4"/><text x="0" y="2" textAnchor="middle" fill="#000" fontSize="11" fontWeight="900" className="font-headline" letterSpacing="1">ESTATISTA</text></g>
+          <g transform="translate(35, 100)"><rect x="-36" y="-12" width="72" height="18" fill="rgba(255,255,255,0.85)" rx="4"/><text x="0" y="2" textAnchor="middle" fill="#000" fontSize="11" fontWeight="900" className="font-headline" letterSpacing="1">ESQUERDA</text></g>
+          <circle cx={xPos} cy={yPos} r="7" fill="#111" stroke="#fff" strokeWidth="2.5" className="transition-all duration-1000 ease-out" />
+        </svg>
+      </div>
+      <div className="grid grid-cols-2 gap-4 mt-2 max-w-[400px] mx-auto text-sm">
+        <div className="bg-[#f8f9fa] border-2 border-black p-3 text-center transition-colors hover:bg-white">
+          <p className="font-bold opacity-70 text-xs uppercase mb-1 font-label block">ECONOMIA (Livre Mercado)</p>
+          <p className="font-black text-2xl font-headline">{economia.toFixed(0)}<span className="text-xs font-bold opacity-60">/100</span></p>
+        </div>
+        <div className="bg-[#f8f9fa] border-2 border-black p-3 text-center transition-colors hover:bg-white">
+          <p className="font-bold opacity-70 text-xs uppercase mb-1 font-label block">COSTUMES (Progresso)</p>
+          <p className="font-black text-2xl font-headline">{costumes.toFixed(0)}<span className="text-xs font-bold opacity-60">/100</span></p>
         </div>
       </div>
     </section>
@@ -364,7 +371,7 @@ export default async function PerfilPage({
 )}
               
                   <p className="font-body font-bold text-lg mt-4 max-w-3xl">
-                    O que mais importa para decidir voto vem primeiro: nota pÃºblica, presenÃ§a, alinhamento, partido e temas em que mais vota.
+                    O que mais importa para decidir voto vem primeiro: nota pública, presença, alinhamento, partido e temas em que mais vota.
                   </p>
                 </div>
 
@@ -383,7 +390,7 @@ export default async function PerfilPage({
 
                 {perfil.atualizadoEm ? (
                   <p className="font-label font-bold uppercase text-xs opacity-80">
-                    AtualizaÃ§Ã£o informada pela fonte: {formatDate(perfil.atualizadoEm) ?? perfil.atualizadoEm}
+                    Atualização informada pela fonte: {formatDate(perfil.atualizadoEm) ?? perfil.atualizadoEm}
                   </p>
                 ) : null}
               </div>
@@ -423,35 +430,35 @@ export default async function PerfilPage({
             'Projetos e requerimentos',
             'MatÃ©rias e autorias legislativas localizadas para este parlamentar.',
             perfil.autorias,
-            'A fonte nÃ£o retornou autorias recentes nesta consulta.',
+            'A fonte não retornou autorias recentes nesta consulta.',
           )}
 
           {renderListSection(
             'VotaÃ§Ãµes recentes',
             'Votos nominais e deliberaÃ§Ãµes localizadas nas fontes consultadas.',
             perfil.votacoes,
-            'A fonte nÃ£o retornou votaÃ§Ãµes recentes para este perfil nesta consulta.',
+            'A fonte não retornou votações recentes para este perfil nesta consulta.',
           )}
 
           {renderListSection(
             'Mandato',
             'Mandato atual e histÃ³rico retornados pelas fontes oficiais.',
             perfil.mandatos,
-            'A fonte nÃ£o retornou mais registros de mandato para este perfil nesta consulta.',
+            'A fonte não retornou mais registros de mandato para este perfil nesta consulta.',
           )}
 
           {renderListSection(
             'ComissÃµes',
             'ParticipaÃ§Ãµes em comissÃµes e frentes oficiais.',
             perfil.comissoes,
-            'A fonte nÃ£o retornou comissÃµes ativas para este perfil nesta consulta.',
+            'A fonte não retornou comissÃµes ativas para este perfil nesta consulta.',
           )}
 
           {renderListSection(
             'Cargos',
             'Cargos institucionais publicados pela casa legislativa correspondente.',
             perfil.cargos,
-            'A fonte nÃ£o retornou cargos ativos para este perfil nesta consulta.',
+            'A fonte não retornou cargos ativos para este perfil nesta consulta.',
           )}
 
           {renderListSection(
@@ -461,8 +468,8 @@ export default async function PerfilPage({
               : 'FiliaÃ§Ãµes partidÃ¡rias histÃ³ricas retornadas pelo Senado Federal.',
             perfil.fonte === 'camara' ? perfil.despesas : perfil.filiacoes,
             perfil.fonte === 'camara'
-              ? 'A CÃ¢mara nÃ£o retornou despesas recentes para este perfil nesta consulta.'
-              : 'O Senado nÃ£o retornou histÃ³rico partidÃ¡rio para este perfil nesta consulta.',
+              ? 'A CÃ¢mara não retornou despesas recentes para este perfil nesta consulta.'
+              : 'O Senado não retornou histÃ³rico partidÃ¡rio para este perfil nesta consulta.',
           )}
 
           {renderSobreSection(perfil)}
