@@ -160,7 +160,7 @@ function normalizeText(value: string) {
 async function fetchSenado<T>(path: string): Promise<T> {
   const response = await fetch(`${SENADO_API_ROOT}${path}`, {
     headers: { Accept: 'application/json' },
-    cache: 'no-store',
+    next: { revalidate: 3600 },
   });
 
   if (!response.ok) {
