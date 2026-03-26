@@ -52,7 +52,7 @@ export default async function PartidoDetailPage({
                   {partido.nome}
                 </h1>
                 <p className="font-body font-bold text-base md:text-lg max-w-4xl">
-                  {partido.definicaoCurta ?? 'Partido com representação parlamentar ativa no Congresso Nacional.'}
+                  {partido.definicaoCurta ?? 'Partido com representa��o parlamentar ativa no Congresso Nacional.'}
                 </p>
                 <div className="flex flex-wrap gap-3">
                   {partido.espectro ? (

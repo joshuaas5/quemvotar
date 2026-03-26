@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="flex flex-col items-center md:items-start gap-4">
         <div className="text-lg font-black text-black font-headline uppercase">QUEM VOTAR.</div>
         <p className="font-body font-bold uppercase text-sm text-black max-w-md text-center md:text-left">
-          © {new Date().getFullYear()} QUEM VOTAR. PLATAFORMA INDEPENDENTE. DADOS: CÂMARA, SENADO,
+          © {new Date().getFullYear()} QUEM VOTAR. PLATAFORMA INDEPENDENTE. DADOS: C�MARA, SENADO,
           TSE E CNJ.
         </p>
       </div>

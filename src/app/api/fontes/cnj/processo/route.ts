@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
   if (!tribunal || !numero) {
     return NextResponse.json(
       {
-        error: 'Informe os parâmetros "tribunal" e "numero" para consultar um processo.',
+        error: 'Informe os par�metros "tribunal" e "numero" para consultar um processo.',
       },
       { status: 400 },
     );

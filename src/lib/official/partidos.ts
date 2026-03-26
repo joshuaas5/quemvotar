@@ -84,7 +84,7 @@ async function fetchText(url: string): Promise<string> {
   });
 
   if (!response.ok) {
-    throw new Error(`Falha ao consultar página: ${response.status}`);
+    throw new Error(`Falha ao consultar p�gina: ${response.status}`);
   }
 
   return response.text();
@@ -204,7 +204,7 @@ const fetchTsePartyDetail = cache(async (sigla: string): Promise<TsePartyDetail 
 
   try {
     const html = await fetchText(tseUrl);
-    const siteOficial = parseTsePartyLink(html, 'Endereço Internet');
+    const siteOficial = parseTsePartyLink(html, 'Endere�o Internet');
 
     return {
       tseUrl,
@@ -226,7 +226,7 @@ function getPartyLeader(liderancas: LiderancaRaw[], sigla: string, casa: 'CD' | 
     return (
       lideranca.casa === casa &&
       lideranca.descricaoTipoUnidadeLideranca?.includes('Partido') &&
-      lideranca.descricaoTipoLideranca?.includes('Líder') &&
+      lideranca.descricaoTipoLideranca?.includes('L�der') &&
       partySigla === sigla
     );
   });
@@ -304,7 +304,7 @@ export const fetchPartidosResumo = cache(async (): Promise<PartidoResumo[]> => {
       presidenteNacional: detalheTse?.presidenteNacional ?? null,
       siteOficial: detalheTse?.siteOficial ?? detalheCamara?.urlWebSite ?? null,
       estatutoUrl: detalheTse?.estatutoUrl ?? null,
-      definicaoCurta: detalheTse?.definicaoCurta ?? `Partido com atuação parlamentar em ${totaisPartido.totalParlamentares} cadeiras no Congresso.`,
+      definicaoCurta: detalheTse?.definicaoCurta ?? `Partido com atua��o parlamentar em ${totaisPartido.totalParlamentares} cadeiras no Congresso.`,
       familiaPolitica: meta.family,
       espectro: getSpectrumLabel(meta.spectrum),
       espectroEixo: meta.spectrum,
@@ -312,7 +312,7 @@ export const fetchPartidosResumo = cache(async (): Promise<PartidoResumo[]> => {
       liderCamara: detalheCamara?.status?.lider?.nome
         ? {
             nome: detalheCamara.status.lider.nome,
-            cargo: 'Líder da Câmara dos Deputados',
+            cargo: 'L�der da C�mara dos Deputados',
             casa: 'CD',
             partido: totaisPartido.sigla,
             uf: detalheCamara.status.lider.uf,
@@ -329,7 +329,7 @@ function mapCategoria(descricao?: string): LiderancaCongresso['categoria'] | nul
   const normalized = descricao?.toLowerCase() ?? '';
 
   if (normalized.includes('governo')) return 'governo';
-  if (normalized.includes('oposição') || normalized.includes('oposicao')) return 'oposicao';
+  if (normalized.includes('oposi��o') || normalized.includes('oposicao')) return 'oposicao';
   if (normalized.includes('maioria')) return 'maioria';
   if (normalized.includes('minoria')) return 'minoria';
 
@@ -341,7 +341,7 @@ export const fetchLiderancasCongresso = cache(async (): Promise<LiderancaCongres
   const resultado: LiderancaCongresso[] = [];
 
   for (const lideranca of liderancas) {
-    if (!lideranca.descricaoTipoLideranca?.includes('Líder')) {
+    if (!lideranca.descricaoTipoLideranca?.includes('L�der')) {
       continue;
     }
 

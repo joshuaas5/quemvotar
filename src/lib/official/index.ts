@@ -33,7 +33,7 @@ export type {
 export const OFFICIAL_SOURCE_LINKS = [
   {
     id: 'camara',
-    label: 'API oficial da Câmara dos Deputados',
+    label: 'API oficial da C�mara dos Deputados',
     href: 'https://dadosabertos.camara.leg.br/swagger/api.html',
   },
   {
@@ -48,7 +48,7 @@ export const OFFICIAL_SOURCE_LINKS = [
   },
   {
     id: 'cnj',
-    label: 'API pública DataJud do CNJ',
+    label: 'API p�blica DataJud do CNJ',
     href: 'https://datajud-wiki.cnj.jus.br/api-publica/exemplos/',
   },
 ] as const;
@@ -161,12 +161,12 @@ export async function getOfficialSourceStatus(): Promise<FonteStatus[]> {
   return [
     {
       id: 'camara',
-      nome: 'Câmara dos Deputados',
+      nome: 'C�mara dos Deputados',
       status: camara.status === 'fulfilled' ? 'ok' : 'indisponivel',
       detalhes:
         camara.status === 'fulfilled'
           ? `${camara.value.length} deputados carregados da API oficial.`
-          : 'Falha ao consultar a API oficial da Câmara.',
+          : 'Falha ao consultar a API oficial da C�mara.',
       href: 'https://dadosabertos.camara.leg.br/swagger/api.html',
     },
     {
@@ -194,7 +194,7 @@ export async function getOfficialSourceStatus(): Promise<FonteStatus[]> {
       nome: 'CNJ DataJud',
       status: 'parcial',
       detalhes:
-        'Integração segura disponível por número de processo e tribunal. Correspondência automática por nome ainda não será feita.',
+        'Integra��o segura dispon�vel por n�mero de processo e tribunal. Correspond�ncia autom�tica por nome ainda n�o ser�feita.',
       href: 'https://datajud-wiki.cnj.jus.br/api-publica/exemplos/',
     },
   ];

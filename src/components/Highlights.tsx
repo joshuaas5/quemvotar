@@ -88,8 +88,8 @@ export default async function Highlights() {
                       {candidato.nome_urna}
                     </h3>
                     <p className="font-body font-medium mb-6 text-sm flex-grow">
-                      {candidato.cargo} em exercício. Perfil exibido a partir de fonte oficial já
-                      disponível na base do projeto.
+                      {candidato.cargo} em exerc�cio. Perfil exibido a partir de fonte oficial j�
+                      dispon�vel na base do projeto.
                     </p>
                     <Link
                       href={getPerfilHref(candidato)}

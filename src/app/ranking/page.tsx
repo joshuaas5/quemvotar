@@ -77,7 +77,7 @@ export default async function RankingPage({
           <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <h1 className="font-headline font-black text-3xl md:text-5xl uppercase mb-3 md:mb-4">Ranking dos Parlamentares 🏆</h1>
             <p className="font-body font-bold text-sm md:text-lg uppercase opacity-80">
-              Nota pública de desempenho legislativo com referência ao Ranking dos Políticos.
+              Nota p�blica de desempenho legislativo com refer�ncia ao Ranking dos Pol�ticos.
             </p>
           </section>
 

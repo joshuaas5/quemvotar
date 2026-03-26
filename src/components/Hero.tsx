@@ -24,8 +24,8 @@ export default function Hero() {
         NÃO ELEJA <br /> NO <span className="bg-primary-container px-4 text-on-primary-fixed">ESCURO</span>. <br /> VOTE COM DADOS.
       </h1>
       <p className="font-body font-bold text-xl md:text-2xl max-w-3xl mb-12 uppercase">
-        Consulte deputados, senadores, partidos, lideranças e notas públicas com base em dados
-        oficiais e referências auditáveis.
+        Consulte deputados, senadores, partidos, lideran�as e notas p�blicas com base em dados
+        oficiais e refer�ncias audit�veis.
       </p>
 
       <form
@@ -53,12 +53,12 @@ export default function Hero() {
       <div className="mt-8 flex flex-col md:flex-row gap-4 font-label font-bold text-sm uppercase">
         <span className="flex items-center gap-2 bg-on-background text-white px-3 py-1">
           <span className="material-symbols-outlined text-sm">verified</span> Dados oficiais da
-          Câmara e do Senado
+          C�mara e do Senado
         </span>
 
         <span className="flex items-center gap-2 bg-on-background text-white px-3 py-1">
-          <span className="material-symbols-outlined text-sm">leaderboard</span> Referências
-          públicas de acompanhamento legislativo
+          <span className="material-symbols-outlined text-sm">leaderboard</span> Refer�ncias
+          p�blicas de acompanhamento legislativo
         </span>
       </div>
     </section>

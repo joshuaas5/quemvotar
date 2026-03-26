@@ -11,7 +11,7 @@ const internalRoutes = [
   },
   {
     path: '/api/fontes/congresso',
-    description: 'Lista inicial de parlamentares carregados das APIs oficiais da Câmara e do Senado.',
+    description: 'Lista inicial de parlamentares carregados das APIs oficiais da C�mara e do Senado.',
   },
   {
     path: '/api/fontes/congresso?q=Tabata',
@@ -23,7 +23,7 @@ const internalRoutes = [
   },
   {
     path: '/api/fontes/cnj/processo?tribunal=tjdft&numero=07223914020178070001',
-    description: 'Consulta segura do CNJ DataJud por número de processo e tribunal.',
+    description: 'Consulta segura do CNJ DataJud por n�mero de processo e tribunal.',
   },
 ];
 
@@ -88,7 +88,7 @@ export default async function ApiDocsPage() {
               {tseDatasets.map((dataset) => (
                 <article key={dataset.id} className="border-2 border-black p-4">
                   <h3 className="font-headline font-black text-2xl uppercase">{dataset.titulo}</h3>
-                  <p className="font-body font-medium mt-2">{dataset.descricao || 'Sem descrição resumida.'}</p>
+                  <p className="font-body font-medium mt-2">{dataset.descricao || 'Sem descri��o resumida.'}</p>
                   <p className="font-label font-bold uppercase text-xs mt-3">
                     Atualizado em: {new Date(dataset.atualizadoEm).toLocaleString('pt-BR')}
                   </p>
@@ -98,10 +98,10 @@ export default async function ApiDocsPage() {
           </section>
 
           <section className="bg-primary-container border-4 border-black p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <h2 className="font-headline font-black text-4xl uppercase mb-4">REGRA DE SEGURANÇA</h2>
+            <h2 className="font-headline font-black text-4xl uppercase mb-4">REGRA DE SEGURAN�A</h2>
             <p className="font-body font-bold text-lg uppercase">
-              CNJ entra por número de processo e tribunal. Nenhuma inferência automática por nome
-              será tratada como prova.
+              CNJ entra por n�mero de processo e tribunal. Nenhuma infer�ncia autom�tica por nome
+              ser�tratada como prova.
             </p>
             <div className="mt-6 flex flex-col gap-3">
               {OFFICIAL_SOURCE_LINKS.map((source) => (

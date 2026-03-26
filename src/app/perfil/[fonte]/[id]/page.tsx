@@ -102,7 +102,7 @@ function renderSobreSection(perfil: PerfilDetalhadoPublico) {
     { label: 'E-mail institucional', value: perfil.email },
     {
       label: 'Telefones oficiais',
-      value: perfil.telefones.length > 0 ? perfil.telefones.join(' â€¢ ') : null,
+      value: perfil.telefones.length > 0 ? perfil.telefones.join(' �€¢ ') : null,
     },
     { label: 'Gabinete', value: perfil.gabinete },
     { label: 'Escolaridade', value: perfil.escolaridade },
@@ -137,31 +137,31 @@ function renderTopCards(perfil: PerfilDetalhadoPublico, partido: PartidoResumo |
   const cards = [
     {
       title: 'NOTA',
-      value: perfil.ranking ? formatScore(perfil.ranking.nota) : 'â€”',
-      helper: perfil.ranking?.rankingGeral ? `Ranking geral #${perfil.ranking.rankingGeral}` : 'Sem nota pública localizada',
+      value: perfil.ranking ? formatScore(perfil.ranking.nota) : '�€”',
+      helper: perfil.ranking?.rankingGeral ? `Ranking geral #${perfil.ranking.rankingGeral}` : 'Sem nota p�blica localizada',
       href: perfil.ranking?.fonteUrl,
       bg: 'bg-[#ffe066]',
     },
     {
       title: 'PresenÃ§a',
-      value: perfil.presenca ? formatPercent(perfil.presenca.percentual) : 'â€”',
+      value: perfil.presenca ? formatPercent(perfil.presenca.percentual) : '�€”',
       helper: perfil.presenca
-        ? `${perfil.presenca.presencas}/${perfil.presenca.sessoesDeliberativas} sessões no ano ${perfil.presenca.ano}`
-        : 'Sem série de presença localizada',
+        ? `${perfil.presenca.presencas}/${perfil.presenca.sessoesDeliberativas} sess�es no ano ${perfil.presenca.ano}`
+        : 'Sem s�rie de presen�a localizada',
       href: perfil.presenca?.fonteUrl,
       bg: 'bg-[#9bf6ff]',
     },
     {
       title: 'ALINHAMENTO',
-      value: perfil.governismo ? formatPercent(perfil.governismo.percentualFavoravel) : 'â€”',
-      helper: perfil.governismo ? 'Percentual de apoio ao governo nas votações monitoradas.' : 'Sem série localizada',
+      value: perfil.governismo ? formatPercent(perfil.governismo.percentualFavoravel) : '�€”',
+      helper: perfil.governismo ? 'Percentual de apoio ao governo nas vota��es monitoradas.' : 'Sem s�rie localizada',
       href: perfil.governismo?.fonteUrl,
       bg: 'bg-[#ffd6a5]',
     },
     {
-      title: 'Campo político',
-      value: perfil.espectro?.label ?? partido?.espectro ?? 'â€”',
-      helper: partido?.familiaPolitica ?? 'Sem classificação aproximada disponível',
+      title: 'Campo pol�tico',
+      value: perfil.espectro?.label ?? partido?.espectro ?? '�€”',
+      helper: partido?.familiaPolitica ?? 'Sem classifica��o aproximada dispon�vel',
       href: partido ? `/partidos/${partido.sigla}` : undefined,
       bg: 'bg-[#caffbf]',
     },
@@ -208,7 +208,7 @@ function renderTemaSection(perfil: PerfilDetalhadoPublico) {
       <div>
         <h2 className="font-headline font-black text-4xl uppercase">Como vota nos temas que pesam</h2>
         <p className="font-body font-bold uppercase text-sm opacity-70 mt-2">
-          Leitura rápida das votações recentes agrupadas por assunto.
+          Leitura r�pida das vota��es recentes agrupadas por assunto.
         </p>
       </div>
 
@@ -234,7 +234,7 @@ function renderTemaSection(perfil: PerfilDetalhadoPublico) {
                 rel="noreferrer"
                 className="inline-block mt-4 font-headline font-black uppercase border-b-4 border-black"
               >
-                Ver matéria
+                Ver mat�ria
               </a>
             ) : null}
           </article>
@@ -254,7 +254,7 @@ function renderNolanChart(perfil: PerfilDetalhadoPublico) {
   return (
     <section className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] mt-8">
       <h2 className="font-headline font-black text-3xl uppercase mb-3 text-center">Diagrama de Nolan</h2>
-      <p className="font-body font-medium mb-6 opacity-80 text-center max-w-2xl mx-auto">Posicionamento aproximado dos votos do parlamentar em temas de liberdade econômica e costumes.</p>
+      <p className="font-body font-medium mb-6 opacity-80 text-center max-w-2xl mx-auto">Posicionamento aproximado dos votos do parlamentar em temas de liberdade econ�mica e costumes.</p>
       <div className="flex flex-col items-center mb-6 overflow-visible">
         <svg viewBox="-20 -20 240 240" className="w-[100%] max-w-[340px] drop-shadow-md">
           <polygon points="100,100 50,50 100,0 150,50" fill="#69db7c" />
@@ -277,7 +277,7 @@ function renderNolanChart(perfil: PerfilDetalhadoPublico) {
           <p className="font-black text-2xl font-headline">{economia.toFixed(0)}<span className="text-xs font-bold opacity-60">/100</span></p>
         </div>
         <div className="bg-[#f8f9fa] border-2 border-black p-3 text-center transition-colors hover:bg-white">
-          <p className="font-bold opacity-70 text-xs uppercase mb-1 font-label block">COSTUMES (Progresso)</p>
+          <p className="font-bold opacity-70 text-xs uppercase mb-1 font-label block">LIBERDADES CIVIS</p>
           <p className="font-black text-2xl font-headline">{costumes.toFixed(0)}<span className="text-xs font-bold opacity-60">/100</span></p>
         </div>
       </div>
@@ -358,7 +358,7 @@ export default async function PerfilPage({
                     />
                   ) : null}
                   <p className="font-label font-bold uppercase text-sm opacity-90 mb-2">
-                    {perfil.partido} {perfil.uf ? `â€¢ ${perfil.uf}` : ''} â€¢ {perfil.cargo}
+                    {perfil.partido} {perfil.uf ? `�€¢ ${perfil.uf}` : ''} �€¢ {perfil.cargo}
                   </p>
                   <h1 className="font-headline font-black text-5xl md:text-7xl uppercase leading-none">
                     {perfil.nome_urna}
@@ -371,7 +371,7 @@ export default async function PerfilPage({
 )}
               
                   <p className="font-body font-bold text-lg mt-4 max-w-3xl">
-                    O que mais importa para decidir voto vem primeiro: nota pública, presença, alinhamento, partido e temas em que mais vota.
+                    O que mais importa para decidir voto vem primeiro: nota p�blica, presen�a, alinhamento, partido e temas em que mais vota.
                   </p>
                 </div>
 
@@ -390,7 +390,7 @@ export default async function PerfilPage({
 
                 {perfil.atualizadoEm ? (
                   <p className="font-label font-bold uppercase text-xs opacity-80">
-                    Atualização informada pela fonte: {formatDate(perfil.atualizadoEm) ?? perfil.atualizadoEm}
+                    Atualiza��o informada pela fonte: {formatDate(perfil.atualizadoEm) ?? perfil.atualizadoEm}
                   </p>
                 ) : null}
               </div>
@@ -430,35 +430,35 @@ export default async function PerfilPage({
             'Projetos e requerimentos',
             'MatÃ©rias e autorias legislativas localizadas para este parlamentar.',
             perfil.autorias,
-            'A fonte não retornou autorias recentes nesta consulta.',
+            'A fonte n�o retornou autorias recentes nesta consulta.',
           )}
 
           {renderListSection(
             'VotaÃ§Ãµes recentes',
             'Votos nominais e deliberaÃ§Ãµes localizadas nas fontes consultadas.',
             perfil.votacoes,
-            'A fonte não retornou votações recentes para este perfil nesta consulta.',
+            'A fonte n�o retornou vota��es recentes para este perfil nesta consulta.',
           )}
 
           {renderListSection(
             'Mandato',
             'Mandato atual e histÃ³rico retornados pelas fontes oficiais.',
             perfil.mandatos,
-            'A fonte não retornou mais registros de mandato para este perfil nesta consulta.',
+            'A fonte n�o retornou mais registros de mandato para este perfil nesta consulta.',
           )}
 
           {renderListSection(
             'ComissÃµes',
             'ParticipaÃ§Ãµes em comissÃµes e frentes oficiais.',
             perfil.comissoes,
-            'A fonte não retornou comissÃµes ativas para este perfil nesta consulta.',
+            'A fonte n�o retornou comissÃµes ativas para este perfil nesta consulta.',
           )}
 
           {renderListSection(
             'Cargos',
             'Cargos institucionais publicados pela casa legislativa correspondente.',
             perfil.cargos,
-            'A fonte não retornou cargos ativos para este perfil nesta consulta.',
+            'A fonte n�o retornou cargos ativos para este perfil nesta consulta.',
           )}
 
           {renderListSection(
@@ -468,8 +468,8 @@ export default async function PerfilPage({
               : 'FiliaÃ§Ãµes partidÃ¡rias histÃ³ricas retornadas pelo Senado Federal.',
             perfil.fonte === 'camara' ? perfil.despesas : perfil.filiacoes,
             perfil.fonte === 'camara'
-              ? 'A CÃ¢mara não retornou despesas recentes para este perfil nesta consulta.'
-              : 'O Senado não retornou histÃ³rico partidÃ¡rio para este perfil nesta consulta.',
+              ? 'A CÃ¢mara n�o retornou despesas recentes para este perfil nesta consulta.'
+              : 'O Senado n�o retornou histÃ³rico partidÃ¡rio para este perfil nesta consulta.',
           )}
 
           {renderSobreSection(perfil)}

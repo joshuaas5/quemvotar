@@ -8,7 +8,7 @@ export default function PrivacyPage() {
       <main className="flex-grow max-w-4xl mx-auto w-full px-6 py-16">
         <h1 className="font-headline font-black text-5xl uppercase mb-6">Privacidade</h1>
         <p className="font-body font-medium text-lg">
-          Esta página será detalhada na próxima revisão jurídica e operacional do projeto.
+          Esta p�gina ser�detalhada na pr�xima revis�o jur�dica e operacional do projeto.
         </p>
       </main>
       <Footer />

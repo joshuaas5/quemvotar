@@ -55,7 +55,7 @@ export async function searchCnjProcessByNumber(
   });
 
   if (!response.ok) {
-    throw new Error(`Falha ao consultar a API pública do CNJ: ${response.status}`);
+    throw new Error(`Falha ao consultar a API p�blica do CNJ: ${response.status}`);
   }
 
   const payload = (await response.json()) as {

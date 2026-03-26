@@ -14,15 +14,15 @@ const THEMES = [
     keywords: ['tribut', 'imposto', 'fiscal', 'orcament', 'arcabouco', 'divida', 'credito', 'gasto'],
   },
   {
-    tema: 'Saúde',
+    tema: 'Sa�de',
     keywords: ['saude', 'sus', 'hospital', 'medic', 'enferm', 'vacina', 'farmac'],
   },
   {
-    tema: 'Educação',
+    tema: 'Educa��o',
     keywords: ['educa', 'escola', 'univers', 'professor', 'aluno', 'ensino'],
   },
   {
-    tema: 'Segurança',
+    tema: 'Seguran�a',
     keywords: ['seguranca', 'policia', 'crime', 'arma', 'pris', 'penal', 'violencia'],
   },
   {
@@ -76,7 +76,7 @@ function normalizeVote(value: string) {
   const text = normalizeText(value);
 
   if (text.includes('sim') || text.includes('favor')) return 'sim';
-  if (text.includes('nao') || text.includes('não') || text.includes('contra')) return 'nao';
+  if (text.includes('nao') || text.includes('n�o') || text.includes('contra')) return 'nao';
   if (text.includes('abst')) return 'abstencao';
   if (text.includes('obstr')) return 'obstrucao';
   return 'outro';
@@ -122,19 +122,19 @@ export function buildVoteThemeCards(items: VoteThemeSource[]): PerfilItemLista[]
       const ultima = [...resumo.items].sort((a, b) => (b.data ?? '').localeCompare(a.data ?? ''))[0];
       const tendencia =
         resumo.sim > resumo.nao
-          ? 'Mais votos favoráveis'
+          ? 'Mais votos favor�veis'
           : resumo.nao > resumo.sim
-            ? 'Mais votos contrários'
+            ? 'Mais votos contr�rios'
             : 'Votos divididos';
 
       return {
         titulo: tema,
-        descricao: ultima?.descricao ? truncate(ultima.descricao) : 'Tema recorrente nas votações recentes.',
+        descricao: ultima?.descricao ? truncate(ultima.descricao) : 'Tema recorrente nas vota��es recentes.',
         detalhe: [
-          `${resumo.items.length} votações analisadas`,
-          resumo.sim ? `${resumo.sim} favoráveis` : null,
-          resumo.nao ? `${resumo.nao} contrárias` : null,
-          resumo.abstencao ? `${resumo.abstencao} abstenções` : null,
+          `${resumo.items.length} vota��es analisadas`,
+          resumo.sim ? `${resumo.sim} favor�veis` : null,
+          resumo.nao ? `${resumo.nao} contr�rias` : null,
+          resumo.abstencao ? `${resumo.abstencao} absten��es` : null,
         ]
           .filter(Boolean)
           .join(' • '),

@@ -6,7 +6,7 @@ export interface PerfilPublico {
   uf?: string;
   cargo: string;
   foto_url: string;
-  casa: 'Câmara dos Deputados' | 'Senado Federal';
+  casa: 'C�mara dos Deputados' | 'Senado Federal';
   fonte: 'camara' | 'senado';
   fonteUrl: string;
 }
