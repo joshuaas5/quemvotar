@@ -5,6 +5,7 @@ import { buildVoteThemeCards } from '@/lib/political-themes';
 
 const RADAR_API_ROOT = 'https://radar.congressoemfoco.com.br/api';
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
+const CAMARA_VOTES_SAMPLE_SIZE = 8;
 
 interface RadarBuscaItem {
   idParlamentar?: string;
@@ -180,7 +181,7 @@ const fetchCamaraVoteItems = cache(async (perfil: PerfilPublico): Promise<Camara
 
   const payload = await fetchRadar<RadarVotosResponse>(`/parlamentares/${match.idParlamentarVoz}/votos`);
   const votos = payload.votos ?? {};
-  const ids = Object.keys(votos).reverse().slice(0, 30);
+  const ids = Object.keys(votos).reverse().slice(0, CAMARA_VOTES_SAMPLE_SIZE);
 
   const detalhes = await Promise.all(
     ids.map(async (voteId) => {
@@ -310,3 +311,4 @@ export const fetchCamaraVoteThemesForPerfil = cache(
     );
   },
 );
+

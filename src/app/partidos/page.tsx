@@ -1,7 +1,8 @@
 ﻿import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import { getLiderancas, getPartidos } from '@/lib/api';
+import { getLiderancas, getPartidos, getParlamentares, getPerfilHref } from '@/lib/api';
+import Image from 'next/image';
 import { getPartyVisualEmoji } from '@/lib/party-logos';
 
 export const revalidate = 3600;
@@ -20,7 +21,11 @@ function getCasaLabel(casa: string) {
 }
 
 export default async function PartidosPage() {
-  const [partidos, liderancas] = await Promise.all([getPartidos(), getLiderancas()]);
+  const [partidos, liderancas, parlamentares] = await Promise.all([getPartidos(), getLiderancas(), getParlamentares()]);
+  const liderancasComFoto = liderancas.map(l => {
+    const p = parlamentares.find(p => p.nome.toLowerCase() === l.nomeParlamentar.toLowerCase().replace(/ \([^)]+\)/g, '') || p.nomeCivil?.toLowerCase() === l.nomeParlamentar.toLowerCase().replace(/ \([^)]+\)/g, ''));
+    return { ...l, foto: p?.foto, href: p ? getPerfilHref(p.fonte, p.id) : null };
+  });
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -34,27 +39,6 @@ export default async function PartidosPage() {
               Retrato dos partidos com assento no Congresso, incluindo presidencia nacional,
               campo politico aproximado e lideranca nas casas.
             </p>
-          </section>
-
-          <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 md:gap-6">
-            {liderancas.slice(0, 8).map((lideranca) => (
-              <article
-                key={lideranca.id}
-                className="bg-white border-4 border-black p-5 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
-              >
-                <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">
-                  {getCasaLabel(lideranca.casa)} • {lideranca.categoria}
-                </p>
-                <h2 className="font-headline font-black text-xl md:text-2xl uppercase leading-tight">
-                  {lideranca.nomeParlamentar}
-                </h2>
-                <p className="font-body font-medium mt-3">{lideranca.titulo}</p>
-                <p className="font-label font-bold uppercase text-xs mt-3 opacity-70">
-                  {lideranca.partido ? `${lideranca.partido} • ` : ''}
-                  {formatDate(lideranca.dataDesignacao) ?? 'Data nao informada'}
-                </p>
-              </article>
-            ))}
           </section>
 
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
@@ -123,6 +107,32 @@ export default async function PartidosPage() {
                     </a>
                   ) : null}
                 </div>
+              </article>
+            ))}
+          </section>
+
+          <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 md:gap-6">
+            {liderancasComFoto.slice(0, 8).map((lideranca) => (
+              <article
+                key={lideranca.id}
+                className="bg-white border-4 border-black p-5 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+              >
+                <div className="flex gap-4 mb-4 items-center">
+  {lideranca.foto && (<Image src={lideranca.foto} alt={lideranca.nomeParlamentar} width={64} height={64} className="rounded-full object-cover border-2 border-black w-16 h-16" />)}
+  <div>
+    <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">
+      {getCasaLabel(lideranca.casa)} • {lideranca.categoria}
+    </p>
+    <h2 className="font-headline font-black text-xl md:text-2xl uppercase leading-tight">
+      {lideranca.href ? <Link href={lideranca.href} className="hover:underline">{lideranca.nomeParlamentar}</Link> : lideranca.nomeParlamentar}
+    </h2>
+    <p className="font-body font-medium mt-3">{lideranca.titulo}</p>
+  </div>
+</div>
+                <p className="font-label font-bold uppercase text-xs mt-3 opacity-70">
+                  {lideranca.partido ? `${lideranca.partido} • ` : ''}
+                  {formatDate(lideranca.dataDesignacao) ?? 'Data nao informada'}
+                </p>
               </article>
             ))}
           </section>

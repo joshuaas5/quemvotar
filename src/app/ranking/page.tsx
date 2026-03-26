@@ -51,7 +51,7 @@ export default async function RankingPage({
 }) {
   const params = await searchParams;
   const q = typeof params.q === 'string' ? params.q.trim() : '';
-  const casa = typeof params.casa === 'string' ? params.casa.trim().toLowerCase() : '';
+  const casa = typeof params.casa === 'string' ? params.casa.trim().toLowerCase() : ''; const uf = typeof params.uf === 'string' ? params.uf.trim().toUpperCase() : '';
   const fonte = casa === 'camara' || casa === 'senado' ? casa : undefined;
 
   const [ranking, parlamentares] = await Promise.all([
@@ -59,12 +59,10 @@ export default async function RankingPage({
     getParlamentares(),
   ]);
 
-  const resultados = ranking.filter((item) => {
-    if (!q) {
-      return true;
-    }
-
-    return [item.nome, item.partido, item.uf, item.cargo]
+  const ufs = Array.from(new Set(ranking.map(i => i.uf).filter(Boolean))).sort(); const resultados = ranking.filter((item) => { 
+ if(uf && item.uf !== uf) return false; 
+ if(!q) return true; 
+ return [item.nome, item.partido, item.uf, item.cargo]
       .join(' ')
       .toLowerCase()
       .includes(q.toLowerCase());
@@ -83,7 +81,7 @@ export default async function RankingPage({
             </p>
           </section>
 
-          <form className="bg-white border-4 border-black p-4 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+          <form className="bg-white border-4 border-black p-4 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
             <input
               type="text"
               name="q"
@@ -101,6 +99,8 @@ export default async function RankingPage({
               <option value="camara">Camara</option>
               <option value="senado">Senado</option>
             </select>
+
+            <select name="uf" defaultValue={uf} className="border-4 border-black px-4 py-3 font-headline font-bold uppercase bg-white"><option value="">Todas as UFs</option>{ufs.map(u => <option key={u} value={u}>{u}</option>)}</select>
 
             <button
               type="submit"
@@ -219,3 +219,6 @@ export default async function RankingPage({
     </div>
   );
 }
+
+
+

@@ -54,7 +54,10 @@ export const OFFICIAL_SOURCE_LINKS = [
 ] as const;
 
 export const fetchOfficialCongressProfiles = cache(async (): Promise<PerfilPublico[]> => {
-  const [deputados, senadores] = await Promise.all([fetchDeputados(), fetchSenadores()]);
+  const [deputadosResult, senadoresResult] = await Promise.allSettled([fetchDeputados(), fetchSenadores()]);
+
+  const deputados = deputadosResult.status === 'fulfilled' ? deputadosResult.value : [];
+  const senadores = senadoresResult.status === 'fulfilled' ? senadoresResult.value : [];
 
   return [...deputados, ...senadores].sort((a, b) => a.nome_urna.localeCompare(b.nome_urna, 'pt-BR'));
 });
@@ -112,8 +115,20 @@ export async function searchOfficialCongressProfiles(
 
 export async function getOfficialPanoramaDados(): Promise<PanoramaDados> {
   try {
-    const [deputados, senadores] = await Promise.all([fetchDeputados(), fetchSenadores()]);
+    const [deputadosResult, senadoresResult] = await Promise.allSettled([fetchDeputados(), fetchSenadores()]);
+    const deputados = deputadosResult.status === 'fulfilled' ? deputadosResult.value : [];
+    const senadores = senadoresResult.status === 'fulfilled' ? senadoresResult.value : [];
     const parlamentares = [...deputados, ...senadores];
+
+    if (parlamentares.length === 0) {
+      return {
+        totalParlamentares: null,
+        totalDeputados: null,
+        totalSenadores: null,
+        totalUfs: null,
+        fonteAtual: 'indisponivel',
+      };
+    }
 
     return {
       totalParlamentares: parlamentares.length,
@@ -207,3 +222,5 @@ export async function getCnjProcessoByNumero(
 ): Promise<CnjProcessoResumo | null> {
   return searchCnjProcessByNumber(tribunalSlug, numeroProcesso);
 }
+
+
