@@ -15,7 +15,12 @@ import {
   type PerfilPublico,
   type RankingListaItem,
 } from './official';
-import { fetchCamaraVotesForPerfil, fetchGovernismoForPerfil } from './external/radar';
+import {
+  fetchAssiduidadeForPerfil,
+  fetchCamaraVoteThemesForPerfil,
+  fetchCamaraVotesForPerfil,
+  fetchGovernismoForPerfil,
+} from './external/radar';
 import { fetchRankingForPerfil, fetchRankingTop } from './external/ranking';
 
 export type {
@@ -85,12 +90,28 @@ export async function getPerfilDetalhado(
     fetchGovernismoForPerfil(perfil).catch(() => null),
     fonte === 'camara' ? fetchCamaraVotesForPerfil(perfil).catch(() => []) : Promise.resolve([]),
   ]);
+  const [presenca, partidoResumo, temasCamara] = await Promise.all([
+    fetchAssiduidadeForPerfil(perfil).catch(() => null),
+    getPartido(perfil.partido).catch(() => null),
+    fonte === 'camara' ? fetchCamaraVoteThemesForPerfil(perfil).catch(() => []) : Promise.resolve([]),
+  ]);
 
   return {
     ...perfil,
     ranking,
     governismo,
+    presenca,
+    espectro:
+      partidoResumo?.espectroEixo && partidoResumo.espectro
+        ? {
+            fonte: 'partido_e_votacoes',
+            eixo: partidoResumo.espectroEixo,
+            label: partidoResumo.espectro,
+            resumo: `Campo aproximado alinhado ao posicionamento público do ${perfil.partido}.`,
+          }
+        : null,
     votacoes: perfil.votacoes.length > 0 ? perfil.votacoes : votacoesCamara,
+    temasVotacao: perfil.temasVotacao.length > 0 ? perfil.temasVotacao : temasCamara,
   };
 }
 

@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import type { PerfilDetalhadoPublico, PerfilItemLista, PerfilPublico } from './types';
+import { buildVoteThemeCards } from '@/lib/political-themes';
 
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
 const AUTORIAS_AMOSTRA_ANALISADA = 40;
@@ -474,6 +475,15 @@ export const fetchSenadorDetalhado = cache(
       autoriasPayload?.MateriasAutoriaParlamentar?.Parlamentar?.Autorias?.Autoria,
     ).sort((a, b) => (b.Materia?.Data ?? '').localeCompare(a.Materia?.Data ?? ''));
     const autoriasResumo = await fetchAutoriasResumo(autorias);
+    const temasVotacao = buildVoteThemeCards(
+      votacoes.map((votacao) => ({
+        titulo: votacao.Materia?.DescricaoIdentificacao ?? 'Votação nominal',
+        descricao: votacao.Materia?.Ementa ?? votacao.DescricaoVotacao,
+        data: votacao.SessaoPlenaria?.DataSessao,
+        voto: votacao.SiglaDescricaoVoto ?? votacao.DescricaoResultado ?? 'Voto registrado',
+        href: getSenadoMateriaUrl(votacao.Materia?.Codigo),
+      })),
+    );
 
     return {
       ...perfilBase,
@@ -547,6 +557,7 @@ export const fetchSenadorDetalhado = cache(
       autoriasTotal: autoriasResumo.total,
       autoriasAprovadas: autoriasResumo.aprovadas,
       autoriasAmostraAnalisada: AUTORIAS_AMOSTRA_ANALISADA,
+      temasVotacao,
     };
   },
 );

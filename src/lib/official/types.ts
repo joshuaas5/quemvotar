@@ -58,6 +58,9 @@ export interface PerfilDetalhadoPublico extends PerfilPublico {
   autoriasTotal?: number | null;
   autoriasAprovadas?: number | null;
   autoriasAmostraAnalisada?: number | null;
+  temasVotacao: PerfilItemLista[];
+  presenca?: PresencaReferencia | null;
+  espectro?: EspectroAproximado | null;
   ranking?: RankingReferencia | null;
   governismo?: GovernismoReferencia | null;
 }
@@ -76,9 +79,19 @@ export interface PartidoResumo {
   nome: string;
   logoUrl?: string | null;
   fonteUrl: string;
+  tseUrl?: string | null;
   deputados: number;
   senadores: number;
   totalParlamentares: number;
+  numeroLegenda?: string | null;
+  presidenteNacional?: string | null;
+  siteOficial?: string | null;
+  estatutoUrl?: string | null;
+  definicaoCurta?: string | null;
+  familiaPolitica?: string | null;
+  espectro?: string | null;
+  espectroEixo?: 'esquerda' | 'centro-esquerda' | 'centro' | 'centro-direita' | 'direita' | null;
+  cores?: string[];
   liderCamara?: PartidoLideranca | null;
   liderSenado?: PartidoLideranca | null;
   blocosSenado: string[];
@@ -122,6 +135,24 @@ export interface GovernismoReferencia {
   votosConsiderados: number;
   votacoesMonitoradas: number;
   fonteUrl: string;
+}
+
+export interface PresencaReferencia {
+  fonte: 'radar_do_congresso';
+  ano: number;
+  percentual: number;
+  sessoesDeliberativas: number;
+  presencas: number;
+  ausenciasJustificadas: number;
+  ausenciasNaoJustificadas: number;
+  fonteUrl: string;
+}
+
+export interface EspectroAproximado {
+  fonte: 'partido_e_votacoes';
+  label: string;
+  eixo: 'esquerda' | 'centro-esquerda' | 'centro' | 'centro-direita' | 'direita';
+  resumo: string;
 }
 
 export interface RankingListaItem {

@@ -22,9 +22,9 @@ export default async function PartidosPage() {
       <main className="flex-grow bg-surface-container py-16 px-6">
         <div className="max-w-7xl mx-auto space-y-10">
           <section className="bg-white border-4 border-black p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <h1 className="font-headline font-black text-5xl uppercase mb-4">Partidos e Lideranças</h1>
+            <h1 className="font-headline font-black text-5xl uppercase mb-4">Partidos e lideranças</h1>
             <p className="font-body font-bold text-lg uppercase opacity-80">
-              Panorama montado com dados oficiais da Câmara dos Deputados e do Senado Federal.
+              Retrato dos partidos com assento no Congresso, incluindo presidência nacional, campo político aproximado e liderança nas casas.
             </p>
           </section>
 
@@ -55,78 +55,65 @@ export default async function PartidosPage() {
                 key={partido.sigla}
                 className="bg-white border-4 border-black p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
               >
-                <div className="flex items-start gap-5">
-                  {partido.logoUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={partido.logoUrl}
-                      alt={partido.sigla}
-                      className="w-20 h-20 object-contain border-4 border-black bg-white p-2"
-                    />
-                  ) : null}
+                <div className="grid grid-cols-[88px_minmax(0,1fr)] gap-5">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={partido.logoUrl ?? 'https://fakeimg.pl/320x320?text=Partido'}
+                    alt={partido.sigla}
+                    className="w-20 h-20 object-cover border-4 border-black bg-white"
+                  />
+
                   <div className="space-y-2">
                     <p className="font-label font-bold uppercase text-xs opacity-70">{partido.sigla}</p>
                     <h2 className="font-headline font-black text-3xl uppercase leading-none">
                       {partido.nome}
                     </h2>
                     <p className="font-body font-bold uppercase text-sm">
-                      {partido.totalParlamentares} parlamentares • {partido.deputados} deputados •{' '}
-                      {partido.senadores} senadores
+                      {partido.totalParlamentares} parlamentares • {partido.deputados} deputados • {partido.senadores} senadores
                     </p>
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      {partido.espectro ? (
+                        <span className="border-2 border-black px-3 py-1 font-label font-bold uppercase text-xs">
+                          {partido.espectro}
+                        </span>
+                      ) : null}
+                      {partido.familiaPolitica ? (
+                        <span className="border-2 border-black px-3 py-1 font-label font-bold uppercase text-xs">
+                          {partido.familiaPolitica}
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
+
+                {partido.definicaoCurta ? (
+                  <p className="font-body font-medium mt-6">{partido.definicaoCurta}</p>
+                ) : null}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                   <div className="border-4 border-black p-4 bg-surface-container-low">
-                    <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Liderança na Câmara</p>
-                    <p className="font-body font-bold">{partido.liderCamara?.nome ?? 'Sem líder retornado'}</p>
-                    {partido.liderCamara?.uf ? (
-                      <p className="font-label font-bold uppercase text-xs mt-2 opacity-70">
-                        {partido.liderCamara.uf}
-                      </p>
-                    ) : null}
+                    <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Presidência nacional</p>
+                    <p className="font-body font-bold">{partido.presidenteNacional ?? 'Não localizada'}</p>
                   </div>
 
                   <div className="border-4 border-black p-4 bg-surface-container-low">
-                    <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Liderança no Senado</p>
-                    <p className="font-body font-bold">{partido.liderSenado?.nome ?? 'Sem líder retornado'}</p>
-                    <p className="font-label font-bold uppercase text-xs mt-2 opacity-70">
-                      {partido.liderSenado?.cargo ?? 'Cargo não informado'}
-                    </p>
+                    <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Liderança na Câmara</p>
+                    <p className="font-body font-bold">{partido.liderCamara?.nome ?? 'Sem líder retornado'}</p>
                   </div>
                 </div>
 
-                {partido.blocosSenado.length > 0 ? (
-                  <div className="mt-6">
-                    <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Blocos no Senado</p>
-                    <div className="flex flex-wrap gap-2">
-                      {partido.blocosSenado.map((bloco) => (
-                        <span
-                          key={`${partido.sigla}-${bloco}`}
-                          className="border-2 border-black px-3 py-1 font-label font-bold uppercase text-xs"
-                        >
-                          {bloco}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-
                 <div className="mt-6 flex flex-wrap gap-4">
-                  <Link
-                    href={`/parlamentares?partido=${encodeURIComponent(partido.sigla)}`}
-                    className="font-headline font-black uppercase border-b-4 border-black"
-                  >
+                  <Link href={`/partidos/${partido.sigla}`} className="font-headline font-black uppercase border-b-4 border-black">
+                    Abrir partido
+                  </Link>
+                  <Link href={`/parlamentares?partido=${encodeURIComponent(partido.sigla)}`} className="font-headline font-black uppercase border-b-4 border-black">
                     Ver bancada
                   </Link>
-                  <a
-                    href={partido.fonteUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="font-headline font-black uppercase border-b-4 border-black"
-                  >
-                    Fonte oficial
-                  </a>
+                  {partido.siteOficial ? (
+                    <a href={partido.siteOficial} target="_blank" rel="noreferrer" className="font-headline font-black uppercase border-b-4 border-black">
+                      Site oficial
+                    </a>
+                  ) : null}
                 </div>
               </article>
             ))}

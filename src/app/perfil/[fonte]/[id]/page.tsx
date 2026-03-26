@@ -2,15 +2,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import { getCasaBadge, getFonteBadge, getPerfilDetalhado } from '@/lib/api';
-import type { PerfilDetalhadoPublico, PerfilItemLista } from '@/lib/official';
+import { getPartidoPorSigla, getPerfilDetalhado } from '@/lib/api';
+import type { PartidoResumo, PerfilDetalhadoPublico, PerfilItemLista } from '@/lib/official';
 
 export const dynamic = 'force-dynamic';
 
 function formatDate(value?: string | null) {
-  if (!value) {
-    return null;
-  }
+  if (!value) return null;
 
   if (/^\d{4}-\d{2}-\d{2}/.test(value)) {
     const date = new Date(value);
@@ -24,35 +22,21 @@ function formatDate(value?: string | null) {
 }
 
 function formatNumber(value?: number | null) {
-  if (typeof value !== 'number') {
-    return null;
-  }
-
+  if (typeof value !== 'number') return null;
   return new Intl.NumberFormat('pt-BR').format(value);
 }
 
 function formatScore(value?: number | null) {
-  if (typeof value !== 'number') {
-    return null;
-  }
-
+  if (typeof value !== 'number') return null;
   return value.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 }
 
 function formatPercent(value?: number | null) {
-  if (typeof value !== 'number') {
-    return null;
-  }
-
+  if (typeof value !== 'number') return null;
   return `${value.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}%`;
 }
 
-function renderListSection(
-  title: string,
-  description: string,
-  items: PerfilItemLista[],
-  emptyText: string,
-) {
+function renderListSection(title: string, description: string, items: PerfilItemLista[], emptyText: string) {
   return (
     <section className="space-y-6">
       <div>
@@ -133,9 +117,9 @@ function renderSobreSection(perfil: PerfilDetalhadoPublico) {
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="font-headline font-black text-4xl uppercase">Raio-X Oficial</h2>
+        <h2 className="font-headline font-black text-4xl uppercase">Informações oficiais</h2>
         <p className="font-body font-bold uppercase text-sm opacity-70 mt-2">
-          Identificação, contato e dados biográficos retornados pelas fontes oficiais.
+          Dados biográficos e de contato publicados pelas casas legislativas.
         </p>
       </div>
 
@@ -154,115 +138,113 @@ function renderSobreSection(perfil: PerfilDetalhadoPublico) {
   );
 }
 
-function renderIndicadoresSection(perfil: PerfilDetalhadoPublico) {
-  const cards = [];
+function renderTopCards(perfil: PerfilDetalhadoPublico, partido: PartidoResumo | null) {
+  const cards = [
+    {
+      title: 'Nota',
+      value: perfil.ranking ? formatScore(perfil.ranking.nota) : '—',
+      helper: perfil.ranking?.rankingGeral ? `Ranking geral #${perfil.ranking.rankingGeral}` : 'Sem nota pública localizada',
+      href: perfil.ranking?.fonteUrl,
+      bg: 'bg-[#ffe066]',
+    },
+    {
+      title: 'Presença',
+      value: perfil.presenca ? formatPercent(perfil.presenca.percentual) : '—',
+      helper: perfil.presenca
+        ? `${perfil.presenca.presencas}/${perfil.presenca.sessoesDeliberativas} sessões no ano ${perfil.presenca.ano}`
+        : 'Sem série de presença localizada',
+      href: perfil.presenca?.fonteUrl,
+      bg: 'bg-[#9bf6ff]',
+    },
+    {
+      title: 'Alinhamento',
+      value: perfil.governismo ? formatPercent(perfil.governismo.percentualFavoravel) : '—',
+      helper: perfil.governismo ? 'Percentual de apoio ao governo nas votações monitoradas.' : 'Sem série localizada',
+      href: perfil.governismo?.fonteUrl,
+      bg: 'bg-[#ffd6a5]',
+    },
+    {
+      title: 'Campo político',
+      value: perfil.espectro?.label ?? partido?.espectro ?? '—',
+      helper: partido?.familiaPolitica ?? 'Sem classificação aproximada disponível',
+      href: partido ? `/partidos/${partido.sigla}` : undefined,
+      bg: 'bg-[#caffbf]',
+    },
+    {
+      title: 'Partido',
+      value: partido?.sigla ?? perfil.partido,
+      helper: partido?.nome ?? perfil.partido,
+      href: partido ? `/partidos/${partido.sigla}` : undefined,
+      bg: 'bg-[#ffc6ff]',
+    },
+  ];
 
-  if (typeof perfil.autoriasTotal === 'number') {
-    cards.push({
-      title: 'Autorias localizadas',
-      value: formatNumber(perfil.autoriasTotal),
-      helper: 'Projetos, requerimentos e matérias localizados nesta fonte.',
-      href: undefined,
-    });
-  }
+  return (
+    <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-5">
+      {cards.map((card) => (
+        <article key={card.title} className={`${card.bg} border-4 border-black p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]`}>
+          <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">{card.title}</p>
+          <p className="font-headline font-black text-4xl leading-none">{card.value}</p>
+          <p className="font-body font-bold mt-3">{card.helper}</p>
+          {card.href ? (
+            card.href.startsWith('/') ? (
+              <Link href={card.href} className="inline-block mt-4 font-headline font-black uppercase border-b-4 border-black">
+                Abrir
+              </Link>
+            ) : (
+              <a href={card.href} target="_blank" rel="noreferrer" className="inline-block mt-4 font-headline font-black uppercase border-b-4 border-black">
+                Ver fonte
+              </a>
+            )
+          ) : null}
+        </article>
+      ))}
+    </section>
+  );
+}
 
-  if (
-    typeof perfil.autoriasAprovadas === 'number' &&
-    typeof perfil.autoriasAmostraAnalisada === 'number'
-  ) {
-    cards.push({
-      title: 'Aprovações identificadas',
-      value: formatNumber(perfil.autoriasAprovadas),
-      helper: `Confirmadas nas últimas ${perfil.autoriasAmostraAnalisada} matérias analisadas.`,
-      href: undefined,
-    });
-  }
-
-  if (perfil.ranking) {
-    cards.push({
-      title: 'Nota do Ranking dos Políticos',
-      value: formatScore(perfil.ranking.nota),
-      helper: [
-        perfil.ranking.rankingGeral ? `Geral: #${perfil.ranking.rankingGeral}` : null,
-        perfil.ranking.rankingCasa ? `Na casa: #${perfil.ranking.rankingCasa}` : null,
-        perfil.ranking.rankingEstado ? `No estado: #${perfil.ranking.rankingEstado}` : null,
-      ]
-        .filter(Boolean)
-        .join(' • '),
-      href: perfil.ranking.fonteUrl,
-    });
-  }
-
-  if (perfil.governismo) {
-    cards.push({
-      title: 'Alinhamento com o governo',
-      value: formatPercent(perfil.governismo.percentualFavoravel),
-      helper: `${formatNumber(perfil.governismo.votosFavoraveis)} votos favoráveis em ${formatNumber(
-        perfil.governismo.votosConsiderados,
-      )} votos considerados.`,
-      href: perfil.governismo.fonteUrl,
-    });
-  }
-
-  if (cards.length === 0) {
+function renderTemaSection(perfil: PerfilDetalhadoPublico) {
+  if (!perfil.temasVotacao.length) {
     return null;
   }
 
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="font-headline font-black text-4xl uppercase">Indicadores</h2>
+        <h2 className="font-headline font-black text-4xl uppercase">Como vota nos temas que pesam</h2>
         <p className="font-body font-bold uppercase text-sm opacity-70 mt-2">
-          Leitura rápida da atuação, da produção legislativa e dos índices públicos disponíveis.
+          Leitura rápida das votações recentes agrupadas por assunto.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        {cards.map((card) => (
+        {perfil.temasVotacao.map((tema, index) => (
           <article
-            key={card.title}
+            key={`${tema.titulo}-${index}`}
             className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
           >
-            <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">{card.title}</p>
-            <p className="font-headline font-black text-4xl">{card.value}</p>
-            {card.helper ? <p className="font-body font-medium mt-3">{card.helper}</p> : null}
-            {card.href ? (
+            <p className="font-headline font-black text-2xl uppercase leading-tight">{tema.titulo}</p>
+            {tema.data ? (
+              <p className="font-label font-bold uppercase text-xs opacity-70 mt-2">{formatDate(tema.data)}</p>
+            ) : null}
+            {tema.destaque ? (
+              <p className="font-body font-bold mt-4">{tema.destaque}</p>
+            ) : null}
+            {tema.detalhe ? <p className="font-label font-bold uppercase text-xs opacity-70 mt-3">{tema.detalhe}</p> : null}
+            {tema.descricao ? <p className="font-body font-medium mt-4">{tema.descricao}</p> : null}
+            {tema.href ? (
               <a
-                href={card.href}
+                href={tema.href}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-block mt-4 font-headline font-black uppercase border-b-4 border-black"
               >
-                Ver fonte
+                Ver matéria
               </a>
             ) : null}
           </article>
         ))}
       </div>
-
-      {perfil.ranking?.anos.length ? (
-        <div className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-          <p className="font-label font-bold uppercase text-xs opacity-70 mb-4">
-            Evolução anual da nota
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-            {perfil.ranking.anos.map((ano) => (
-              <article key={ano.ano} className="border-4 border-black p-4 bg-surface-container-low">
-                <p className="font-headline font-black text-2xl">{ano.ano}</p>
-                <p className="font-body font-bold mt-1">Nota {formatScore(ano.pontuacao)}</p>
-                <p className="font-label font-bold uppercase text-xs opacity-70 mt-3">
-                  {[
-                    typeof ano.votacoes === 'number' ? `Votações ${formatScore(ano.votacoes)}` : null,
-                    typeof ano.presenca === 'number' ? `Presença ${formatScore(ano.presenca)}` : null,
-                  ]
-                    .filter(Boolean)
-                    .join(' • ')}
-                </p>
-              </article>
-            ))}
-          </div>
-        </div>
-      ) : null}
     </section>
   );
 }
@@ -284,22 +266,27 @@ export default async function PerfilPage({
     notFound();
   }
 
+  const partido = await getPartidoPorSigla(perfil.partido);
+  const cores = partido?.cores ?? ['#111827', '#d1d5db'];
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
 
       <main className="flex-grow bg-surface-container py-12 px-6">
         <div className="max-w-7xl mx-auto space-y-10">
-          <Link
-            href="/parlamentares"
-            className="inline-block font-headline font-black uppercase text-lg border-b-4 border-black"
-          >
+          <Link href="/parlamentares" className="inline-block font-headline font-black uppercase text-lg border-b-4 border-black">
             Voltar para parlamentares
           </Link>
 
-          <section className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
-            <div className="grid grid-cols-1 lg:grid-cols-[320px_minmax(0,1fr)]">
-              <div className="bg-surface-container-high border-b-4 lg:border-b-0 lg:border-r-4 border-black">
+          <section
+            className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
+            style={{
+              background: `linear-gradient(135deg, ${cores[0]} 0%, ${cores[1]} 100%)`,
+            }}
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)]">
+              <div className="bg-white/20 border-b-4 lg:border-b-0 lg:border-r-4 border-black">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={perfil.foto_url || 'https://fakeimg.pl/640x640?text=Sem+Foto'}
@@ -308,63 +295,50 @@ export default async function PerfilPage({
                 />
               </div>
 
-              <div className="p-8 lg:p-10 space-y-6">
+              <div className="p-8 lg:p-10 space-y-6 text-white">
                 <div className="flex flex-wrap gap-3">
-                  <span className="bg-secondary-fixed text-on-secondary-fixed border-2 border-black px-3 py-1 font-headline font-black uppercase text-sm">
-                    {getCasaBadge(perfil)}
-                  </span>
-                  <span className="bg-white border-2 border-black px-3 py-1 font-headline font-black uppercase text-sm">
-                    {getFonteBadge(perfil)}
+                  <span className="bg-white text-black border-2 border-black px-3 py-1 font-headline font-black uppercase text-sm">
+                    {perfil.casa}
                   </span>
                   {perfil.situacao ? (
-                    <span className="bg-primary-container border-2 border-black px-3 py-1 font-headline font-black uppercase text-sm">
+                    <span className="bg-black text-white border-2 border-black px-3 py-1 font-headline font-black uppercase text-sm">
                       {perfil.situacao}
+                    </span>
+                  ) : null}
+                  {partido?.espectro ? (
+                    <span className="bg-white/90 text-black border-2 border-black px-3 py-1 font-headline font-black uppercase text-sm">
+                      {partido.espectro}
                     </span>
                   ) : null}
                 </div>
 
                 <div>
-                  <p className="font-label font-bold uppercase text-sm opacity-70 mb-2">
+                  <p className="font-label font-bold uppercase text-sm opacity-90 mb-2">
                     {perfil.partido} {perfil.uf ? `• ${perfil.uf}` : ''} • {perfil.cargo}
                   </p>
                   <h1 className="font-headline font-black text-5xl md:text-7xl uppercase leading-none">
                     {perfil.nome_urna}
                   </h1>
                   <p className="font-body font-bold text-lg mt-4 max-w-3xl">
-                    Perfil montado com dados das fontes oficiais do Congresso e indicadores públicos auditáveis.
+                    O que mais importa para decidir voto vem primeiro: nota pública, presença, alinhamento, partido e temas em que mais vota.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-                  {perfil.fatos.slice(0, 8).map((fato) => (
-                    <article
-                      key={`${fato.label}-${fato.value}`}
-                      className="border-4 border-black p-4 bg-surface-container-low"
-                    >
-                      <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">
-                        {fato.label}
-                      </p>
-                      <p className="font-body font-bold">{fato.value}</p>
-                    </article>
-                  ))}
-                </div>
-
-                <div className="flex flex-wrap gap-4">
-                  {perfil.linksOficiais.slice(0, 6).map((link) => (
-                    <a
-                      key={`${link.label}-${link.href}`}
-                      href={link.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-headline font-black uppercase border-b-4 border-black"
-                    >
-                      {link.label}
-                    </a>
-                  ))}
-                </div>
+                {partido ? (
+                  <div className="flex flex-wrap gap-4">
+                    <Link href={`/partidos/${partido.sigla}`} className="font-headline font-black uppercase border-b-4 border-white">
+                      Ver partido
+                    </Link>
+                    {partido.siteOficial ? (
+                      <a href={partido.siteOficial} target="_blank" rel="noreferrer" className="font-headline font-black uppercase border-b-4 border-white">
+                        Site oficial do partido
+                      </a>
+                    ) : null}
+                  </div>
+                ) : null}
 
                 {perfil.atualizadoEm ? (
-                  <p className="font-label font-bold uppercase text-xs opacity-70">
+                  <p className="font-label font-bold uppercase text-xs opacity-80">
                     Atualização informada pela fonte: {formatDate(perfil.atualizadoEm) ?? perfil.atualizadoEm}
                   </p>
                 ) : null}
@@ -372,28 +346,52 @@ export default async function PerfilPage({
             </div>
           </section>
 
-          {renderSobreSection(perfil)}
-          {renderIndicadoresSection(perfil)}
+          {renderTopCards(perfil, partido)}
+          {renderTemaSection(perfil)}
+
+          {partido?.definicaoCurta ? (
+            <section className="bg-white border-4 border-black p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+              <h2 className="font-headline font-black text-3xl uppercase mb-3">Partido e posicionamento</h2>
+              <p className="font-body font-medium">{partido.definicaoCurta}</p>
+              <div className="flex flex-wrap gap-4 mt-5">
+                {partido.familiaPolitica ? (
+                  <span className="border-2 border-black px-3 py-1 font-label font-bold uppercase text-xs">
+                    {partido.familiaPolitica}
+                  </span>
+                ) : null}
+                {partido.espectro ? (
+                  <span className="border-2 border-black px-3 py-1 font-label font-bold uppercase text-xs">
+                    {partido.espectro}
+                  </span>
+                ) : null}
+                {partido.presidenteNacional ? (
+                  <span className="border-2 border-black px-3 py-1 font-label font-bold uppercase text-xs">
+                    Presidência nacional: {partido.presidenteNacional}
+                  </span>
+                ) : null}
+              </div>
+            </section>
+          ) : null}
 
           {renderListSection(
-            'Mandato',
-            'Mandato atual e histórico retornados pelas fontes oficiais.',
-            perfil.mandatos,
-            'A fonte não retornou mais registros de mandato para este perfil nesta consulta.',
-          )}
-
-          {renderListSection(
-            'Projetos e Requerimentos',
+            'Projetos e requerimentos',
             'Matérias e autorias legislativas localizadas para este parlamentar.',
             perfil.autorias,
             'A fonte não retornou autorias recentes nesta consulta.',
           )}
 
           {renderListSection(
-            'Votações Recentes',
+            'Votações recentes',
             'Votos nominais e deliberações localizadas nas fontes consultadas.',
             perfil.votacoes,
             'A fonte não retornou votações recentes para este perfil nesta consulta.',
+          )}
+
+          {renderListSection(
+            'Mandato',
+            'Mandato atual e histórico retornados pelas fontes oficiais.',
+            perfil.mandatos,
+            'A fonte não retornou mais registros de mandato para este perfil nesta consulta.',
           )}
 
           {renderListSection(
@@ -411,7 +409,7 @@ export default async function PerfilPage({
           )}
 
           {renderListSection(
-            perfil.fonte === 'camara' ? 'Despesas Recentes' : 'Histórico Partidário',
+            perfil.fonte === 'camara' ? 'Despesas recentes' : 'Histórico partidário',
             perfil.fonte === 'camara'
               ? 'Despesas recentes da cota parlamentar retornadas pela Câmara dos Deputados.'
               : 'Filiações partidárias históricas retornadas pelo Senado Federal.',
@@ -421,13 +419,12 @@ export default async function PerfilPage({
               : 'O Senado não retornou histórico partidário para este perfil nesta consulta.',
           )}
 
+          {renderSobreSection(perfil)}
+
           <section className="bg-white border-4 border-black p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-            <h2 className="font-headline font-black text-3xl uppercase mb-4">
-              Fontes Desta Página
-            </h2>
+            <h2 className="font-headline font-black text-3xl uppercase mb-4">Fontes desta página</h2>
             <p className="font-body font-medium mb-6">
-              Este perfil reúne dados publicados pela Câmara dos Deputados, pelo Senado Federal e,
-              quando disponível, por índices públicos de acompanhamento legislativo.
+              Este perfil reúne dados publicados pela Câmara dos Deputados, pelo Senado Federal, pelo TSE e por índices públicos de acompanhamento legislativo.
             </p>
             <div className="space-y-3">
               {perfil.linksOficiais.map((link) => (
@@ -441,23 +438,18 @@ export default async function PerfilPage({
                   {link.label}
                 </a>
               ))}
+              {partido?.tseUrl ? (
+                <a href={partido.tseUrl} target="_blank" rel="noreferrer" className="block font-headline font-black uppercase border-b-4 border-black w-max">
+                  Registro partidário no TSE
+                </a>
+              ) : null}
               {perfil.ranking ? (
-                <a
-                  href={perfil.ranking.fonteUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="block font-headline font-black uppercase border-b-4 border-black w-max"
-                >
+                <a href={perfil.ranking.fonteUrl} target="_blank" rel="noreferrer" className="block font-headline font-black uppercase border-b-4 border-black w-max">
                   Ranking dos Políticos
                 </a>
               ) : null}
               {perfil.governismo ? (
-                <a
-                  href={perfil.governismo.fonteUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="block font-headline font-black uppercase border-b-4 border-black w-max"
-                >
+                <a href={perfil.governismo.fonteUrl} target="_blank" rel="noreferrer" className="block font-headline font-black uppercase border-b-4 border-black w-max">
                   Radar do Congresso
                 </a>
               ) : null}

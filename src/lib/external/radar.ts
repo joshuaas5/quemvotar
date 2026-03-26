@@ -1,6 +1,7 @@
 import { cache } from 'react';
 import type { PerfilItemLista, PerfilPublico } from '@/lib/official';
-import type { GovernismoReferencia } from '@/lib/official/types';
+import type { GovernismoReferencia, PresencaReferencia } from '@/lib/official/types';
+import { buildVoteThemeCards } from '@/lib/political-themes';
 
 const RADAR_API_ROOT = 'https://radar.congressoemfoco.com.br/api';
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
@@ -16,8 +17,6 @@ interface RadarBuscaItem {
   };
 }
 
-interface RadarBuscaResponse extends Array<RadarBuscaItem> {}
-
 interface RadarGovernismoResponse {
   afavor?: number;
   n?: number;
@@ -27,6 +26,18 @@ interface RadarGovernismoResponse {
 
 interface RadarVotosResponse {
   votos?: Record<string, number>;
+}
+
+interface RadarAssiduidadeAno {
+  ano: number;
+  totalSessoesDeliberativas: number;
+  totalPresenca: number;
+  totalAusenciasJustificadas: number;
+  totalAusenciasNaoJustificadas: number;
+}
+
+interface RadarAssiduidadeResponse {
+  parlamentarAssiduidade?: RadarAssiduidadeAno[];
 }
 
 interface CamaraVotacaoDetalhe {
@@ -50,6 +61,12 @@ interface CamaraVotacaoDetalhe {
       ementa?: string;
     }>;
   };
+}
+
+interface CamaraVoteItem {
+  voteId: string;
+  voto: number | undefined;
+  votacao: NonNullable<CamaraVotacaoDetalhe['dados']>;
 }
 
 function normalizeText(value: string) {
@@ -90,7 +107,7 @@ async function fetchCamara<T>(path: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-function findRadarMatch(items: RadarBuscaResponse, perfil: PerfilPublico) {
+function findRadarMatch(items: RadarBuscaItem[], perfil: PerfilPublico) {
   const nomePerfil = normalizeText(perfil.nome_urna);
 
   return items.find((item) => {
@@ -118,8 +135,8 @@ function mapRadarVote(code: number | undefined) {
   return 'Voto registrado';
 }
 
-function buildVoteTitle(votacao: CamaraVotacaoDetalhe['dados']) {
-  const materia = votacao?.proposicoesAfetadas?.[0] ?? votacao?.objetosPossiveis?.[0];
+function buildVoteTitle(votacao: CamaraVoteItem['votacao']) {
+  const materia = votacao.proposicoesAfetadas?.[0] ?? votacao.objetosPossiveis?.[0];
 
   if (!materia) {
     return 'Votação nominal';
@@ -134,20 +151,65 @@ function buildVoteTitle(votacao: CamaraVotacaoDetalhe['dados']) {
   return partes.length > 0 ? partes.join('/') : 'Votação nominal';
 }
 
-function buildVoteHref(votacao: CamaraVotacaoDetalhe['dados']) {
-  const materia = votacao?.proposicoesAfetadas?.[0] ?? votacao?.objetosPossiveis?.[0];
+function buildVoteHref(votacao: CamaraVoteItem['votacao']) {
+  const materia = votacao.proposicoesAfetadas?.[0] ?? votacao.objetosPossiveis?.[0];
 
   return materia?.id
     ? `https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=${materia.id}`
     : undefined;
 }
 
+const findRadarPerfil = cache(async (perfil: PerfilPublico): Promise<RadarBuscaItem | null> => {
+  const busca = await fetchRadar<RadarBuscaItem[]>(
+    `/busca-parlamentar/buscar?nome=${encodeURIComponent(perfil.nome_urna)}`,
+  );
+
+  return findRadarMatch(busca, perfil) ?? null;
+});
+
+const fetchCamaraVoteItems = cache(async (perfil: PerfilPublico): Promise<CamaraVoteItem[]> => {
+  if (perfil.fonte !== 'camara') {
+    return [];
+  }
+
+  const match = await findRadarPerfil(perfil);
+
+  if (!match?.idParlamentarVoz) {
+    return [];
+  }
+
+  const payload = await fetchRadar<RadarVotosResponse>(`/parlamentares/${match.idParlamentarVoz}/votos`);
+  const votos = payload.votos ?? {};
+  const ids = Object.keys(votos).reverse().slice(0, 30);
+
+  const detalhes = await Promise.all(
+    ids.map(async (voteId) => {
+      try {
+        const votacao = await fetchCamara<CamaraVotacaoDetalhe>(`/votacoes/${voteId}`);
+
+        if (!votacao.dados) {
+          return null;
+        }
+
+        return {
+          voteId,
+          voto: votos[voteId],
+          votacao: votacao.dados,
+        } satisfies CamaraVoteItem;
+      } catch {
+        return null;
+      }
+    }),
+  );
+
+  const validos = detalhes.filter((item) => item !== null) as CamaraVoteItem[];
+
+  return validos.sort((a, b) => (b.votacao.data ?? '').localeCompare(a.votacao.data ?? ''));
+});
+
 export const fetchGovernismoForPerfil = cache(
   async (perfil: PerfilPublico): Promise<GovernismoReferencia | null> => {
-    const busca = await fetchRadar<RadarBuscaResponse>(
-      `/busca-parlamentar/buscar?nome=${encodeURIComponent(perfil.nome_urna)}`,
-    );
-    const match = findRadarMatch(busca, perfil);
+    const match = await findRadarPerfil(perfil);
 
     if (!match?.idParlamentarVoz) {
       return null;
@@ -175,62 +237,76 @@ export const fetchGovernismoForPerfil = cache(
   },
 );
 
-export const fetchCamaraVotesForPerfil = cache(
-  async (perfil: PerfilPublico): Promise<PerfilItemLista[]> => {
-    if (perfil.fonte !== 'camara') {
-      return [];
-    }
-
-    const busca = await fetchRadar<RadarBuscaResponse>(
-      `/busca-parlamentar/buscar?nome=${encodeURIComponent(perfil.nome_urna)}`,
-    );
-    const match = findRadarMatch(busca, perfil);
+export const fetchAssiduidadeForPerfil = cache(
+  async (perfil: PerfilPublico): Promise<PresencaReferencia | null> => {
+    const match = await findRadarPerfil(perfil);
 
     if (!match?.idParlamentarVoz) {
-      return [];
+      return null;
     }
 
-    const payload = await fetchRadar<RadarVotosResponse>(`/parlamentares/${match.idParlamentarVoz}/votos`);
-    const votos = payload.votos ?? {};
-    const ids = Object.keys(votos).reverse().slice(0, 12);
-
-    const detalhes = await Promise.all(
-      ids.map(async (voteId) => {
-        try {
-          const votacao = await fetchCamara<CamaraVotacaoDetalhe>(`/votacoes/${voteId}`);
-          return { voteId, votacao: votacao.dados, voto: votos[voteId] };
-        } catch {
-          return null;
-        }
-      }),
+    const payload = await fetchRadar<RadarAssiduidadeResponse>(
+      `/parlamentares/${match.idParlamentarVoz}/assiduidade`,
     );
+    const anos = payload.parlamentarAssiduidade ?? [];
+    const maisRecente = [...anos].sort((a, b) => b.ano - a.ano)[0];
 
-    const votacoesValidas = detalhes.filter((item) => item?.votacao) as Array<{
-      voteId: string;
-      votacao: NonNullable<CamaraVotacaoDetalhe['dados']>;
-      voto: number | undefined;
-    }>;
+    if (!maisRecente || !maisRecente.totalSessoesDeliberativas) {
+      return null;
+    }
 
-    return votacoesValidas
-      .sort((a, b) => (b.votacao?.data ?? '').localeCompare(a.votacao?.data ?? ''))
-      .slice(0, 6)
-      .map(({ votacao, voto }) => {
+    return {
+      fonte: 'radar_do_congresso',
+      ano: maisRecente.ano,
+      percentual: (maisRecente.totalPresenca / maisRecente.totalSessoesDeliberativas) * 100,
+      sessoesDeliberativas: maisRecente.totalSessoesDeliberativas,
+      presencas: maisRecente.totalPresenca,
+      ausenciasJustificadas: maisRecente.totalAusenciasJustificadas,
+      ausenciasNaoJustificadas: maisRecente.totalAusenciasNaoJustificadas,
+      fonteUrl: getRadarPerfilUrl(match.idParlamentarVoz),
+    };
+  },
+);
+
+export const fetchCamaraVotesForPerfil = cache(
+  async (perfil: PerfilPublico): Promise<PerfilItemLista[]> => {
+    const detalhes = await fetchCamaraVoteItems(perfil);
+
+    return detalhes.slice(0, 6).map(({ votacao, voto }) => {
+      const materia = votacao.proposicoesAfetadas?.[0] ?? votacao.objetosPossiveis?.[0];
+
+      return {
+        titulo: buildVoteTitle(votacao),
+        descricao:
+          materia?.ementa ?? votacao.descricao ?? 'Votação nominal registrada na Câmara dos Deputados.',
+        detalhe: compact([
+          mapRadarVote(voto),
+          votacao.aprovacao === 1 ? 'Resultado: aprovada' : 'Resultado: não aprovada',
+        ]).join(' • '),
+        data: votacao.data,
+        destaque: mapRadarVote(voto),
+        href: buildVoteHref(votacao),
+      } satisfies PerfilItemLista;
+    });
+  },
+);
+
+export const fetchCamaraVoteThemesForPerfil = cache(
+  async (perfil: PerfilPublico): Promise<PerfilItemLista[]> => {
+    const detalhes = await fetchCamaraVoteItems(perfil);
+
+    return buildVoteThemeCards(
+      detalhes.map(({ votacao, voto }) => {
         const materia = votacao.proposicoesAfetadas?.[0] ?? votacao.objetosPossiveis?.[0];
 
         return {
           titulo: buildVoteTitle(votacao),
-          descricao:
-            materia?.ementa ??
-            votacao.descricao ??
-            'Votação nominal registrada na Câmara dos Deputados.',
-          detalhe: compact([
-            mapRadarVote(voto),
-            votacao.aprovacao === 1 ? 'Resultado: aprovada' : 'Resultado: não aprovada',
-          ]).join(' • '),
+          descricao: materia?.ementa ?? votacao.descricao,
           data: votacao.data,
-          destaque: mapRadarVote(voto),
+          voto: mapRadarVote(voto),
           href: buildVoteHref(votacao),
-        } satisfies PerfilItemLista;
-      });
+        };
+      }),
+    );
   },
 );

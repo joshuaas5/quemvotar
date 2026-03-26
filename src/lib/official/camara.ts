@@ -378,6 +378,7 @@ export const fetchDeputadoDetalhado = cache(
       autoriasTotal: autoriasResumo.total,
       autoriasAprovadas: autoriasResumo.aprovadas,
       autoriasAmostraAnalisada: AUTORIAS_AMOSTRA_ANALISADA,
+      temasVotacao: [],
     };
   },
 );

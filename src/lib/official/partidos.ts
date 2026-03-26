@@ -1,15 +1,12 @@
 import { cache } from 'react';
-import type {
-  LiderancaCongresso,
-  PartidoLideranca,
-  PartidoResumo,
-  PerfilPublico,
-} from './types';
+import type { LiderancaCongresso, PartidoLideranca, PartidoResumo, PerfilPublico } from './types';
 import { fetchDeputados } from './camara';
 import { fetchSenadores } from './senado';
+import { buildPartyBadgeDataUrl, getPartyMeta, getSpectrumLabel } from '@/lib/party-meta';
 
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
+const TSE_PARTIDOS_URL = 'https://www.tse.jus.br/partidos/partidos-registrados-no-tse';
 
 interface CamaraPartido {
   id: number;
@@ -31,6 +28,7 @@ interface CamaraPartidoDetalhe {
     };
   };
   urlLogo?: string | null;
+  urlWebSite?: string | null;
 }
 
 interface SenadoParlamentarLista {
@@ -56,6 +54,15 @@ interface LiderancaRaw {
   siglaBloco?: string;
 }
 
+interface TsePartyDetail {
+  tseUrl: string;
+  nome?: string | null;
+  presidenteNacional?: string | null;
+  siteOficial?: string | null;
+  estatutoUrl?: string | null;
+  definicaoCurta?: string | null;
+}
+
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url, {
     headers: { Accept: 'application/json' },
@@ -69,8 +76,25 @@ async function fetchJson<T>(url: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+async function fetchText(url: string): Promise<string> {
+  const response = await fetch(url, {
+    headers: { Accept: 'text/html,application/xhtml+xml' },
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Falha ao consultar página: ${response.status}`);
+  }
+
+  return response.text();
+}
+
 function compact<T>(values: Array<T | null | undefined | false>): T[] {
   return values.filter(Boolean) as T[];
+}
+
+function cleanText(value?: string | null) {
+  return value?.replace(/\s+/g, ' ').trim() ?? null;
 }
 
 function buildPartyMap(perfis: PerfilPublico[]) {
@@ -131,20 +155,92 @@ const fetchComposicaoLiderancas = cache(async (): Promise<LiderancaRaw[]> => {
 
 const fetchCamaraPartidoDetalhe = cache(async (id: number): Promise<CamaraPartidoDetalhe | null> => {
   try {
-    const payload = await fetchJson<{ dados?: CamaraPartidoDetalhe }>(
-      `${CAMARA_API_ROOT}/partidos/${id}`,
-    );
+    const payload = await fetchJson<{ dados?: CamaraPartidoDetalhe }>(`${CAMARA_API_ROOT}/partidos/${id}`);
     return payload.dados ?? null;
   } catch {
     return null;
   }
 });
 
-function getPartyLeader(
-  liderancas: LiderancaRaw[],
-  sigla: string,
-  casa: 'CD' | 'SF',
-): PartidoLideranca | null {
+const fetchTsePartyRegistry = cache(async (): Promise<Map<string, string>> => {
+  const html = await fetchText(TSE_PARTIDOS_URL);
+  const regex = /<a[^>]+href="([^"]*\/partido-[^"]+)"[^>]*>\s*([A-Z][A-Za-zÀ-ÿ0-9]+)\s*<\/a>/g;
+  const map = new Map<string, string>();
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(html)) !== null) {
+    const href = match[1];
+    const sigla = match[2].replace(/\s+/g, '');
+
+    if (!map.has(sigla)) {
+      map.set(sigla, href.startsWith('http') ? href : `https://www.tse.jus.br${href}`);
+    }
+  }
+
+  return map;
+});
+
+function parseTsePartyField(html: string, label: string) {
+  const regex = new RegExp(`${label}:\\s*(?:<[^>]+>)*([^<]+)`, 'i');
+  const match = html.match(regex);
+  return cleanText(match?.[1] ?? null);
+}
+
+function parseTsePartyLink(html: string, label: string) {
+  const regex = new RegExp(`${label}:\\s*<a[^>]+href="([^"]+)"`, 'i');
+  const match = html.match(regex);
+  return match?.[1] ?? null;
+}
+
+function parseFirstStatuteLink(html: string) {
+  const match = html.match(/Estatuto[\s\S]{0,500}?href="([^"]+)"/i);
+  return match?.[1] ?? null;
+}
+
+async function fetchWebsiteDescription(url?: string | null) {
+  if (!url) {
+    return null;
+  }
+
+  try {
+    const html = await fetchText(url);
+    const meta =
+      html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)/i) ??
+      html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)/i);
+
+    return cleanText(meta?.[1] ?? null);
+  } catch {
+    return null;
+  }
+}
+
+const fetchTsePartyDetail = cache(async (sigla: string): Promise<TsePartyDetail | null> => {
+  const registry = await fetchTsePartyRegistry();
+  const tseUrl = registry.get(sigla);
+
+  if (!tseUrl) {
+    return null;
+  }
+
+  try {
+    const html = await fetchText(tseUrl);
+    const siteOficial = parseTsePartyLink(html, 'Endereço Internet');
+    const definicaoCurta = (await fetchWebsiteDescription(siteOficial)) ?? null;
+
+    return {
+      tseUrl,
+      nome: parseTsePartyField(html, 'Nome'),
+      presidenteNacional: parseTsePartyField(html, 'Presidente Nacional'),
+      siteOficial,
+      estatutoUrl: parseFirstStatuteLink(html),
+      definicaoCurta,
+    };
+  } catch {
+    return { tseUrl };
+  }
+});
+
+function getPartyLeader(liderancas: LiderancaRaw[], sigla: string, casa: 'CD' | 'SF'): PartidoLideranca | null {
   const match = liderancas.find((lideranca) => {
     const partySigla = lideranca.siglaPartido ?? lideranca.siglaPartidoFiliacao;
 
@@ -184,49 +280,54 @@ export const fetchPartidosResumo = cache(async (): Promise<PartidoResumo[]> => {
   );
 
   const detalhesCamara = new Map<string, CamaraPartidoDetalhe | null>();
+  const detalhesTse = new Map<string, TsePartyDetail | null>();
 
   await Promise.all(
     partidosOrdenados.map(async (partido) => {
       const referencia = camaraIndex.get(partido.sigla);
-
-      if (!referencia) {
-        detalhesCamara.set(partido.sigla, null);
-        return;
-      }
-
-      detalhesCamara.set(partido.sigla, await fetchCamaraPartidoDetalhe(referencia.id));
+      detalhesCamara.set(partido.sigla, referencia ? await fetchCamaraPartidoDetalhe(referencia.id) : null);
+      detalhesTse.set(partido.sigla, await fetchTsePartyDetail(partido.sigla));
     }),
   );
 
   return partidosOrdenados.map((totaisPartido) => {
     const detalheCamara = detalhesCamara.get(totaisPartido.sigla);
+    const detalheTse = detalhesTse.get(totaisPartido.sigla);
+    const meta = getPartyMeta(totaisPartido.sigla);
     const blocosSenado = Array.from(
       new Set(
         senadoLista
-          .filter(
-            (item) =>
-              item.IdentificacaoParlamentar?.SiglaPartidoParlamentar === totaisPartido.sigla,
-          )
+          .filter((item) => item.IdentificacaoParlamentar?.SiglaPartidoParlamentar === totaisPartido.sigla)
           .map(
             (item) =>
-              item.IdentificacaoParlamentar?.Bloco?.NomeApelido ||
-              item.IdentificacaoParlamentar?.Bloco?.NomeBloco,
+              item.IdentificacaoParlamentar?.Bloco?.NomeApelido || item.IdentificacaoParlamentar?.Bloco?.NomeBloco,
           )
           .filter((value): value is string => Boolean(value)),
       ),
     );
 
+    const logoUrl =
+      detalheCamara?.urlLogo && !detalheCamara.urlLogo.toLowerCase().endsWith('.gif')
+        ? detalheCamara.urlLogo
+        : buildPartyBadgeDataUrl(totaisPartido.sigla, meta.primary, meta.secondary);
+
     return {
       sigla: totaisPartido.sigla,
-      nome: detalheCamara?.nome ?? totaisPartido.sigla,
-      logoUrl: detalheCamara?.urlLogo ?? null,
-      fonteUrl:
-        detalheCamara?.uri ??
-        camaraIndex.get(totaisPartido.sigla)?.uri ??
-        `${SENADO_API_ROOT}/composicao/lideranca.json`,
+      nome: detalheTse?.nome ?? detalheCamara?.nome ?? totaisPartido.sigla,
+      logoUrl,
+      fonteUrl: detalheCamara?.uri ?? camaraIndex.get(totaisPartido.sigla)?.uri ?? TSE_PARTIDOS_URL,
+      tseUrl: detalheTse?.tseUrl ?? null,
       deputados: totaisPartido.deputados,
       senadores: totaisPartido.senadores,
       totalParlamentares: totaisPartido.totalParlamentares,
+      presidenteNacional: detalheTse?.presidenteNacional ?? null,
+      siteOficial: detalheTse?.siteOficial ?? detalheCamara?.urlWebSite ?? null,
+      estatutoUrl: detalheTse?.estatutoUrl ?? null,
+      definicaoCurta: detalheTse?.definicaoCurta ?? `Partido com atuação parlamentar em ${totaisPartido.totalParlamentares} cadeiras no Congresso.`,
+      familiaPolitica: meta.family,
+      espectro: getSpectrumLabel(meta.spectrum),
+      espectroEixo: meta.spectrum,
+      cores: [meta.primary, meta.secondary],
       liderCamara: detalheCamara?.status?.lider?.nome
         ? {
             nome: detalheCamara.status.lider.nome,
