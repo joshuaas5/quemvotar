@@ -9,7 +9,7 @@ export default function QuizBand() {
             CANSADO DE PROMESSAS? <br /> DESCUBRA QUEM DEFENDE O QUE <span className="bg-on-background text-white px-2">VOCÊ ACREDITA</span>.
           </h2>
           <p className="font-body font-bold text-xl uppercase text-on-secondary-fixed">
-            O Match está em validação com votações oficiais antes de ser liberado ao público.
+            O Match está sendo preparado com base em votações oficiais do Congresso.
           </p>
         </div>
         <div className="w-full md:w-auto">

@@ -2,7 +2,7 @@ import { cache } from 'react';
 import type { PerfilDetalhadoPublico, PerfilItemLista, PerfilPublico } from './types';
 
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
-const SENADO_LISTA_ATUAL_URL = `${SENADO_API_ROOT}/senador/lista/atual.json`;
+const AUTORIAS_AMOSTRA_ANALISADA = 40;
 
 interface SenadoTelefone {
   NumeroTelefone?: string;
@@ -19,7 +19,6 @@ interface SenadoIdentificacao {
   NomeParlamentar?: string;
   NomeCompletoParlamentar?: string;
   SexoParlamentar?: string;
-  FormaTratamento?: string;
   UrlFotoParlamentar?: string;
   UrlPaginaParlamentar?: string;
   UrlPaginaParticular?: string;
@@ -37,7 +36,6 @@ interface SenadoIdentificacao {
 interface SenadoLegislatura {
   NumeroLegislatura?: string;
   DataInicio?: string;
-  DataFim?: string;
 }
 
 interface SenadoSuplente {
@@ -45,23 +43,13 @@ interface SenadoSuplente {
   NomeParlamentar?: string;
 }
 
-interface SenadoExercicio {
-  DataInicio?: string;
-  DataFim?: string;
-  DescricaoCausaAfastamento?: string;
-}
-
 interface SenadoMandato {
-  CodigoMandato?: string;
   UfParlamentar?: string;
   PrimeiraLegislaturaDoMandato?: SenadoLegislatura;
   SegundaLegislaturaDoMandato?: SenadoLegislatura;
   DescricaoParticipacao?: string;
   Suplentes?: {
     Suplente?: SenadoSuplente | SenadoSuplente[];
-  };
-  Exercicios?: {
-    Exercicio?: SenadoExercicio | SenadoExercicio[];
   };
 }
 
@@ -94,7 +82,6 @@ interface SenadoComissao {
   };
   DescricaoParticipacao?: string;
   DataInicio?: string;
-  DataFim?: string;
 }
 
 interface SenadoCargo {
@@ -105,18 +92,20 @@ interface SenadoCargo {
   };
   DescricaoCargo?: string;
   DataInicio?: string;
-  DataFim?: string;
+}
+
+interface SenadoMateria {
+  Codigo?: string;
+  DescricaoIdentificacao?: string;
+  Ementa?: string;
+  Data?: string;
 }
 
 interface SenadoVotacao {
   SessaoPlenaria?: {
     DataSessao?: string;
-    NumeroSessao?: string;
   };
-  Materia?: {
-    DescricaoIdentificacao?: string;
-    Ementa?: string;
-  };
+  Materia?: SenadoMateria;
   DescricaoVotacao?: string;
   DescricaoResultado?: string;
   SiglaDescricaoVoto?: string;
@@ -126,11 +115,7 @@ interface SenadoVotacao {
 }
 
 interface SenadoAutoria {
-  Materia?: {
-    DescricaoIdentificacao?: string;
-    Ementa?: string;
-    Data?: string;
-  };
+  Materia?: SenadoMateria;
   IndicadorAutorPrincipal?: string;
 }
 
@@ -143,6 +128,15 @@ interface SenadoFiliacao {
   DataDesfiliacao?: string;
 }
 
+interface SenadoMateriaDetalhe {
+  DecisaoEDestino?: {
+    Decisao?: {
+      Sigla?: string;
+      Descricao?: string;
+    };
+  };
+}
+
 function toArray<T>(value?: T | T[] | null): T[] {
   if (!value) {
     return [];
@@ -153,6 +147,13 @@ function toArray<T>(value?: T | T[] | null): T[] {
 
 function compact<T>(values: Array<T | null | undefined | false>): T[] {
   return values.filter(Boolean) as T[];
+}
+
+function normalizeText(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase();
 }
 
 async function fetchSenado<T>(path: string): Promise<T> {
@@ -176,6 +177,20 @@ async function fetchSenadoSafe<T>(path: string): Promise<T | null> {
   }
 }
 
+function getSenadoMateriaUrl(codigo?: string) {
+  return codigo ? `https://www25.senado.leg.br/web/atividade/materias/-/materia/${codigo}` : undefined;
+}
+
+function isApprovedMateria(detalhe: SenadoMateriaDetalhe | null) {
+  const texto = normalizeText(
+    [detalhe?.DecisaoEDestino?.Decisao?.Sigla, detalhe?.DecisaoEDestino?.Decisao?.Descricao]
+      .filter(Boolean)
+      .join(' '),
+  );
+
+  return texto.includes('aprov');
+}
+
 function normalizeSenador(parlamentar: SenadoParlamentarLista): PerfilPublico {
   const info = parlamentar.IdentificacaoParlamentar ?? {};
 
@@ -189,16 +204,13 @@ function normalizeSenador(parlamentar: SenadoParlamentarLista): PerfilPublico {
     foto_url: info.UrlFotoParlamentar ?? '',
     casa: 'Senado Federal',
     fonte: 'senado',
-    fonteUrl:
-      info.UrlPaginaParlamentar ??
-      `${SENADO_API_ROOT}/senador/lista/atual`,
+    fonteUrl: info.UrlPaginaParlamentar ?? `${SENADO_API_ROOT}/senador/lista/atual`,
   };
 }
 
 const fetchSenadoresListaAtual = cache(async (): Promise<SenadoParlamentarLista[]> => {
   const payload = await fetchSenado<{
     ListaParlamentarEmExercicio?: {
-      Metadados?: { Versao?: string };
       Parlamentares?: {
         Parlamentar?: SenadoParlamentarLista[];
       };
@@ -220,10 +232,7 @@ function mapMandato(mandato: SenadoMandato): PerfilItemLista {
 
   const suplentes = toArray(mandato.Suplentes?.Suplente)
     .map((suplente) =>
-      compact([
-        suplente.DescricaoParticipacao ?? null,
-        suplente.NomeParlamentar ?? null,
-      ]).join(': '),
+      compact([suplente.DescricaoParticipacao ?? null, suplente.NomeParlamentar ?? null]).join(': '),
     )
     .filter(Boolean)
     .join(' | ');
@@ -248,7 +257,7 @@ function mapComissao(comissao: SenadoComissao): PerfilItemLista {
       'Comissão',
     descricao:
       comissao.IdentificacaoComissao?.NomeComissao ??
-      'Comissão sem nome informado.',
+      'Comissão retornada pela fonte oficial do Senado.',
     detalhe: compact([
       comissao.DescricaoParticipacao ?? null,
       comissao.IdentificacaoComissao?.SiglaCasaComissao ?? null,
@@ -274,13 +283,10 @@ function mapCargo(cargo: SenadoCargo): PerfilItemLista {
 
 function mapVotacao(votacao: SenadoVotacao): PerfilItemLista {
   return {
-    titulo:
-      votacao.Materia?.DescricaoIdentificacao ??
-      votacao.DescricaoVotacao ??
-      'Votação nominal',
+    titulo: votacao.Materia?.DescricaoIdentificacao ?? 'Votação nominal',
     descricao:
-      votacao.DescricaoVotacao ??
       votacao.Materia?.Ementa ??
+      votacao.DescricaoVotacao ??
       'Votação retornada pela API oficial do Senado.',
     detalhe: compact([
       votacao.DescricaoResultado ?? null,
@@ -291,17 +297,14 @@ function mapVotacao(votacao: SenadoVotacao): PerfilItemLista {
     ]).join(' • '),
     data: votacao.SessaoPlenaria?.DataSessao ?? undefined,
     destaque: votacao.SiglaDescricaoVoto ?? undefined,
+    href: getSenadoMateriaUrl(votacao.Materia?.Codigo),
   };
 }
 
 function mapAutoria(autoria: SenadoAutoria): PerfilItemLista {
   return {
-    titulo:
-      autoria.Materia?.DescricaoIdentificacao ??
-      'Matéria de autoria',
-    descricao:
-      autoria.Materia?.Ementa ??
-      'Matéria legislativa retornada pela API oficial do Senado.',
+    titulo: autoria.Materia?.DescricaoIdentificacao ?? 'Matéria de autoria',
+    descricao: autoria.Materia?.Ementa ?? 'Matéria legislativa retornada pela API oficial do Senado.',
     data: autoria.Materia?.Data ?? undefined,
     destaque:
       autoria.IndicadorAutorPrincipal === 'Sim'
@@ -309,21 +312,49 @@ function mapAutoria(autoria: SenadoAutoria): PerfilItemLista {
         : autoria.IndicadorAutorPrincipal === 'Não'
           ? 'Coautoria'
           : undefined,
+    href: getSenadoMateriaUrl(autoria.Materia?.Codigo),
   };
 }
 
 function mapFiliacao(filiacao: SenadoFiliacao): PerfilItemLista {
   return {
-    titulo:
-      filiacao.Partido?.SiglaPartido ??
-      filiacao.Partido?.NomePartido ??
-      'Partido',
+    titulo: filiacao.Partido?.SiglaPartido ?? filiacao.Partido?.NomePartido ?? 'Partido',
     descricao: filiacao.Partido?.NomePartido ?? 'Filiação partidária registrada.',
-    detalhe:
-      filiacao.DataDesfiliacao
-        ? `Desfiliação em ${filiacao.DataDesfiliacao}`
-        : 'Filiação sem data de desligamento informada.',
+    detalhe: filiacao.DataDesfiliacao
+      ? `Desfiliação em ${filiacao.DataDesfiliacao}`
+      : 'Filiação sem data final informada.',
     data: filiacao.DataFiliacao ?? undefined,
+  };
+}
+
+async function fetchAutoriasResumo(autorias: SenadoAutoria[]) {
+  const amostra = autorias.slice(0, AUTORIAS_AMOSTRA_ANALISADA);
+
+  const detalhes = await Promise.all(
+    amostra.map(async (autoria) => {
+      const codigo = autoria.Materia?.Codigo;
+
+      if (!codigo) {
+        return null;
+      }
+
+      try {
+        const detalhe = await fetchSenado<{
+          DetalheMateria?: {
+            Materia?: SenadoMateriaDetalhe;
+          };
+        }>(`/materia/${codigo}.json`);
+
+        return detalhe.DetalheMateria?.Materia ?? null;
+      } catch {
+        return null;
+      }
+    }),
+  );
+
+  return {
+    total: autorias.length,
+    aprovadas: detalhes.filter((detalhe) => isApprovedMateria(detalhe)).length,
   };
 }
 
@@ -385,12 +416,6 @@ export const fetchSenadorDetalhado = cache(
       }>(`/senador/${id}/cargos.json?indAtivos=S`),
       fetchSenadoSafe<{
         VotacaoParlamentar?: {
-          Metadados?: {
-            Descontinuacao?: {
-              DataDesativacaoCompleta?: string;
-              UrlServicoSubstituto?: string;
-            };
-          };
           Parlamentar?: {
             Votacoes?: {
               Votacao?: SenadoVotacao[];
@@ -431,17 +456,24 @@ export const fetchSenadorDetalhado = cache(
     });
 
     const dadosBasicos = detalhe?.DadosBasicosParlamentar;
-    const naturalidade = compact([
-      dadosBasicos?.Naturalidade ?? null,
-      dadosBasicos?.UfNaturalidade ?? null,
-    ]).join(' - ');
+    const naturalidade = compact([dadosBasicos?.Naturalidade ?? null, dadosBasicos?.UfNaturalidade ?? null]).join(
+      ' - ',
+    );
     const telefones = toArray(detalhe?.Telefones?.Telefone)
       .map((telefone) => telefone.NumeroTelefone)
       .filter((value): value is string => Boolean(value));
     const mandatoAtual = parlamentarAtual?.Mandato;
     const bloco = identificacao.Bloco?.NomeApelido || identificacao.Bloco?.NomeBloco || null;
     const servicos = toArray(detalhe?.OutrasInformacoes?.Servico);
-    const votosMeta = votacoesPayload?.VotacaoParlamentar?.Metadados?.Descontinuacao;
+    const comissoes = toArray(
+      comissoesPayload?.MembroComissaoParlamentar?.Parlamentar?.MembroComissoes?.Comissao,
+    );
+    const cargos = toArray(cargosPayload?.CargoParlamentar?.Parlamentar?.Cargos?.Cargo);
+    const votacoes = toArray(votacoesPayload?.VotacaoParlamentar?.Parlamentar?.Votacoes?.Votacao);
+    const autorias = toArray(
+      autoriasPayload?.MateriasAutoriaParlamentar?.Parlamentar?.Autorias?.Autoria,
+    ).sort((a, b) => (b.Materia?.Data ?? '').localeCompare(a.Materia?.Data ?? ''));
+    const autoriasResumo = await fetchAutoriasResumo(autorias);
 
     return {
       ...perfilBase,
@@ -463,18 +495,15 @@ export const fetchSenadorDetalhado = cache(
         perfilBase.partido ? { label: 'Partido', value: perfilBase.partido } : null,
         perfilBase.uf ? { label: 'UF', value: perfilBase.uf } : null,
         mandatoAtual?.DescricaoParticipacao
-          ? { label: 'Participação no mandato', value: mandatoAtual.DescricaoParticipacao }
+          ? { label: 'Participação', value: mandatoAtual.DescricaoParticipacao }
           : null,
         bloco ? { label: 'Bloco', value: bloco } : null,
-        identificacao.MembroMesa === 'Sim'
-          ? { label: 'Mesa Diretora', value: 'Integra a Mesa' }
-          : null,
+        identificacao.MembroMesa === 'Sim' ? { label: 'Mesa Diretora', value: 'Integra a Mesa' } : null,
         identificacao.MembroLideranca === 'Sim'
           ? { label: 'Liderança', value: 'Exerce função de liderança' }
           : null,
-        dadosBasicos?.EnderecoParlamentar
-          ? { label: 'Gabinete', value: dadosBasicos.EnderecoParlamentar }
-          : null,
+        autoriasResumo.total ? { label: 'Autorias localizadas', value: `${autoriasResumo.total} registros` } : null,
+        votacoes.length ? { label: 'Votações localizadas', value: `${votacoes.length} registros` } : null,
       ]),
       mandatos: compact([
         mandatoAtual ? mapMandato(mandatoAtual) : null,
@@ -490,34 +519,18 @@ export const fetchSenadorDetalhado = cache(
               candidate.data === item.data,
           ) === index,
       ),
-      comissoes: toArray(
-        comissoesPayload?.MembroComissaoParlamentar?.Parlamentar?.MembroComissoes?.Comissao,
-      )
-        .slice(0, 8)
-        .map(mapComissao),
-      cargos: toArray(cargosPayload?.CargoParlamentar?.Parlamentar?.Cargos?.Cargo)
-        .slice(0, 8)
-        .map(mapCargo),
-      votacoes: toArray(votacoesPayload?.VotacaoParlamentar?.Parlamentar?.Votacoes?.Votacao)
-        .slice(0, 6)
-        .map(mapVotacao),
+      comissoes: comissoes.slice(0, 8).map(mapComissao),
+      cargos: cargos.slice(0, 8).map(mapCargo),
+      votacoes: votacoes.slice(0, 6).map(mapVotacao),
       despesas: [],
-      autorias: toArray(
-        autoriasPayload?.MateriasAutoriaParlamentar?.Parlamentar?.Autorias?.Autoria,
-      )
-        .slice(0, 6)
-        .map(mapAutoria),
-      filiacoes: toArray(
-        filiacoesPayload?.FiliacaoParlamentar?.Parlamentar?.Filiacoes?.Filiacao,
-      )
+      autorias: autorias.slice(0, 8).map(mapAutoria),
+      filiacoes: toArray(filiacoesPayload?.FiliacaoParlamentar?.Parlamentar?.Filiacoes?.Filiacao)
         .slice(0, 6)
         .map(mapFiliacao),
       linksOficiais: compact([
-        { label: 'Perfil oficial do Senado', href: perfilBase.fonteUrl },
-        { label: 'Serviço de detalhe aberto', href: `${SENADO_API_ROOT}/senador/${id}.json` },
-        identificacao.UrlPaginaParticular
-          ? { label: 'Página pessoal informada', href: identificacao.UrlPaginaParticular }
-          : null,
+        { label: 'Perfil oficial no Senado', href: perfilBase.fonteUrl },
+        { label: 'Dados abertos do Senado', href: `${SENADO_API_ROOT}/senador/${id}.json` },
+        identificacao.UrlPaginaParticular ? { label: 'Site pessoal', href: identificacao.UrlPaginaParticular } : null,
         ...servicos
           .filter((servico) =>
             ['MandatoParlamentar', 'MembroComissaoParlamentar', 'VotacaoParlamentar'].includes(
@@ -530,16 +543,10 @@ export const fetchSenadorDetalhado = cache(
           }))
           .filter((servico) => Boolean(servico.href)),
       ]),
-      notas: compact([
-        'Comissões, cargos, autorias e filiações são exibidos a partir de serviços oficiais do Senado Federal.',
-        votosMeta?.DataDesativacaoCompleta
-          ? `O serviço legado de votações do Senado informa desativação completa em ${votosMeta.DataDesativacaoCompleta}, mas ainda retornou dados nesta consulta.`
-          : null,
-        votosMeta?.UrlServicoSubstituto
-          ? `O próprio Senado aponta um serviço substituto para votações: ${votosMeta.UrlServicoSubstituto}.`
-          : null,
-        'Dados judiciais e reputacionais não são inferidos automaticamente nesta página.',
-      ]),
+      notas: ['Dados desta página são carregados a partir das fontes oficiais do Senado Federal.'],
+      autoriasTotal: autoriasResumo.total,
+      autoriasAprovadas: autoriasResumo.aprovadas,
+      autoriasAmostraAnalisada: AUTORIAS_AMOSTRA_ANALISADA,
     };
   },
 );

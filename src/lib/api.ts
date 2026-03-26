@@ -1,16 +1,31 @@
 import {
   fetchOfficialCongressProfiles,
+  getLiderancasCongresso,
   getOfficialCongressProfile,
   getOfficialPanoramaDados,
   getOfficialProfileDetail,
   getOfficialProfileHref,
+  getPartido,
+  getPartidosResumo,
+  searchOfficialCongressProfiles,
+  type LiderancaCongresso,
   type PanoramaDados,
+  type PartidoResumo,
   type PerfilDetalhadoPublico,
   type PerfilPublico,
-  searchOfficialCongressProfiles,
+  type RankingListaItem,
 } from './official';
+import { fetchCamaraVotesForPerfil, fetchGovernismoForPerfil } from './external/radar';
+import { fetchRankingForPerfil, fetchRankingTop } from './external/ranking';
 
-export type { PanoramaDados, PerfilDetalhadoPublico, PerfilPublico };
+export type {
+  LiderancaCongresso,
+  PanoramaDados,
+  PartidoResumo,
+  PerfilDetalhadoPublico,
+  PerfilPublico,
+  RankingListaItem,
+};
 export {
   OFFICIAL_SOURCE_LINKS,
   getCnjProcessoByNumero,
@@ -19,20 +34,21 @@ export {
 } from './official';
 
 export function getCasaBadge(perfil: PerfilPublico): string {
-  return perfil.casa === 'Senado Federal'
-    ? 'SENADO FEDERAL'
-    : 'CÂMARA DOS DEPUTADOS';
+  return perfil.casa === 'Senado Federal' ? 'SENADO FEDERAL' : 'CÂMARA DOS DEPUTADOS';
 }
 
 export function getFonteBadge(perfil: PerfilPublico): string {
-  return perfil.fonte === 'camara'
-    ? 'FONTE OFICIAL: CÂMARA'
-    : 'FONTE OFICIAL: SENADO';
+  return perfil.fonte === 'camara' ? 'FONTE OFICIAL: CÂMARA' : 'FONTE OFICIAL: SENADO';
 }
 
 export async function getHighlights(): Promise<PerfilPublico[]> {
   const profiles = await fetchOfficialCongressProfiles();
-  return profiles.slice(0, 3);
+  const shuffled = [...profiles].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, 3);
+}
+
+export async function getParlamentares(): Promise<PerfilPublico[]> {
+  return fetchOfficialCongressProfiles();
 }
 
 export function getPerfilHref(perfil: Pick<PerfilPublico, 'fonte' | 'idOrigem'>): string {
@@ -58,5 +74,41 @@ export async function getPerfilDetalhado(
   fonte: PerfilPublico['fonte'],
   idOrigem: string,
 ): Promise<PerfilDetalhadoPublico | null> {
-  return getOfficialProfileDetail(fonte, idOrigem);
+  const perfil = await getOfficialProfileDetail(fonte, idOrigem);
+
+  if (!perfil) {
+    return null;
+  }
+
+  const [ranking, governismo, votacoesCamara] = await Promise.all([
+    fetchRankingForPerfil(perfil).catch(() => null),
+    fetchGovernismoForPerfil(perfil).catch(() => null),
+    fonte === 'camara' ? fetchCamaraVotesForPerfil(perfil).catch(() => []) : Promise.resolve([]),
+  ]);
+
+  return {
+    ...perfil,
+    ranking,
+    governismo,
+    votacoes: perfil.votacoes.length > 0 ? perfil.votacoes : votacoesCamara,
+  };
+}
+
+export async function getPartidos(): Promise<PartidoResumo[]> {
+  return getPartidosResumo();
+}
+
+export async function getPartidoPorSigla(sigla: string): Promise<PartidoResumo | null> {
+  return getPartido(sigla);
+}
+
+export async function getLiderancas(): Promise<LiderancaCongresso[]> {
+  return getLiderancasCongresso();
+}
+
+export async function getRankingParlamentares(
+  limit = 24,
+  fonte?: PerfilPublico['fonte'],
+): Promise<RankingListaItem[]> {
+  return fetchRankingTop(limit, fonte);
 }

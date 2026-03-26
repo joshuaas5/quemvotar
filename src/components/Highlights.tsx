@@ -28,7 +28,7 @@ export default async function Highlights() {
             PARLAMENTARES EM EXERCÍCIO
           </h2>
           <p className="font-body font-bold text-xl uppercase opacity-70">
-            Perfis carregados com base nas APIs oficiais da Câmara e do Senado.
+            Perfis em destaque nesta visita.
           </p>
         </div>
 

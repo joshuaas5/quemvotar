@@ -55,6 +55,86 @@ export interface PerfilDetalhadoPublico extends PerfilPublico {
   filiacoes: PerfilItemLista[];
   linksOficiais: PerfilLinkOficial[];
   notas: string[];
+  autoriasTotal?: number | null;
+  autoriasAprovadas?: number | null;
+  autoriasAmostraAnalisada?: number | null;
+  ranking?: RankingReferencia | null;
+  governismo?: GovernismoReferencia | null;
+}
+
+export interface PartidoLideranca {
+  nome: string;
+  cargo: string;
+  casa: 'CD' | 'SF' | 'CN';
+  partido?: string;
+  uf?: string;
+  fotoUrl?: string;
+}
+
+export interface PartidoResumo {
+  sigla: string;
+  nome: string;
+  logoUrl?: string | null;
+  fonteUrl: string;
+  deputados: number;
+  senadores: number;
+  totalParlamentares: number;
+  liderCamara?: PartidoLideranca | null;
+  liderSenado?: PartidoLideranca | null;
+  blocosSenado: string[];
+}
+
+export interface LiderancaCongresso {
+  id: string;
+  categoria: 'governo' | 'oposicao' | 'maioria' | 'minoria';
+  titulo: string;
+  casa: 'CD' | 'SF' | 'CN';
+  nomeParlamentar: string;
+  partido?: string;
+  dataDesignacao?: string;
+}
+
+export interface RankingAno {
+  ano: number;
+  pontuacao: number;
+  votacoes?: number;
+  gastos?: number;
+  presenca?: number;
+  privilegios?: number;
+}
+
+export interface RankingReferencia {
+  fonte: 'ranking_dos_politicos';
+  nota: number;
+  rankingGeral?: number | null;
+  rankingCasa?: number | null;
+  rankingPartido?: number | null;
+  rankingEstado?: number | null;
+  atualizadoEm?: string | null;
+  fonteUrl: string;
+  anos: RankingAno[];
+}
+
+export interface GovernismoReferencia {
+  fonte: 'radar_do_congresso';
+  percentualFavoravel: number;
+  votosFavoraveis: number;
+  votosConsiderados: number;
+  votacoesMonitoradas: number;
+  fonteUrl: string;
+}
+
+export interface RankingListaItem {
+  id: string;
+  nome: string;
+  nomeCivil?: string | null;
+  cargo: string;
+  partido: string;
+  uf: string;
+  fotoUrl?: string | null;
+  slug?: string | null;
+  fonteUrl: string;
+  ranking: RankingReferencia;
 }
 
 export interface PanoramaDados {

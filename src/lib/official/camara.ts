@@ -2,8 +2,17 @@ import { cache } from 'react';
 import type { PerfilDetalhadoPublico, PerfilItemLista, PerfilPublico } from './types';
 
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
-const CAMARA_DEPUTADOS_URL =
-  `${CAMARA_API_ROOT}/deputados?ordem=ASC&ordenarPor=nome&itens=1000`;
+const AUTORIAS_AMOSTRA_ANALISADA = 40;
+
+interface CamaraLink {
+  rel?: string;
+  href?: string;
+}
+
+interface CamaraResponse<T> {
+  dados?: T;
+  links?: CamaraLink[];
+}
 
 interface CamaraDeputado {
   id: number;
@@ -12,6 +21,15 @@ interface CamaraDeputado {
   siglaUf: string;
   urlFoto?: string;
   uri?: string;
+}
+
+interface CamaraGabinete {
+  nome?: string;
+  predio?: string;
+  sala?: string;
+  andar?: string;
+  telefone?: string;
+  email?: string;
 }
 
 interface CamaraDeputadoDetalhe {
@@ -56,7 +74,6 @@ interface CamaraDespesa {
 
 interface CamaraProposicao {
   id: number;
-  uri: string;
   siglaTipo?: string;
   numero?: number;
   ano?: number;
@@ -64,13 +81,12 @@ interface CamaraProposicao {
   dataApresentacao?: string;
 }
 
-interface CamaraGabinete {
-  nome?: string;
-  predio?: string;
-  sala?: string;
-  andar?: string;
-  telefone?: string;
-  email?: string;
+interface CamaraProposicaoDetalhe {
+  statusProposicao?: {
+    descricaoSituacao?: string;
+    descricaoTramitacao?: string;
+    despacho?: string;
+  };
 }
 
 async function fetchCamara<T>(path: string): Promise<T> {
@@ -90,6 +106,17 @@ function compact<T>(values: Array<T | null | undefined | false>): T[] {
   return values.filter(Boolean) as T[];
 }
 
+function formatCurrency(value?: number) {
+  if (typeof value !== 'number') {
+    return null;
+  }
+
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value);
+}
+
 function formatGabinete(gabinete?: CamaraGabinete): string | null {
   if (!gabinete) {
     return null;
@@ -102,11 +129,70 @@ function formatGabinete(gabinete?: CamaraGabinete): string | null {
     gabinete.nome ? `Gabinete ${gabinete.nome}` : null,
   ]);
 
-  if (partes.length === 0) {
-    return null;
+  return partes.length > 0 ? partes.join(' • ') : null;
+}
+
+function getCamaraPublicProfileUrl(id: string) {
+  return `https://www.camara.leg.br/deputados/${id}`;
+}
+
+function getCamaraProposicaoUrl(id: number) {
+  return `https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=${id}`;
+}
+
+function getSocialNetworkLabel(url: string, index: number) {
+  try {
+    const hostname = new URL(url).hostname.replace(/^www\./, '');
+
+    if (hostname.includes('instagram.com')) return 'Instagram';
+    if (hostname.includes('facebook.com')) return 'Facebook';
+    if (hostname.includes('twitter.com') || hostname.includes('x.com')) return 'X';
+    if (hostname.includes('youtube.com') || hostname.includes('youtu.be')) return 'YouTube';
+    if (hostname.includes('tiktok.com')) return 'TikTok';
+    if (hostname.includes('linkedin.com')) return 'LinkedIn';
+    if (hostname.includes('threads.net')) return 'Threads';
+  } catch {
+    return `Rede ${index + 1}`;
   }
 
-  return partes.join(' • ');
+  return `Rede ${index + 1}`;
+}
+
+function normalizeText(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase();
+}
+
+function isApprovedCamaraStatus(detalhe: CamaraProposicaoDetalhe) {
+  const texto = normalizeText(
+    [
+      detalhe.statusProposicao?.descricaoSituacao,
+      detalhe.statusProposicao?.descricaoTramitacao,
+      detalhe.statusProposicao?.despacho,
+    ]
+      .filter(Boolean)
+      .join(' '),
+  );
+
+  return texto.includes('aprovad');
+}
+
+function getTotalFromLastLink(links: CamaraLink[] | undefined, defaultValue: number) {
+  const last = links?.find((link) => link.rel === 'last')?.href;
+
+  if (!last) {
+    return defaultValue;
+  }
+
+  try {
+    const url = new URL(last);
+    const pagina = Number(url.searchParams.get('pagina'));
+    return Number.isFinite(pagina) ? pagina : defaultValue;
+  } catch {
+    return defaultValue;
+  }
 }
 
 function normalizeDeputado(deputado: CamaraDeputado): PerfilPublico {
@@ -120,9 +206,7 @@ function normalizeDeputado(deputado: CamaraDeputado): PerfilPublico {
     foto_url: deputado.urlFoto ?? '',
     casa: 'Câmara dos Deputados',
     fonte: 'camara',
-    fonteUrl:
-      deputado.uri ??
-      `${CAMARA_API_ROOT}/deputados/${deputado.id}`,
+    fonteUrl: getCamaraPublicProfileUrl(String(deputado.id)),
   };
 }
 
@@ -134,16 +218,11 @@ function mapDespesa(despesa: CamaraDespesa): PerfilItemLista {
       despesa.tipoDocumento ?? null,
       despesa.numDocumento ? `Documento ${despesa.numDocumento}` : null,
       typeof despesa.valorGlosa === 'number' && despesa.valorGlosa > 0
-        ? `Glosa de R$ ${despesa.valorGlosa.toFixed(2)}`
+        ? `Glosa de ${formatCurrency(despesa.valorGlosa)}`
         : null,
     ]).join(' • '),
     data: despesa.dataDocumento ?? undefined,
-    destaque:
-      typeof despesa.valorLiquido === 'number'
-        ? `R$ ${despesa.valorLiquido.toFixed(2)}`
-        : typeof despesa.valorDocumento === 'number'
-          ? `R$ ${despesa.valorDocumento.toFixed(2)}`
-          : undefined,
+    destaque: formatCurrency(despesa.valorLiquido ?? despesa.valorDocumento) ?? undefined,
     href: despesa.urlDocumento ?? undefined,
   };
 }
@@ -152,19 +231,52 @@ function mapAutoria(proposicao: CamaraProposicao): PerfilItemLista {
   const identificacao = compact([
     proposicao.siglaTipo ?? null,
     typeof proposicao.numero === 'number' ? String(proposicao.numero) : null,
-    typeof proposicao.ano === 'number' ? String(proposicao.ano) : null,
+    typeof proposicao.ano === 'number' && proposicao.ano > 0 ? String(proposicao.ano) : null,
   ]).join('/');
 
   return {
     titulo: identificacao || `Proposição ${proposicao.id}`,
     descricao: proposicao.ementa ?? 'Sem ementa resumida disponível.',
     data: proposicao.dataApresentacao ?? undefined,
-    href: proposicao.uri || undefined,
+    href: getCamaraProposicaoUrl(proposicao.id),
+  };
+}
+
+async function fetchAutoriasResumo(id: string) {
+  const [contagemPayload, recentesPayload] = await Promise.all([
+    fetchCamara<CamaraResponse<CamaraProposicao[]>>(
+      `/proposicoes?idDeputadoAutor=${id}&ordem=DESC&ordenarPor=id&itens=1`,
+    ),
+    fetchCamara<CamaraResponse<CamaraProposicao[]>>(
+      `/proposicoes?idDeputadoAutor=${id}&ordem=DESC&ordenarPor=id&itens=${AUTORIAS_AMOSTRA_ANALISADA}`,
+    ),
+  ]);
+
+  const recentes = recentesPayload.dados ?? [];
+  const total = getTotalFromLastLink(contagemPayload.links, contagemPayload.dados?.length ?? 0);
+
+  const detalhes = await Promise.all(
+    recentes.map(async (proposicao) => {
+      try {
+        const detalhe = await fetchCamara<CamaraResponse<CamaraProposicaoDetalhe>>(
+          `/proposicoes/${proposicao.id}`,
+        );
+        return detalhe.dados ?? null;
+      } catch {
+        return null;
+      }
+    }),
+  );
+
+  return {
+    total,
+    aprovadas: detalhes.filter((detalhe) => detalhe && isApprovedCamaraStatus(detalhe)).length,
+    recentes,
   };
 }
 
 export const fetchDeputados = cache(async (): Promise<PerfilPublico[]> => {
-  const payload = await fetchCamara<{ dados?: CamaraDeputado[] }>(
+  const payload = await fetchCamara<CamaraResponse<CamaraDeputado[]>>(
     '/deputados?ordem=ASC&ordenarPor=nome&itens=1000',
   );
 
@@ -173,14 +285,12 @@ export const fetchDeputados = cache(async (): Promise<PerfilPublico[]> => {
 
 export const fetchDeputadoDetalhado = cache(
   async (id: string): Promise<PerfilDetalhadoPublico | null> => {
-    const [detalhePayload, despesasPayload, autoriasPayload] = await Promise.all([
-      fetchCamara<{ dados?: CamaraDeputadoDetalhe }>(`/deputados/${id}`),
-      fetchCamara<{ dados?: CamaraDespesa[] }>(
+    const [detalhePayload, despesasPayload, autoriasResumo] = await Promise.all([
+      fetchCamara<CamaraResponse<CamaraDeputadoDetalhe>>(`/deputados/${id}`),
+      fetchCamara<CamaraResponse<CamaraDespesa[]>>(
         `/deputados/${id}/despesas?ordem=DESC&ordenarPor=dataDocumento&itens=6`,
       ),
-      fetchCamara<{ dados?: CamaraProposicao[] }>(
-        `/proposicoes?idDeputadoAutor=${id}&ordem=DESC&ordenarPor=id&itens=6`,
-      ),
+      fetchAutoriasResumo(id),
     ]);
 
     const detalhe = detalhePayload.dados;
@@ -201,13 +311,12 @@ export const fetchDeputadoDetalhado = cache(
       foto_url: ultimoStatus?.urlFoto ?? '',
       casa: 'Câmara dos Deputados',
       fonte: 'camara',
-      fonteUrl: detalhe.uri ?? `${CAMARA_API_ROOT}/deputados/${id}`,
+      fonteUrl: getCamaraPublicProfileUrl(String(detalhe.id)),
     };
 
-    const naturalidade = compact([
-      detalhe.municipioNascimento ?? null,
-      detalhe.ufNascimento ?? null,
-    ]).join(' - ');
+    const naturalidade = compact([detalhe.municipioNascimento ?? null, detalhe.ufNascimento ?? null]).join(
+      ' - ',
+    );
 
     return {
       ...perfilBase,
@@ -234,13 +343,16 @@ export const fetchDeputadoDetalhado = cache(
           : null,
         gabinete ? { label: 'Gabinete', value: gabinete } : null,
         detalhe.escolaridade ? { label: 'Escolaridade', value: detalhe.escolaridade } : null,
+        autoriasResumo.total
+          ? { label: 'Autorias localizadas', value: `${autoriasResumo.total} registros` }
+          : null,
       ]),
       mandatos: compact([
         ultimoStatus?.idLegislatura
           ? {
               titulo: `Legislatura ${ultimoStatus.idLegislatura}`,
               descricao: ultimoStatus?.data
-                ? `Status oficial publicado em ${ultimoStatus.data}`
+                ? `Atualização oficial publicada em ${ultimoStatus.data}`
                 : 'Registro atual de exercício na Câmara dos Deputados.',
               data: ultimoStatus?.data ?? undefined,
               destaque: ultimoStatus?.condicaoEleitoral ?? undefined,
@@ -251,21 +363,21 @@ export const fetchDeputadoDetalhado = cache(
       cargos: [],
       votacoes: [],
       despesas: (despesasPayload.dados ?? []).map(mapDespesa),
-      autorias: (autoriasPayload.dados ?? []).map(mapAutoria),
+      autorias: autoriasResumo.recentes.slice(0, 8).map(mapAutoria),
       filiacoes: [],
       linksOficiais: compact([
-        { label: 'Página da API da Câmara', href: perfilBase.fonteUrl },
-        detalhe.urlWebsite ? { label: 'Site pessoal informado', href: detalhe.urlWebsite } : null,
+        { label: 'Perfil oficial na Câmara', href: perfilBase.fonteUrl },
+        { label: 'Dados abertos da Câmara', href: detalhe.uri ?? `${CAMARA_API_ROOT}/deputados/${id}` },
+        detalhe.urlWebsite ? { label: 'Site pessoal', href: detalhe.urlWebsite } : null,
         ...(detalhe.redeSocial ?? []).map((href, index) => ({
-          label: `Rede social ${index + 1}`,
+          label: getSocialNetworkLabel(href, index),
           href,
         })),
       ]),
-      notas: [
-        'Despesas exibidas vêm da cota parlamentar retornada pela API oficial da Câmara dos Deputados.',
-        'As proposições listadas correspondem às autorias recentes encontradas para este deputado na fonte oficial.',
-        'Dados judiciais e reputacionais não são inferidos automaticamente nesta página.',
-      ],
+      notas: ['Dados desta página são carregados a partir das fontes oficiais da Câmara dos Deputados.'],
+      autoriasTotal: autoriasResumo.total,
+      autoriasAprovadas: autoriasResumo.aprovadas,
+      autoriasAmostraAnalisada: AUTORIAS_AMOSTRA_ANALISADA,
     };
   },
 );

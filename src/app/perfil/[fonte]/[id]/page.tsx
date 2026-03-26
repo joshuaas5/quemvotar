@@ -23,22 +23,28 @@ function formatDate(value?: string | null) {
   return value;
 }
 
-function formatHighlight(value?: string) {
-  if (!value) {
+function formatNumber(value?: number | null) {
+  if (typeof value !== 'number') {
     return null;
   }
 
-  const moneyMatch = value.match(/^R\$ (\d+(?:\.\d{2})?)$/);
+  return new Intl.NumberFormat('pt-BR').format(value);
+}
 
-  if (moneyMatch) {
-    const amount = Number(moneyMatch[1]);
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(amount);
+function formatScore(value?: number | null) {
+  if (typeof value !== 'number') {
+    return null;
   }
 
-  return value;
+  return value.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+}
+
+function formatPercent(value?: number | null) {
+  if (typeof value !== 'number') {
+    return null;
+  }
+
+  return `${value.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}%`;
 }
 
 function renderListSection(
@@ -79,19 +85,14 @@ function renderListSection(
                   </div>
                   {item.destaque ? (
                     <span className="bg-primary-container border-2 border-black px-3 py-1 font-headline font-black uppercase text-sm">
-                      {formatHighlight(item.destaque)}
+                      {item.destaque}
                     </span>
                   ) : null}
                 </div>
 
-                {item.descricao ? (
-                  <p className="font-body font-medium">{item.descricao}</p>
-                ) : null}
-
+                {item.descricao ? <p className="font-body font-medium">{item.descricao}</p> : null}
                 {item.detalhe ? (
-                  <p className="font-label font-bold uppercase text-xs opacity-70">
-                    {item.detalhe}
-                  </p>
+                  <p className="font-label font-bold uppercase text-xs opacity-70">{item.detalhe}</p>
                 ) : null}
 
                 {item.href ? (
@@ -101,7 +102,7 @@ function renderListSection(
                     rel="noreferrer"
                     className="font-headline font-black uppercase border-b-4 border-black w-max"
                   >
-                    Abrir fonte oficial
+                    Ver página oficial
                   </a>
                 ) : null}
               </div>
@@ -134,8 +135,7 @@ function renderSobreSection(perfil: PerfilDetalhadoPublico) {
       <div>
         <h2 className="font-headline font-black text-4xl uppercase">Raio-X Oficial</h2>
         <p className="font-body font-bold uppercase text-sm opacity-70 mt-2">
-          Esta seção reúne identificação, contato e dados biográficos retornados pelas fontes
-          oficiais já integradas no projeto.
+          Identificação, contato e dados biográficos retornados pelas fontes oficiais.
         </p>
       </div>
 
@@ -150,6 +150,119 @@ function renderSobreSection(perfil: PerfilDetalhadoPublico) {
           </article>
         ))}
       </div>
+    </section>
+  );
+}
+
+function renderIndicadoresSection(perfil: PerfilDetalhadoPublico) {
+  const cards = [];
+
+  if (typeof perfil.autoriasTotal === 'number') {
+    cards.push({
+      title: 'Autorias localizadas',
+      value: formatNumber(perfil.autoriasTotal),
+      helper: 'Projetos, requerimentos e matérias localizados nesta fonte.',
+      href: undefined,
+    });
+  }
+
+  if (
+    typeof perfil.autoriasAprovadas === 'number' &&
+    typeof perfil.autoriasAmostraAnalisada === 'number'
+  ) {
+    cards.push({
+      title: 'Aprovações identificadas',
+      value: formatNumber(perfil.autoriasAprovadas),
+      helper: `Confirmadas nas últimas ${perfil.autoriasAmostraAnalisada} matérias analisadas.`,
+      href: undefined,
+    });
+  }
+
+  if (perfil.ranking) {
+    cards.push({
+      title: 'Nota do Ranking dos Políticos',
+      value: formatScore(perfil.ranking.nota),
+      helper: [
+        perfil.ranking.rankingGeral ? `Geral: #${perfil.ranking.rankingGeral}` : null,
+        perfil.ranking.rankingCasa ? `Na casa: #${perfil.ranking.rankingCasa}` : null,
+        perfil.ranking.rankingEstado ? `No estado: #${perfil.ranking.rankingEstado}` : null,
+      ]
+        .filter(Boolean)
+        .join(' • '),
+      href: perfil.ranking.fonteUrl,
+    });
+  }
+
+  if (perfil.governismo) {
+    cards.push({
+      title: 'Alinhamento com o governo',
+      value: formatPercent(perfil.governismo.percentualFavoravel),
+      helper: `${formatNumber(perfil.governismo.votosFavoraveis)} votos favoráveis em ${formatNumber(
+        perfil.governismo.votosConsiderados,
+      )} votos considerados.`,
+      href: perfil.governismo.fonteUrl,
+    });
+  }
+
+  if (cards.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="space-y-6">
+      <div>
+        <h2 className="font-headline font-black text-4xl uppercase">Indicadores</h2>
+        <p className="font-body font-bold uppercase text-sm opacity-70 mt-2">
+          Leitura rápida da atuação, da produção legislativa e dos índices públicos disponíveis.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        {cards.map((card) => (
+          <article
+            key={card.title}
+            className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+          >
+            <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">{card.title}</p>
+            <p className="font-headline font-black text-4xl">{card.value}</p>
+            {card.helper ? <p className="font-body font-medium mt-3">{card.helper}</p> : null}
+            {card.href ? (
+              <a
+                href={card.href}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-block mt-4 font-headline font-black uppercase border-b-4 border-black"
+              >
+                Ver fonte
+              </a>
+            ) : null}
+          </article>
+        ))}
+      </div>
+
+      {perfil.ranking?.anos.length ? (
+        <div className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+          <p className="font-label font-bold uppercase text-xs opacity-70 mb-4">
+            Evolução anual da nota
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+            {perfil.ranking.anos.map((ano) => (
+              <article key={ano.ano} className="border-4 border-black p-4 bg-surface-container-low">
+                <p className="font-headline font-black text-2xl">{ano.ano}</p>
+                <p className="font-body font-bold mt-1">Nota {formatScore(ano.pontuacao)}</p>
+                <p className="font-label font-bold uppercase text-xs opacity-70 mt-3">
+                  {[
+                    typeof ano.votacoes === 'number' ? `Votações ${formatScore(ano.votacoes)}` : null,
+                    typeof ano.presenca === 'number' ? `Presença ${formatScore(ano.presenca)}` : null,
+                  ]
+                    .filter(Boolean)
+                    .join(' • ')}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -178,7 +291,7 @@ export default async function PerfilPage({
       <main className="flex-grow bg-surface-container py-12 px-6">
         <div className="max-w-7xl mx-auto space-y-10">
           <Link
-            href="/#candidatos"
+            href="/parlamentares"
             className="inline-block font-headline font-black uppercase text-lg border-b-4 border-black"
           >
             Voltar para parlamentares
@@ -218,8 +331,7 @@ export default async function PerfilPage({
                     {perfil.nome_urna}
                   </h1>
                   <p className="font-body font-bold text-lg mt-4 max-w-3xl">
-                    Página individual alimentada por dados oficiais já disponíveis no projeto. O
-                    que ainda não está validado por fonte pública permanece fora do perfil.
+                    Perfil montado com dados das fontes oficiais do Congresso e indicadores públicos auditáveis.
                   </p>
                 </div>
 
@@ -233,15 +345,12 @@ export default async function PerfilPage({
                         {fato.label}
                       </p>
                       <p className="font-body font-bold">{fato.value}</p>
-                      {fato.helper ? (
-                        <p className="font-body text-sm mt-2 opacity-80">{fato.helper}</p>
-                      ) : null}
                     </article>
                   ))}
                 </div>
 
                 <div className="flex flex-wrap gap-4">
-                  {perfil.linksOficiais.slice(0, 4).map((link) => (
+                  {perfil.linksOficiais.slice(0, 6).map((link) => (
                     <a
                       key={`${link.label}-${link.href}`}
                       href={link.href}
@@ -264,83 +373,94 @@ export default async function PerfilPage({
           </section>
 
           {renderSobreSection(perfil)}
+          {renderIndicadoresSection(perfil)}
 
           {renderListSection(
             'Mandato',
-            'Posição atual e histórico de mandatos recuperados nas fontes oficiais.',
+            'Mandato atual e histórico retornados pelas fontes oficiais.',
             perfil.mandatos,
-            'Ainda não encontramos um bloco adicional de histórico para este parlamentar além do registro atual.',
+            'A fonte não retornou mais registros de mandato para este perfil nesta consulta.',
           )}
 
           {renderListSection(
-            'Atuação Legislativa',
-            'Autorias recentes e votações nominais quando o serviço oficial já entrega esses dados.',
-            [...perfil.autorias, ...perfil.votacoes],
-            perfil.fonte === 'camara'
-              ? 'A integração de proposições já está ativa, mas o bloco de votações nominais da Câmara ainda será conectado em uma próxima etapa.'
-              : 'Nenhuma atuação recente foi retornada pelos serviços oficiais consultados nesta carga.',
+            'Projetos e Requerimentos',
+            'Matérias e autorias legislativas localizadas para este parlamentar.',
+            perfil.autorias,
+            'A fonte não retornou autorias recentes nesta consulta.',
           )}
 
           {renderListSection(
-            'Comissões e Cargos',
-            'Participações institucionais disponíveis na fonte oficial da casa legislativa correspondente.',
-            [...perfil.comissoes, ...perfil.cargos],
-            perfil.fonte === 'senado'
-              ? 'O Senado não retornou comissões ou cargos ativos para este parlamentar nesta consulta.'
-              : 'A integração de comissões e cargos da Câmara ainda será adicionada em uma próxima etapa.',
+            'Votações Recentes',
+            'Votos nominais e deliberações localizadas nas fontes consultadas.',
+            perfil.votacoes,
+            'A fonte não retornou votações recentes para este perfil nesta consulta.',
+          )}
+
+          {renderListSection(
+            'Comissões',
+            'Participações em comissões e frentes oficiais.',
+            perfil.comissoes,
+            'A fonte não retornou comissões ativas para este perfil nesta consulta.',
+          )}
+
+          {renderListSection(
+            'Cargos',
+            'Cargos institucionais publicados pela casa legislativa correspondente.',
+            perfil.cargos,
+            'A fonte não retornou cargos ativos para este perfil nesta consulta.',
           )}
 
           {renderListSection(
             perfil.fonte === 'camara' ? 'Despesas Recentes' : 'Histórico Partidário',
             perfil.fonte === 'camara'
-              ? 'Despesas recentes da cota parlamentar retornadas diretamente pela API oficial da Câmara.'
-              : 'Filiações partidárias históricas retornadas pela API oficial do Senado.',
+              ? 'Despesas recentes da cota parlamentar retornadas pela Câmara dos Deputados.'
+              : 'Filiações partidárias históricas retornadas pelo Senado Federal.',
             perfil.fonte === 'camara' ? perfil.despesas : perfil.filiacoes,
             perfil.fonte === 'camara'
-              ? 'Não houve despesas recentes retornadas pela Câmara nesta consulta.'
-              : 'A API do Senado não retornou histórico partidário nesta consulta.',
+              ? 'A Câmara não retornou despesas recentes para este perfil nesta consulta.'
+              : 'O Senado não retornou histórico partidário para este perfil nesta consulta.',
           )}
 
-          <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <article className="bg-white border-4 border-black p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-              <h2 className="font-headline font-black text-3xl uppercase mb-4">
-                Fontes Desta Página
-              </h2>
-              <div className="space-y-3">
-                {perfil.linksOficiais.map((link) => (
-                  <a
-                    key={`${link.label}-${link.href}-full`}
-                    href={link.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="block font-headline font-black uppercase border-b-4 border-black w-max"
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </div>
-            </article>
-
-            <article className="bg-primary-container border-4 border-black p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-              <h2 className="font-headline font-black text-3xl uppercase mb-4">
-                Em Integração Segura
-              </h2>
-              <div className="space-y-3 font-body font-bold">
-                <p>TSE ainda será conciliado nesta ficha para candidaturas, bens e histórico eleitoral.</p>
-                <p>CNJ continua restrito a consulta por tribunal e número do processo, sem inferência por nome.</p>
-                <p>Qualquer indicador reputacional ou judicial só entra quando houver base auditável e vínculo confiável.</p>
-              </div>
-            </article>
-          </section>
-
           <section className="bg-white border-4 border-black p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-            <h2 className="font-headline font-black text-3xl uppercase mb-4">Notas Metodológicas</h2>
+            <h2 className="font-headline font-black text-3xl uppercase mb-4">
+              Fontes Desta Página
+            </h2>
+            <p className="font-body font-medium mb-6">
+              Este perfil reúne dados publicados pela Câmara dos Deputados, pelo Senado Federal e,
+              quando disponível, por índices públicos de acompanhamento legislativo.
+            </p>
             <div className="space-y-3">
-              {perfil.notas.map((nota) => (
-                <p key={nota} className="font-body font-medium">
-                  {nota}
-                </p>
+              {perfil.linksOficiais.map((link) => (
+                <a
+                  key={`${link.label}-${link.href}-full`}
+                  href={link.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block font-headline font-black uppercase border-b-4 border-black w-max"
+                >
+                  {link.label}
+                </a>
               ))}
+              {perfil.ranking ? (
+                <a
+                  href={perfil.ranking.fonteUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block font-headline font-black uppercase border-b-4 border-black w-max"
+                >
+                  Ranking dos Políticos
+                </a>
+              ) : null}
+              {perfil.governismo ? (
+                <a
+                  href={perfil.governismo.fonteUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block font-headline font-black uppercase border-b-4 border-black w-max"
+                >
+                  Radar do Congresso
+                </a>
+              ) : null}
             </div>
           </section>
         </div>

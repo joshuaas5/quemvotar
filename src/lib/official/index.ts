@@ -1,25 +1,32 @@
 import { cache } from 'react';
 import { fetchDeputadoDetalhado, fetchDeputados } from './camara';
 import { searchCnjProcessByNumber } from './cnj';
+import { fetchLiderancasCongresso, fetchPartidosResumo, getPartidoResumo } from './partidos';
 import { fetchSenadorDetalhado, fetchSenadores } from './senado';
 import { fetchTseCandidateDatasets } from './tse';
 import type {
   CnjProcessoResumo,
   FonteStatus,
+  LiderancaCongresso,
   PanoramaDados,
+  PartidoResumo,
   PerfilDetalhadoPublico,
   PerfilItemLista,
   PerfilPublico,
+  RankingListaItem,
   TseDataset,
 } from './types';
 
 export type {
   CnjProcessoResumo,
   FonteStatus,
+  LiderancaCongresso,
   PanoramaDados,
+  PartidoResumo,
   PerfilDetalhadoPublico,
   PerfilItemLista,
   PerfilPublico,
+  RankingListaItem,
   TseDataset,
 } from './types';
 
@@ -49,9 +56,7 @@ export const OFFICIAL_SOURCE_LINKS = [
 export const fetchOfficialCongressProfiles = cache(async (): Promise<PerfilPublico[]> => {
   const [deputados, senadores] = await Promise.all([fetchDeputados(), fetchSenadores()]);
 
-  return [...deputados, ...senadores].sort((a, b) =>
-    a.nome_urna.localeCompare(b.nome_urna, 'pt-BR'),
-  );
+  return [...deputados, ...senadores].sort((a, b) => a.nome_urna.localeCompare(b.nome_urna, 'pt-BR'));
 });
 
 export function getOfficialProfileHref(perfil: Pick<PerfilPublico, 'fonte' | 'idOrigem'>): string {
@@ -115,9 +120,7 @@ export async function getOfficialPanoramaDados(): Promise<PanoramaDados> {
       totalDeputados: deputados.length,
       totalSenadores: senadores.length,
       totalUfs: new Set(
-        parlamentares
-          .map((perfil) => perfil.uf)
-          .filter((uf): uf is string => Boolean(uf)),
+        parlamentares.map((perfil) => perfil.uf).filter((uf): uf is string => Boolean(uf)),
       ).size,
       fonteAtual: 'apis_oficiais',
     };
@@ -184,6 +187,18 @@ export async function getOfficialSourceStatus(): Promise<FonteStatus[]> {
 
 export async function getTseDatasets(limit = 6): Promise<TseDataset[]> {
   return fetchTseCandidateDatasets(limit);
+}
+
+export async function getPartidosResumo(): Promise<PartidoResumo[]> {
+  return fetchPartidosResumo();
+}
+
+export async function getPartido(sigla: string): Promise<PartidoResumo | null> {
+  return getPartidoResumo(sigla);
+}
+
+export async function getLiderancasCongresso(): Promise<LiderancaCongresso[]> {
+  return fetchLiderancasCongresso();
 }
 
 export async function getCnjProcessoByNumero(
