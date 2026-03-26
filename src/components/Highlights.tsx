@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { getCasaBadge, getHighlights } from '@/lib/api';
+import { getCasaBadge, getHighlights, getPerfilHref } from '@/lib/api';
 
 type CardConfig = {
   bgClass: string;
@@ -60,7 +60,7 @@ export default async function Highlights() {
                     <img
                       className="w-full h-full object-cover object-top"
                       alt={candidato.nome_urna}
-                      src={candidato.foto_url || "https://fakeimg.pl/600x600?text=Sem+Foto"}
+                      src={candidato.foto_url || 'https://fakeimg.pl/600x600?text=Sem+Foto'}
                     />
                   </div>
                   <div className="p-6 flex-grow flex flex-col">
@@ -75,7 +75,7 @@ export default async function Highlights() {
                       disponível na base do projeto.
                     </p>
                     <Link
-                      href={`/busca?q=${encodeURIComponent(candidato.nome_urna)}`}
+                      href={getPerfilHref(candidato)}
                       className="w-full bg-on-background text-white font-headline font-black py-4 uppercase border-4 border-transparent hover:bg-white hover:text-black hover:border-black transition-all cursor-pointer text-center"
                     >
                       VER PERFIL

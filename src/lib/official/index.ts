@@ -1,17 +1,27 @@
 import { cache } from 'react';
-import { fetchDeputados } from './camara';
+import { fetchDeputadoDetalhado, fetchDeputados } from './camara';
 import { searchCnjProcessByNumber } from './cnj';
-import { fetchSenadores } from './senado';
+import { fetchSenadorDetalhado, fetchSenadores } from './senado';
 import { fetchTseCandidateDatasets } from './tse';
 import type {
   CnjProcessoResumo,
   FonteStatus,
   PanoramaDados,
+  PerfilDetalhadoPublico,
+  PerfilItemLista,
   PerfilPublico,
   TseDataset,
 } from './types';
 
-export type { CnjProcessoResumo, FonteStatus, PanoramaDados, PerfilPublico, TseDataset };
+export type {
+  CnjProcessoResumo,
+  FonteStatus,
+  PanoramaDados,
+  PerfilDetalhadoPublico,
+  PerfilItemLista,
+  PerfilPublico,
+  TseDataset,
+} from './types';
 
 export const OFFICIAL_SOURCE_LINKS = [
   {
@@ -31,21 +41,46 @@ export const OFFICIAL_SOURCE_LINKS = [
   },
   {
     id: 'cnj',
-    label: 'API Pública DataJud do CNJ',
+    label: 'API pública DataJud do CNJ',
     href: 'https://datajud-wiki.cnj.jus.br/api-publica/exemplos/',
   },
 ] as const;
 
 export const fetchOfficialCongressProfiles = cache(async (): Promise<PerfilPublico[]> => {
-  const [deputados, senadores] = await Promise.all([
-    fetchDeputados(),
-    fetchSenadores(),
-  ]);
+  const [deputados, senadores] = await Promise.all([fetchDeputados(), fetchSenadores()]);
 
   return [...deputados, ...senadores].sort((a, b) =>
     a.nome_urna.localeCompare(b.nome_urna, 'pt-BR'),
   );
 });
+
+export function getOfficialProfileHref(perfil: Pick<PerfilPublico, 'fonte' | 'idOrigem'>): string {
+  return `/perfil/${perfil.fonte}/${perfil.idOrigem}`;
+}
+
+export async function getOfficialCongressProfile(
+  fonte: PerfilPublico['fonte'],
+  idOrigem: string,
+): Promise<PerfilPublico | null> {
+  const perfis = await fetchOfficialCongressProfiles();
+
+  return perfis.find((perfil) => perfil.fonte === fonte && perfil.idOrigem === idOrigem) ?? null;
+}
+
+export async function getOfficialProfileDetail(
+  fonte: PerfilPublico['fonte'],
+  idOrigem: string,
+): Promise<PerfilDetalhadoPublico | null> {
+  if (fonte === 'camara') {
+    return fetchDeputadoDetalhado(idOrigem);
+  }
+
+  if (fonte === 'senado') {
+    return fetchSenadorDetalhado(idOrigem);
+  }
+
+  return null;
+}
 
 export async function searchOfficialCongressProfiles(
   query: string,
@@ -61,12 +96,7 @@ export async function searchOfficialCongressProfiles(
 
   return profiles
     .filter((perfil) => {
-      const searchable = [
-        perfil.nome_urna,
-        perfil.partido,
-        perfil.uf ?? '',
-        perfil.cargo,
-      ]
+      const searchable = [perfil.nome_urna, perfil.partido, perfil.uf ?? '', perfil.cargo]
         .join(' ')
         .toLowerCase();
 
@@ -77,11 +107,7 @@ export async function searchOfficialCongressProfiles(
 
 export async function getOfficialPanoramaDados(): Promise<PanoramaDados> {
   try {
-    const [deputados, senadores] = await Promise.all([
-      fetchDeputados(),
-      fetchSenadores(),
-    ]);
-
+    const [deputados, senadores] = await Promise.all([fetchDeputados(), fetchSenadores()]);
     const parlamentares = [...deputados, ...senadores];
 
     return {

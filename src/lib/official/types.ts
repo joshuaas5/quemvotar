@@ -11,6 +11,52 @@ export interface PerfilPublico {
   fonteUrl: string;
 }
 
+export interface PerfilFato {
+  label: string;
+  value: string;
+  helper?: string;
+}
+
+export interface PerfilItemLista {
+  titulo: string;
+  descricao?: string;
+  detalhe?: string;
+  data?: string;
+  destaque?: string;
+  href?: string;
+}
+
+export interface PerfilLinkOficial {
+  label: string;
+  href: string;
+}
+
+export interface PerfilDetalhadoPublico extends PerfilPublico {
+  nomeCompleto?: string | null;
+  sexo?: string | null;
+  email?: string | null;
+  telefones: string[];
+  dataNascimento?: string | null;
+  naturalidade?: string | null;
+  escolaridade?: string | null;
+  situacao?: string | null;
+  condicaoMandato?: string | null;
+  gabinete?: string | null;
+  sitePessoal?: string | null;
+  redesSociais: string[];
+  atualizadoEm?: string | null;
+  fatos: PerfilFato[];
+  mandatos: PerfilItemLista[];
+  comissoes: PerfilItemLista[];
+  cargos: PerfilItemLista[];
+  votacoes: PerfilItemLista[];
+  despesas: PerfilItemLista[];
+  autorias: PerfilItemLista[];
+  filiacoes: PerfilItemLista[];
+  linksOficiais: PerfilLinkOficial[];
+  notas: string[];
+}
+
 export interface PanoramaDados {
   totalParlamentares: number | null;
   totalDeputados: number | null;
