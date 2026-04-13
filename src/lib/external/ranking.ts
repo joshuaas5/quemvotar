@@ -1,4 +1,4 @@
-﻿import { cache } from 'react';
+import { cache } from 'react';
 import type { PerfilPublico } from '@/lib/official';
 import type { RankingListaItem, RankingReferencia } from '@/lib/official/types';
 
@@ -50,7 +50,7 @@ function normalizeText(value: string) {
 }
 
 function getRankingSourceUrl(item: RankingItemApi) {
-  return item.slug ? `${RANKING_SITE_ROOT}/perfil/${item.slug}` : `${RANKING_SITE_ROOT}/ranking`;
+  return item.slug ? `${RANKING_SITE_ROOT}/parlamentar/${item.slug}` : `${RANKING_SITE_ROOT}/ranking`;
 }
 
 function buildRankingReferencia(item: RankingItemApi, lastSync?: string): RankingReferencia | null {
@@ -85,11 +85,11 @@ function buildRankingReferencia(item: RankingItemApi, lastSync?: string): Rankin
 async function fetchRanking<T>(path: string): Promise<T> {
   const response = await fetch(`${RANKING_API_ROOT}${path}`, {
     headers: { Accept: 'application/json' },
-    next: { revalidate: 3600 },
+    cache: 'no-store',
   });
 
   if (!response.ok) {
-    throw new Error(`Falha ao consultar o Ranking dos PolÃ­ticos: ${response.status}`);
+    throw new Error(`Falha ao consultar o Ranking dos Políticos: ${response.status}`);
   }
 
   return response.json() as Promise<T>;
@@ -185,4 +185,3 @@ export const fetchRankingTop = cache(
     return items.slice(0, limit);
   },
 );
-

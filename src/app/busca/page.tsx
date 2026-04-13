@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import {
@@ -7,9 +7,8 @@ import {
   getPerfilHref,
   searchCandidatos,
 } from '@/lib/api';
-import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
 
-export const revalidate = 1800;
+export const dynamic = 'force-dynamic';
 
 function getInitials(nome: string) {
   return nome
@@ -33,19 +32,19 @@ export default async function BuscaPage({
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="flex-grow bg-surface-container py-10 md:py-16 px-4 md:px-6">
+      <main className="flex-grow bg-surface-container py-16 px-6">
         <div className="max-w-5xl mx-auto">
-          <h1 className="font-headline font-black text-3xl md:text-5xl uppercase mb-6 md:mb-8">
+          <h1 className="font-headline font-black text-5xl uppercase mb-8">
             Resultados para: <span className="bg-primary-container px-2">{q || 'Busca'}</span>
           </h1>
-          <p className="font-body font-bold uppercase text-xs md:text-sm opacity-70 mb-8 md:mb-10">
-            O buscador retorna perfis diretamente das APIs oficiais da Camara e do Senado.
+          <p className="font-body font-bold uppercase text-sm opacity-70 mb-10">
+            O buscador retorna perfis diretamente das APIs oficiais da Câmara e do Senado.
           </p>
 
           {resultados.length === 0 ? (
-            <div className="bg-white border-4 border-black p-8 md:p-12 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <div className="bg-white border-4 border-black p-12 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
               <span className="material-symbols-outlined text-6xl mb-4">search_off</span>
-              <h2 className="font-headline font-black text-2xl md:text-3xl uppercase">
+              <h2 className="font-headline font-black text-3xl uppercase">
                 Nenhum perfil oficial encontrado
               </h2>
               <p className="font-body font-bold mt-2">
@@ -53,69 +52,55 @@ export default async function BuscaPage({
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-              {resultados.map((perfil) => {
-                const logo = getPartyLogoBySigla(perfil.partido);
-                const visual = getPartyVisualEmoji(perfil.partido);
-
-                return (
-                  <Link
-                    key={`${perfil.fonte}-${perfil.id}`}
-                    href={getPerfilHref(perfil)}
-                    className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all"
-                  >
-                    <div className="w-24 md:w-32 h-auto border-r-4 border-black bg-gray-200 shrink-0">
-                      {perfil.foto_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={perfil.foto_url}
-                          alt={perfil.nome_urna}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full min-h-28 md:min-h-32 flex items-center justify-center font-headline font-black text-3xl">
-                          {getInitials(perfil.nome_urna)}
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-4 md:p-6 flex flex-col justify-center">
-                      <span className="font-label font-bold text-xs uppercase opacity-70 mb-1">
-                        {perfil.cargo} {perfil.uf ? `- ${perfil.uf}` : ''}
-                      </span>
-                      <h3 className="font-headline font-black text-xl md:text-2xl uppercase leading-none mb-2">
-                        {perfil.nome_urna}
-                      </h3>
-                      <div className="flex items-center gap-2 mb-2">
-                        {logo ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={logo} alt={`Logo ${perfil.partido}`} className="w-7 h-7 object-contain rounded-full bg-white border-2 border-black p-1" />
-                        ) : null}
-                        <span className="font-label font-bold text-xs uppercase opacity-90">
-                          {visual} {perfil.partido}
-                        </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {resultados.map((perfil) => (
+                <Link
+                  key={`${perfil.fonte}-${perfil.id}`}
+                  href={getPerfilHref(perfil)}
+                  className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all"
+                >
+                  <div className="w-32 h-auto border-r-4 border-black bg-gray-200 shrink-0">
+                    {perfil.foto_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={perfil.foto_url}
+                        alt={perfil.nome_urna}
+                        className="w-full h-full object-cover grayscale"
+                      />
+                    ) : (
+                      <div className="w-full h-full min-h-32 flex items-center justify-center font-headline font-black text-3xl">
+                        {getInitials(perfil.nome_urna)}
                       </div>
-                      <span className="font-label font-bold text-xs bg-secondary-fixed text-on-secondary-fixed px-2 py-1 inline-block w-max mb-2">
-                        {getCasaBadge(perfil)}
-                      </span>
-                      <span className="font-label font-bold text-[11px] uppercase opacity-70 mb-4">
-                        {getFonteBadge(perfil)}
-                      </span>
-                      <span className="font-headline font-black uppercase text-base md:text-lg border-b-4 border-black w-max">
-                        Abrir perfil
-                      </span>
-                    </div>
-                  </Link>
-                );
-              })}
+                    )}
+                  </div>
+                  <div className="p-6 flex flex-col justify-center">
+                    <span className="font-label font-bold text-xs uppercase opacity-70 mb-1">
+                      {perfil.partido} - {perfil.cargo} {perfil.uf ? `- ${perfil.uf}` : ''}
+                    </span>
+                    <h3 className="font-headline font-black text-2xl uppercase leading-none mb-2">
+                      {perfil.nome_urna}
+                    </h3>
+                    <span className="font-label font-bold text-xs bg-secondary-fixed text-on-secondary-fixed px-2 py-1 inline-block w-max mb-2">
+                      {getCasaBadge(perfil)}
+                    </span>
+                    <span className="font-label font-bold text-[11px] uppercase opacity-70 mb-4">
+                      {getFonteBadge(perfil)}
+                    </span>
+                    <span className="font-headline font-black uppercase text-lg border-b-4 border-black w-max">
+                      Abrir perfil
+                    </span>
+                  </div>
+                </Link>
+              ))}
             </div>
           )}
 
-          <div className="mt-10 md:mt-12 text-center">
+          <div className="mt-12 text-center">
             <Link
               href="/"
-              className="inline-block font-headline font-black uppercase text-lg md:text-xl border-b-4 border-black hover:text-primary-container transition-colors"
+              className="inline-block font-headline font-black uppercase text-xl border-b-4 border-black hover:text-primary-container transition-colors"
             >
-              Voltar ao inicio
+              Voltar ao início
             </Link>
           </div>
         </div>

@@ -6,7 +6,7 @@ export interface PerfilPublico {
   uf?: string;
   cargo: string;
   foto_url: string;
-  casa: 'C�mara dos Deputados' | 'Senado Federal';
+  casa: 'Câmara dos Deputados' | 'Senado Federal';
   fonte: 'camara' | 'senado';
   fonteUrl: string;
 }
@@ -90,7 +90,13 @@ export interface PartidoResumo {
   definicaoCurta?: string | null;
   familiaPolitica?: string | null;
   espectro?: string | null;
-  espectroEixo?: 'esquerda' | 'centro-esquerda' | 'centro' | 'centro-direita' | 'direita' | null;
+  espectroEixo?:
+    | 'esquerda'
+    | 'centro-esquerda'
+    | 'centro'
+    | 'centro-direita'
+    | 'direita'
+    | null;
   cores?: string[];
   liderCamara?: PartidoLideranca | null;
   liderSenado?: PartidoLideranca | null;

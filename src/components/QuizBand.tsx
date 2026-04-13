@@ -6,10 +6,10 @@ export default function QuizBand() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
         <div className="flex-1">
           <h2 className="font-headline font-black text-4xl md:text-5xl uppercase tracking-tighter leading-tight mb-4">
-            CANSADO DE PROMESSAS? <br /> DESCUBRA QUEM DEFENDE O QUE <span className="bg-on-background text-white px-2">VOC� ACREDITA</span>.
+            CANSADO DE PROMESSAS? <br /> DESCUBRA QUEM DEFENDE O QUE <span className="bg-on-background text-white px-2">VOCÊ ACREDITA</span>.
           </h2>
           <p className="font-body font-bold text-xl uppercase text-on-secondary-fixed">
-            O Match est�sendo preparado com base em vota��es oficiais do Congresso.
+            O Match está sendo preparado com base em votações oficiais do Congresso.
           </p>
         </div>
         <div className="w-full md:w-auto">

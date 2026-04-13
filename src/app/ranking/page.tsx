@@ -1,10 +1,9 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { getParlamentares, getPerfilHref, getRankingParlamentares, type PerfilPublico } from '@/lib/api';
-import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
 
-export const revalidate = 1800;
+export const dynamic = 'force-dynamic';
 
 function normalizeText(value: string) {
   return value
@@ -51,7 +50,7 @@ export default async function RankingPage({
 }) {
   const params = await searchParams;
   const q = typeof params.q === 'string' ? params.q.trim() : '';
-  const casa = typeof params.casa === 'string' ? params.casa.trim().toLowerCase() : ''; const uf = typeof params.uf === 'string' ? params.uf.trim().toUpperCase() : '';
+  const casa = typeof params.casa === 'string' ? params.casa.trim().toLowerCase() : '';
   const fonte = casa === 'camara' || casa === 'senado' ? casa : undefined;
 
   const [ranking, parlamentares] = await Promise.all([
@@ -59,10 +58,12 @@ export default async function RankingPage({
     getParlamentares(),
   ]);
 
-  const ufs = Array.from(new Set(ranking.map(i => i.uf).filter(Boolean))).sort(); const resultados = ranking.filter((item) => { 
- if(uf && item.uf !== uf) return false; 
- if(!q) return true; 
- return [item.nome, item.partido, item.uf, item.cargo]
+  const resultados = ranking.filter((item) => {
+    if (!q) {
+      return true;
+    }
+
+    return [item.nome, item.partido, item.uf, item.cargo]
       .join(' ')
       .toLowerCase()
       .includes(q.toLowerCase());
@@ -72,16 +73,16 @@ export default async function RankingPage({
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="flex-grow bg-surface-container py-10 md:py-16 px-4 md:px-6">
-        <div className="max-w-7xl mx-auto space-y-8 md:space-y-10">
-          <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <h1 className="font-headline font-black text-3xl md:text-5xl uppercase mb-3 md:mb-4">Ranking dos Parlamentares 🏆</h1>
-            <p className="font-body font-bold text-sm md:text-lg uppercase opacity-80">
-              Nota p�blica de desempenho legislativo com refer�ncia ao Ranking dos Pol�ticos.
+      <main className="flex-grow bg-surface-container py-16 px-6">
+        <div className="max-w-7xl mx-auto space-y-10">
+          <section className="bg-white border-4 border-black p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <h1 className="font-headline font-black text-5xl uppercase mb-4">Ranking dos Parlamentares</h1>
+            <p className="font-body font-bold text-lg uppercase opacity-80">
+              Nota pública de desempenho legislativo com referência ao Ranking dos Políticos.
             </p>
           </section>
 
-          <form className="bg-white border-4 border-black p-4 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
+          <form className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
               type="text"
               name="q"
@@ -95,12 +96,10 @@ export default async function RankingPage({
               defaultValue={casa}
               className="border-4 border-black px-4 py-3 font-headline font-bold uppercase bg-white"
             >
-              <option value="">Camara e Senado</option>
-              <option value="camara">Camara</option>
+              <option value="">Câmara e Senado</option>
+              <option value="camara">Câmara</option>
               <option value="senado">Senado</option>
             </select>
-
-            <select name="uf" defaultValue={uf} className="border-4 border-black px-4 py-3 font-headline font-bold uppercase bg-white"><option value="">Todas as UFs</option>{ufs.map(u => <option key={u} value={u}>{u}</option>)}</select>
 
             <button
               type="submit"
@@ -111,7 +110,7 @@ export default async function RankingPage({
           </form>
 
           <section className="flex flex-wrap items-center justify-between gap-4">
-            <p className="font-headline font-black text-xl md:text-2xl uppercase">
+            <p className="font-headline font-black text-2xl uppercase">
               {resultados.length} parlamentares no recorte atual
             </p>
             <Link href="/parlamentares" className="font-headline font-black uppercase border-b-4 border-black">
@@ -119,19 +118,17 @@ export default async function RankingPage({
             </Link>
           </section>
 
-          <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
+          <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
             {resultados.map((item) => {
               const perfilLocal = findLocalPerfil(parlamentares, item.nome, item.cargo, item.uf);
-              const logo = getPartyLogoBySigla(item.partido);
-              const visual = getPartyVisualEmoji(item.partido);
 
               return (
                 <article
                   key={item.id}
                   className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
                 >
-                  <div className="grid grid-cols-[96px_minmax(0,1fr)] md:grid-cols-[120px_minmax(0,1fr)] border-b-4 border-black">
-                    <div className="bg-surface-container-high min-h-[96px] md:min-h-[120px]">
+                  <div className="grid grid-cols-[120px_minmax(0,1fr)] border-b-4 border-black">
+                    <div className="bg-surface-container-high min-h-[120px]">
                       {item.fotoUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -140,38 +137,32 @@ export default async function RankingPage({
                           className="w-full h-full object-cover object-top"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center font-headline font-black text-3xl md:text-4xl">
+                        <div className="w-full h-full flex items-center justify-center font-headline font-black text-4xl">
                           {getInitials(item.nome)}
                         </div>
                       )}
                     </div>
 
-                    <div className="p-4 md:p-5 space-y-2">
+                    <div className="p-5 space-y-2">
                       <p className="font-label font-bold uppercase text-xs opacity-70">
                         {item.cargo} • {item.uf}
                       </p>
-                      <h2 className="font-headline font-black text-2xl md:text-3xl uppercase leading-none">
+                      <h2 className="font-headline font-black text-3xl uppercase leading-none">
                         {item.nome}
                       </h2>
-                      <div className="flex items-center gap-2">
-                        {logo ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={logo} alt={`Logo ${item.partido}`} className="w-7 h-7 object-contain rounded-full bg-white border-2 border-black p-1" />
-                        ) : null}
-                        <p className="font-body font-bold">{visual} {item.partido}</p>
-                      </div>
+                      <p className="font-body font-bold">{item.partido}</p>
                     </div>
                   </div>
 
-                  <div className="p-5 md:p-6 space-y-5">
+                  <div className="p-6 space-y-5">
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="border-4 border-black p-4 bg-[#FFF4C2]">
+                      <div className="border-4 border-black p-4 bg-surface-container-low">
                         <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Nota</p>
                         <p className="font-headline font-black text-4xl">
                           {formatScore(item.ranking.nota)}
                         </p>
                       </div>
-                      <div className="border-4 border-black p-4 bg-[#D7F6FF]">
+                      <div className="border-4 border-black p-4 bg-surface-container-low">
                         <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Ranking geral</p>
                         <p className="font-headline font-black text-4xl">
                           #{item.ranking.rankingGeral ?? '—'}
@@ -219,6 +210,3 @@ export default async function RankingPage({
     </div>
   );
 }
-
-
-

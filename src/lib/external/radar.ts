@@ -5,7 +5,6 @@ import { buildVoteThemeCards } from '@/lib/political-themes';
 
 const RADAR_API_ROOT = 'https://radar.congressoemfoco.com.br/api';
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
-const CAMARA_VOTES_SAMPLE_SIZE = 8;
 
 interface RadarBuscaItem {
   idParlamentar?: string;
@@ -85,7 +84,7 @@ function compact<T>(values: Array<T | null | undefined | false>): T[] {
 async function fetchRadar<T>(path: string): Promise<T> {
   const response = await fetch(`${RADAR_API_ROOT}${path}`, {
     headers: { Accept: 'application/json' },
-    next: { revalidate: 1800 },
+    cache: 'no-store',
   });
 
   if (!response.ok) {
@@ -98,11 +97,11 @@ async function fetchRadar<T>(path: string): Promise<T> {
 async function fetchCamara<T>(path: string): Promise<T> {
   const response = await fetch(`${CAMARA_API_ROOT}${path}`, {
     headers: { Accept: 'application/json' },
-    next: { revalidate: 1800 },
+    cache: 'no-store',
   });
 
   if (!response.ok) {
-    throw new Error(`Falha ao consultar a API da C�mara: ${response.status}`);
+    throw new Error(`Falha ao consultar a API da Câmara: ${response.status}`);
   }
 
   return response.json() as Promise<T>;
@@ -130,9 +129,9 @@ function getRadarPerfilUrl(idParlamentarVoz: string) {
 
 function mapRadarVote(code: number | undefined) {
   if (code === 1) return 'Votou sim';
-  if (code === -1) return 'Votou n�o';
-  if (code === 0) return 'Absten��o registrada';
-  if (code === 2) return 'Obstru��o registrada';
+  if (code === -1) return 'Votou não';
+  if (code === 0) return 'Abstenção registrada';
+  if (code === 2) return 'Obstrução registrada';
   return 'Voto registrado';
 }
 
@@ -140,7 +139,7 @@ function buildVoteTitle(votacao: CamaraVoteItem['votacao']) {
   const materia = votacao.proposicoesAfetadas?.[0] ?? votacao.objetosPossiveis?.[0];
 
   if (!materia) {
-    return 'Vota��o nominal';
+    return 'Votação nominal';
   }
 
   const partes = compact([
@@ -149,7 +148,7 @@ function buildVoteTitle(votacao: CamaraVoteItem['votacao']) {
     typeof materia.ano === 'number' && materia.ano > 0 ? String(materia.ano) : null,
   ]);
 
-  return partes.length > 0 ? partes.join('/') : 'Vota��o nominal';
+  return partes.length > 0 ? partes.join('/') : 'Votação nominal';
 }
 
 function buildVoteHref(votacao: CamaraVoteItem['votacao']) {
@@ -181,7 +180,7 @@ const fetchCamaraVoteItems = cache(async (perfil: PerfilPublico): Promise<Camara
 
   const payload = await fetchRadar<RadarVotosResponse>(`/parlamentares/${match.idParlamentarVoz}/votos`);
   const votos = payload.votos ?? {};
-  const ids = Object.keys(votos).reverse().slice(0, CAMARA_VOTES_SAMPLE_SIZE);
+  const ids = Object.keys(votos).reverse().slice(0, 30);
 
   const detalhes = await Promise.all(
     ids.map(async (voteId) => {
@@ -279,10 +278,10 @@ export const fetchCamaraVotesForPerfil = cache(
       return {
         titulo: buildVoteTitle(votacao),
         descricao:
-          materia?.ementa ?? votacao.descricao ?? 'Vota��o nominal registrada na C�mara dos Deputados.',
+          materia?.ementa ?? votacao.descricao ?? 'Votação nominal registrada na Câmara dos Deputados.',
         detalhe: compact([
           mapRadarVote(voto),
-          votacao.aprovacao === 1 ? 'Resultado: aprovada' : 'Resultado: n�o aprovada',
+          votacao.aprovacao === 1 ? 'Resultado: aprovada' : 'Resultado: não aprovada',
         ]).join(' • '),
         data: votacao.data,
         destaque: mapRadarVote(voto),
@@ -311,4 +310,3 @@ export const fetchCamaraVoteThemesForPerfil = cache(
     );
   },
 );
-

@@ -1,4 +1,4 @@
-﻿import {
+import {
   fetchOfficialCongressProfiles,
   getLiderancasCongresso,
   getOfficialCongressProfile,
@@ -39,11 +39,11 @@ export {
 } from './official';
 
 export function getCasaBadge(perfil: PerfilPublico): string {
-  return perfil.casa === 'Senado Federal' ? 'SENADO' : 'CAMARA';
+  return perfil.casa === 'Senado Federal' ? 'SENADO FEDERAL' : 'CÂMARA DOS DEPUTADOS';
 }
 
 export function getFonteBadge(perfil: PerfilPublico): string {
-  return perfil.fonte === 'camara' ? 'FONTE OFICIAL: CÃ‚MARA' : 'FONTE OFICIAL: SENADO';
+  return perfil.fonte === 'camara' ? 'FONTE OFICIAL: CÂMARA' : 'FONTE OFICIAL: SENADO';
 }
 
 export async function getHighlights(): Promise<PerfilPublico[]> {
@@ -85,30 +85,15 @@ export async function getPerfilDetalhado(
     return null;
   }
 
-  const withTimeout = async <T>(promise: Promise<T>, fallback: T, timeoutMs = 2500): Promise<T> => {
-    try {
-      return await Promise.race<T>([
-        promise,
-        new Promise<T>((resolve) => {
-          setTimeout(() => resolve(fallback), timeoutMs);
-        }),
-      ]);
-    } catch {
-      return fallback;
-    }
-  };
-
-  const [ranking, governismo, votacoesCamara, presenca, partidoResumo, temasCamara] = await Promise.all([
-    withTimeout(fetchRankingForPerfil(perfil), null, 1500),
-    withTimeout(fetchGovernismoForPerfil(perfil), null, 1500),
-    fonte === 'camara'
-      ? withTimeout(fetchCamaraVotesForPerfil(perfil), [] as PerfilDetalhadoPublico['votacoes'], 1500)
-      : Promise.resolve([] as PerfilDetalhadoPublico['votacoes']),
-    withTimeout(fetchAssiduidadeForPerfil(perfil), null, 1500),
-    withTimeout(getPartido(perfil.partido), null, 1500),
-    fonte === 'camara'
-      ? withTimeout(fetchCamaraVoteThemesForPerfil(perfil), [] as PerfilDetalhadoPublico['temasVotacao'], 1500)
-      : Promise.resolve([] as PerfilDetalhadoPublico['temasVotacao']),
+  const [ranking, governismo, votacoesCamara] = await Promise.all([
+    fetchRankingForPerfil(perfil).catch(() => null),
+    fetchGovernismoForPerfil(perfil).catch(() => null),
+    fonte === 'camara' ? fetchCamaraVotesForPerfil(perfil).catch(() => []) : Promise.resolve([]),
+  ]);
+  const [presenca, partidoResumo, temasCamara] = await Promise.all([
+    fetchAssiduidadeForPerfil(perfil).catch(() => null),
+    getPartido(perfil.partido).catch(() => null),
+    fonte === 'camara' ? fetchCamaraVoteThemesForPerfil(perfil).catch(() => []) : Promise.resolve([]),
   ]);
 
   return {
@@ -122,7 +107,7 @@ export async function getPerfilDetalhado(
             fonte: 'partido_e_votacoes',
             eixo: partidoResumo.espectroEixo,
             label: partidoResumo.espectro,
-            resumo: `Campo aproximado alinhado ao posicionamento pÃºblico do ${perfil.partido}.`,
+            resumo: `Campo aproximado alinhado ao posicionamento público do ${perfil.partido}.`,
           }
         : null,
     votacoes: perfil.votacoes.length > 0 ? perfil.votacoes : votacoesCamara,
@@ -148,7 +133,3 @@ export async function getRankingParlamentares(
 ): Promise<RankingListaItem[]> {
   return fetchRankingTop(limit, fonte);
 }
-
-
-
-

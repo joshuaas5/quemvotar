@@ -33,7 +33,7 @@ export type {
 export const OFFICIAL_SOURCE_LINKS = [
   {
     id: 'camara',
-    label: 'API oficial da C�mara dos Deputados',
+    label: 'API oficial da Câmara dos Deputados',
     href: 'https://dadosabertos.camara.leg.br/swagger/api.html',
   },
   {
@@ -48,16 +48,13 @@ export const OFFICIAL_SOURCE_LINKS = [
   },
   {
     id: 'cnj',
-    label: 'API p�blica DataJud do CNJ',
+    label: 'API pública DataJud do CNJ',
     href: 'https://datajud-wiki.cnj.jus.br/api-publica/exemplos/',
   },
 ] as const;
 
 export const fetchOfficialCongressProfiles = cache(async (): Promise<PerfilPublico[]> => {
-  const [deputadosResult, senadoresResult] = await Promise.allSettled([fetchDeputados(), fetchSenadores()]);
-
-  const deputados = deputadosResult.status === 'fulfilled' ? deputadosResult.value : [];
-  const senadores = senadoresResult.status === 'fulfilled' ? senadoresResult.value : [];
+  const [deputados, senadores] = await Promise.all([fetchDeputados(), fetchSenadores()]);
 
   return [...deputados, ...senadores].sort((a, b) => a.nome_urna.localeCompare(b.nome_urna, 'pt-BR'));
 });
@@ -115,20 +112,8 @@ export async function searchOfficialCongressProfiles(
 
 export async function getOfficialPanoramaDados(): Promise<PanoramaDados> {
   try {
-    const [deputadosResult, senadoresResult] = await Promise.allSettled([fetchDeputados(), fetchSenadores()]);
-    const deputados = deputadosResult.status === 'fulfilled' ? deputadosResult.value : [];
-    const senadores = senadoresResult.status === 'fulfilled' ? senadoresResult.value : [];
+    const [deputados, senadores] = await Promise.all([fetchDeputados(), fetchSenadores()]);
     const parlamentares = [...deputados, ...senadores];
-
-    if (parlamentares.length === 0) {
-      return {
-        totalParlamentares: null,
-        totalDeputados: null,
-        totalSenadores: null,
-        totalUfs: null,
-        fonteAtual: 'indisponivel',
-      };
-    }
 
     return {
       totalParlamentares: parlamentares.length,
@@ -161,12 +146,12 @@ export async function getOfficialSourceStatus(): Promise<FonteStatus[]> {
   return [
     {
       id: 'camara',
-      nome: 'C�mara dos Deputados',
+      nome: 'Câmara dos Deputados',
       status: camara.status === 'fulfilled' ? 'ok' : 'indisponivel',
       detalhes:
         camara.status === 'fulfilled'
           ? `${camara.value.length} deputados carregados da API oficial.`
-          : 'Falha ao consultar a API oficial da C�mara.',
+          : 'Falha ao consultar a API oficial da Câmara.',
       href: 'https://dadosabertos.camara.leg.br/swagger/api.html',
     },
     {
@@ -194,7 +179,7 @@ export async function getOfficialSourceStatus(): Promise<FonteStatus[]> {
       nome: 'CNJ DataJud',
       status: 'parcial',
       detalhes:
-        'Integra��o segura dispon�vel por n�mero de processo e tribunal. Correspond�ncia autom�tica por nome ainda n�o ser�feita.',
+        'Integração segura disponível por número de processo e tribunal. Correspondência automática por nome ainda não será feita.',
       href: 'https://datajud-wiki.cnj.jus.br/api-publica/exemplos/',
     },
   ];
@@ -222,5 +207,3 @@ export async function getCnjProcessoByNumero(
 ): Promise<CnjProcessoResumo | null> {
   return searchCnjProcessByNumber(tribunalSlug, numeroProcesso);
 }
-
-

@@ -3,7 +3,6 @@ import type { LiderancaCongresso, PartidoLideranca, PartidoResumo, PerfilPublico
 import { fetchDeputados } from './camara';
 import { fetchSenadores } from './senado';
 import { buildPartyBadgeDataUrl, getPartyMeta, getSpectrumLabel } from '@/lib/party-meta';
-import { getPartyLogoBySigla } from '@/lib/party-logos';
 
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
@@ -67,7 +66,7 @@ interface TsePartyDetail {
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url, {
     headers: { Accept: 'application/json' },
-    next: { revalidate: 86400 },
+    cache: 'no-store',
   });
 
   if (!response.ok) {
@@ -80,14 +79,18 @@ async function fetchJson<T>(url: string): Promise<T> {
 async function fetchText(url: string): Promise<string> {
   const response = await fetch(url, {
     headers: { Accept: 'text/html,application/xhtml+xml' },
-    next: { revalidate: 86400 },
+    cache: 'no-store',
   });
 
   if (!response.ok) {
-    throw new Error(`Falha ao consultar p�gina: ${response.status}`);
+    throw new Error(`Falha ao consultar página: ${response.status}`);
   }
 
   return response.text();
+}
+
+function compact<T>(values: Array<T | null | undefined | false>): T[] {
+  return values.filter(Boolean) as T[];
 }
 
 function cleanText(value?: string | null) {
@@ -194,6 +197,23 @@ function parseFirstStatuteLink(html: string) {
   return match?.[1] ?? null;
 }
 
+async function fetchWebsiteDescription(url?: string | null) {
+  if (!url) {
+    return null;
+  }
+
+  try {
+    const html = await fetchText(url);
+    const meta =
+      html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)/i) ??
+      html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)/i);
+
+    return cleanText(meta?.[1] ?? null);
+  } catch {
+    return null;
+  }
+}
+
 const fetchTsePartyDetail = cache(async (sigla: string): Promise<TsePartyDetail | null> => {
   const registry = await fetchTsePartyRegistry();
   const tseUrl = registry.get(sigla);
@@ -204,7 +224,8 @@ const fetchTsePartyDetail = cache(async (sigla: string): Promise<TsePartyDetail 
 
   try {
     const html = await fetchText(tseUrl);
-    const siteOficial = parseTsePartyLink(html, 'Endere�o Internet');
+    const siteOficial = parseTsePartyLink(html, 'Endereço Internet');
+    const definicaoCurta = (await fetchWebsiteDescription(siteOficial)) ?? null;
 
     return {
       tseUrl,
@@ -212,7 +233,7 @@ const fetchTsePartyDetail = cache(async (sigla: string): Promise<TsePartyDetail 
       presidenteNacional: parseTsePartyField(html, 'Presidente Nacional'),
       siteOficial,
       estatutoUrl: parseFirstStatuteLink(html),
-      definicaoCurta: null,
+      definicaoCurta,
     };
   } catch {
     return { tseUrl };
@@ -226,7 +247,7 @@ function getPartyLeader(liderancas: LiderancaRaw[], sigla: string, casa: 'CD' | 
     return (
       lideranca.casa === casa &&
       lideranca.descricaoTipoUnidadeLideranca?.includes('Partido') &&
-      lideranca.descricaoTipoLideranca?.includes('L�der') &&
+      lideranca.descricaoTipoLideranca?.includes('Líder') &&
       partySigla === sigla
     );
   });
@@ -285,12 +306,10 @@ export const fetchPartidosResumo = cache(async (): Promise<PartidoResumo[]> => {
       ),
     );
 
-    const localLogo = getPartyLogoBySigla(totaisPartido.sigla);
     const logoUrl =
-      localLogo ??
-      (detalheCamara?.urlLogo && !detalheCamara.urlLogo.toLowerCase().endsWith('.gif')
+      detalheCamara?.urlLogo && !detalheCamara.urlLogo.toLowerCase().endsWith('.gif')
         ? detalheCamara.urlLogo
-        : buildPartyBadgeDataUrl(totaisPartido.sigla, meta.primary, meta.secondary));
+        : buildPartyBadgeDataUrl(totaisPartido.sigla, meta.primary, meta.secondary);
 
     return {
       sigla: totaisPartido.sigla,
@@ -304,7 +323,7 @@ export const fetchPartidosResumo = cache(async (): Promise<PartidoResumo[]> => {
       presidenteNacional: detalheTse?.presidenteNacional ?? null,
       siteOficial: detalheTse?.siteOficial ?? detalheCamara?.urlWebSite ?? null,
       estatutoUrl: detalheTse?.estatutoUrl ?? null,
-      definicaoCurta: detalheTse?.definicaoCurta ?? `Partido com atua��o parlamentar em ${totaisPartido.totalParlamentares} cadeiras no Congresso.`,
+      definicaoCurta: detalheTse?.definicaoCurta ?? `Partido com atuação parlamentar em ${totaisPartido.totalParlamentares} cadeiras no Congresso.`,
       familiaPolitica: meta.family,
       espectro: getSpectrumLabel(meta.spectrum),
       espectroEixo: meta.spectrum,
@@ -312,7 +331,7 @@ export const fetchPartidosResumo = cache(async (): Promise<PartidoResumo[]> => {
       liderCamara: detalheCamara?.status?.lider?.nome
         ? {
             nome: detalheCamara.status.lider.nome,
-            cargo: 'L�der da C�mara dos Deputados',
+            cargo: 'Líder da Câmara dos Deputados',
             casa: 'CD',
             partido: totaisPartido.sigla,
             uf: detalheCamara.status.lider.uf,
@@ -329,7 +348,7 @@ function mapCategoria(descricao?: string): LiderancaCongresso['categoria'] | nul
   const normalized = descricao?.toLowerCase() ?? '';
 
   if (normalized.includes('governo')) return 'governo';
-  if (normalized.includes('oposi��o') || normalized.includes('oposicao')) return 'oposicao';
+  if (normalized.includes('oposição') || normalized.includes('oposicao')) return 'oposicao';
   if (normalized.includes('maioria')) return 'maioria';
   if (normalized.includes('minoria')) return 'minoria';
 
@@ -341,7 +360,7 @@ export const fetchLiderancasCongresso = cache(async (): Promise<LiderancaCongres
   const resultado: LiderancaCongresso[] = [];
 
   for (const lideranca of liderancas) {
-    if (!lideranca.descricaoTipoLideranca?.includes('L�der')) {
+    if (!lideranca.descricaoTipoLideranca?.includes('Líder')) {
       continue;
     }
 

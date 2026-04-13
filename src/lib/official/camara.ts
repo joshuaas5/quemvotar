@@ -2,8 +2,7 @@ import { cache } from 'react';
 import type { PerfilDetalhadoPublico, PerfilItemLista, PerfilPublico } from './types';
 
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
-const AUTORIAS_AMOSTRA_ANALISADA = 8;
-const CAMARA_TIMEOUT_MS = 2500;
+const AUTORIAS_AMOSTRA_ANALISADA = 40;
 
 interface CamaraLink {
   rel?: string;
@@ -92,13 +91,12 @@ interface CamaraProposicaoDetalhe {
 
 async function fetchCamara<T>(path: string): Promise<T> {
   const response = await fetch(`${CAMARA_API_ROOT}${path}`, {
-    signal: AbortSignal.timeout(CAMARA_TIMEOUT_MS),
     headers: { Accept: 'application/json' },
-    next: { revalidate: 3600 },
+    cache: 'no-store',
   });
 
   if (!response.ok) {
-    throw new Error(`Falha ao consultar a API da C�mara: ${response.status}`);
+    throw new Error(`Falha ao consultar a API da Câmara: ${response.status}`);
   }
 
   return response.json() as Promise<T>;
@@ -125,7 +123,7 @@ function formatGabinete(gabinete?: CamaraGabinete): string | null {
   }
 
   const partes = compact([
-    gabinete.predio ? `Pr�dio ${gabinete.predio}` : null,
+    gabinete.predio ? `Prédio ${gabinete.predio}` : null,
     gabinete.andar ? `${gabinete.andar}º andar` : null,
     gabinete.sala ? `Sala ${gabinete.sala}` : null,
     gabinete.nome ? `Gabinete ${gabinete.nome}` : null,
@@ -206,7 +204,7 @@ function normalizeDeputado(deputado: CamaraDeputado): PerfilPublico {
     uf: deputado.siglaUf,
     cargo: 'Deputado Federal',
     foto_url: deputado.urlFoto ?? '',
-    casa: 'C�mara dos Deputados',
+    casa: 'Câmara dos Deputados',
     fonte: 'camara',
     fonteUrl: getCamaraPublicProfileUrl(String(deputado.id)),
   };
@@ -215,7 +213,7 @@ function normalizeDeputado(deputado: CamaraDeputado): PerfilPublico {
 function mapDespesa(despesa: CamaraDespesa): PerfilItemLista {
   return {
     titulo: despesa.tipoDespesa ?? 'Despesa parlamentar',
-    descricao: despesa.nomeFornecedor ?? 'Fornecedor n�o informado',
+    descricao: despesa.nomeFornecedor ?? 'Fornecedor não informado',
     detalhe: compact([
       despesa.tipoDocumento ?? null,
       despesa.numDocumento ? `Documento ${despesa.numDocumento}` : null,
@@ -237,8 +235,8 @@ function mapAutoria(proposicao: CamaraProposicao): PerfilItemLista {
   ]).join('/');
 
   return {
-    titulo: identificacao || `Proposi��o ${proposicao.id}`,
-    descricao: proposicao.ementa ?? 'Sem ementa resumida dispon�vel.',
+    titulo: identificacao || `Proposição ${proposicao.id}`,
+    descricao: proposicao.ementa ?? 'Sem ementa resumida disponível.',
     data: proposicao.dataApresentacao ?? undefined,
     href: getCamaraProposicaoUrl(proposicao.id),
   };
@@ -311,7 +309,7 @@ export const fetchDeputadoDetalhado = cache(
       uf: ultimoStatus?.siglaUf ?? '',
       cargo: 'Deputado Federal',
       foto_url: ultimoStatus?.urlFoto ?? '',
-      casa: 'C�mara dos Deputados',
+      casa: 'Câmara dos Deputados',
       fonte: 'camara',
       fonteUrl: getCamaraPublicProfileUrl(String(detalhe.id)),
     };
@@ -339,9 +337,9 @@ export const fetchDeputadoDetalhado = cache(
         { label: 'Cargo', value: 'Deputado Federal' },
         perfilBase.partido ? { label: 'Partido', value: perfilBase.partido } : null,
         perfilBase.uf ? { label: 'UF', value: perfilBase.uf } : null,
-        ultimoStatus?.situacao ? { label: 'Situa��o', value: ultimoStatus.situacao } : null,
+        ultimoStatus?.situacao ? { label: 'Situação', value: ultimoStatus.situacao } : null,
         ultimoStatus?.condicaoEleitoral
-          ? { label: 'Condi��o', value: ultimoStatus.condicaoEleitoral }
+          ? { label: 'Condição', value: ultimoStatus.condicaoEleitoral }
           : null,
         gabinete ? { label: 'Gabinete', value: gabinete } : null,
         detalhe.escolaridade ? { label: 'Escolaridade', value: detalhe.escolaridade } : null,
@@ -354,8 +352,8 @@ export const fetchDeputadoDetalhado = cache(
           ? {
               titulo: `Legislatura ${ultimoStatus.idLegislatura}`,
               descricao: ultimoStatus?.data
-                ? `Atualiza��o oficial publicada em ${ultimoStatus.data}`
-                : 'Registro atual de exerc�cio na C�mara dos Deputados.',
+                ? `Atualização oficial publicada em ${ultimoStatus.data}`
+                : 'Registro atual de exercício na Câmara dos Deputados.',
               data: ultimoStatus?.data ?? undefined,
               destaque: ultimoStatus?.condicaoEleitoral ?? undefined,
             }
@@ -368,15 +366,15 @@ export const fetchDeputadoDetalhado = cache(
       autorias: autoriasResumo.recentes.slice(0, 8).map(mapAutoria),
       filiacoes: [],
       linksOficiais: compact([
-        { label: 'Perfil oficial na C�mara', href: perfilBase.fonteUrl },
-        { label: 'Dados abertos da C�mara', href: detalhe.uri ?? `${CAMARA_API_ROOT}/deputados/${id}` },
+        { label: 'Perfil oficial na Câmara', href: perfilBase.fonteUrl },
+        { label: 'Dados abertos da Câmara', href: detalhe.uri ?? `${CAMARA_API_ROOT}/deputados/${id}` },
         detalhe.urlWebsite ? { label: 'Site pessoal', href: detalhe.urlWebsite } : null,
         ...(detalhe.redeSocial ?? []).map((href, index) => ({
           label: getSocialNetworkLabel(href, index),
           href,
         })),
       ]),
-      notas: ['Dados desta p�gina s�o carregados a partir das fontes oficiais da C�mara dos Deputados.'],
+      notas: ['Dados desta página são carregados a partir das fontes oficiais da Câmara dos Deputados.'],
       autoriasTotal: autoriasResumo.total,
       autoriasAprovadas: autoriasResumo.aprovadas,
       autoriasAmostraAnalisada: AUTORIAS_AMOSTRA_ANALISADA,
@@ -384,6 +382,3 @@ export const fetchDeputadoDetalhado = cache(
     };
   },
 );
-
-
-
