@@ -1,10 +1,11 @@
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import RankingExplorer, { type RankingExplorerRow } from '@/components/RankingExplorer';
+import { normalizeUf } from '@/lib/geo';
 import { getParlamentares, getPerfilHref, getRankingParlamentares } from '@/lib/api';
 import type { PerfilPublico } from '@/lib/api';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 1800;
 
 function normalizeText(value: string) {
   return value
@@ -39,7 +40,7 @@ export default async function RankingPage() {
       cargo: item.cargo,
       partidoSigla: perfilLocal?.partido ?? '',
       partidoNome: item.partido,
-      uf: perfilLocal?.uf ?? item.uf,
+      uf: normalizeUf(perfilLocal?.uf ?? item.uf),
       nota: item.ranking.nota,
       rankingGeral: item.ranking.rankingGeral,
       rankingCasa: item.ranking.rankingCasa,

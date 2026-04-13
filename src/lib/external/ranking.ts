@@ -4,6 +4,7 @@ import type { RankingListaItem, RankingReferencia } from '@/lib/official/types';
 
 const RANKING_API_ROOT = 'https://www.politicos.org.br/api';
 const RANKING_SITE_ROOT = 'https://ranking.org.br';
+const REMOTE_REVALIDATE_SECONDS = 1800;
 
 interface RankingAnoApi {
   ano?: number;
@@ -43,11 +44,7 @@ interface RankingApiResponse {
 }
 
 function normalizeText(value: string) {
-  return value
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .toLowerCase()
-    .trim();
+  return value.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
 }
 
 function getRankingSourceUrl(item: RankingItemApi) {
@@ -56,10 +53,7 @@ function getRankingSourceUrl(item: RankingItemApi) {
 
 function buildRankingReferencia(item: RankingItemApi, lastSync?: string): RankingReferencia | null {
   const composicao = item.composicao_pontuacao;
-
-  if (!composicao || typeof composicao.pontuacao !== 'number') {
-    return null;
-  }
+  if (!composicao || typeof composicao.pontuacao !== 'number') return null;
 
   return {
     fonte: 'ranking_dos_politicos',
@@ -86,7 +80,7 @@ function buildRankingReferencia(item: RankingItemApi, lastSync?: string): Rankin
 async function fetchRanking<T>(path: string): Promise<T> {
   const response = await fetch(`${RANKING_API_ROOT}${path}`, {
     headers: { Accept: 'application/json' },
-    cache: 'no-store',
+    next: { revalidate: REMOTE_REVALIDATE_SECONDS },
   });
 
   if (!response.ok) {
@@ -98,16 +92,12 @@ async function fetchRanking<T>(path: string): Promise<T> {
 
 function matchesHouse(cargo: string | undefined, fonte: PerfilPublico['fonte']) {
   const normalized = normalizeText(cargo ?? '');
-
-  if (fonte === 'camara') {
-    return normalized.includes('deputado');
-  }
-
-  return normalized.includes('senador');
+  return fonte === 'camara' ? normalized.includes('deputado') : normalized.includes('senador');
 }
 
 function findBestRankingMatch(items: RankingItemApi[], perfil: PerfilPublico) {
   const nomePerfil = normalizeText(perfil.nome_urna);
+
   const exactName = items.find((item) => {
     const nomes = [item.nome_eleitoral, item.nome, item.nome_civil]
       .filter((value): value is string => Boolean(value))
@@ -116,9 +106,7 @@ function findBestRankingMatch(items: RankingItemApi[], perfil: PerfilPublico) {
     return matchesHouse(item.cargo, perfil.fonte) && nomes.includes(nomePerfil);
   });
 
-  if (exactName) {
-    return exactName;
-  }
+  if (exactName) return exactName;
 
   return items.find((item) => {
     const nomes = [item.nome_eleitoral, item.nome, item.nome_civil]
@@ -157,15 +145,10 @@ export const fetchRankingTop = cache(
       lastSync = payload.lastSync ?? lastSync;
 
       for (const item of payload.items ?? []) {
-        if (fonte && !matchesHouse(item.cargo, fonte)) {
-          continue;
-        }
+        if (fonte && !matchesHouse(item.cargo, fonte)) continue;
 
         const ranking = buildRankingReferencia(item, lastSync);
-
-        if (!ranking) {
-          continue;
-        }
+        if (!ranking) continue;
 
         items.push({
           id: String(item.id),
@@ -180,9 +163,7 @@ export const fetchRankingTop = cache(
           ranking,
         });
 
-        if (items.length >= limit) {
-          break;
-        }
+        if (items.length >= limit) break;
       }
 
       page += 1;

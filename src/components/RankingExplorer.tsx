@@ -38,18 +38,9 @@ function getContextLabel(uf: string, partido: string, casa: string) {
     return `Top de ${uf} no ${partido} (${casa === 'camara' ? 'Câmara' : 'Senado'})`;
   }
 
-  if (uf && partido) {
-    return `Top de ${uf} no ${partido}`;
-  }
-
-  if (uf && casa) {
-    return `Top de ${uf} na ${casa === 'camara' ? 'Câmara' : 'Senado'}`;
-  }
-
-  if (partido && casa) {
-    return `Top do ${partido} na ${casa === 'camara' ? 'Câmara' : 'Senado'}`;
-  }
-
+  if (uf && partido) return `Top de ${uf} no ${partido}`;
+  if (uf && casa) return `Top de ${uf} na ${casa === 'camara' ? 'Câmara' : 'Senado'}`;
+  if (partido && casa) return `Top do ${partido} na ${casa === 'camara' ? 'Câmara' : 'Senado'}`;
   if (uf) return `Top de ${uf}`;
   if (partido) return `Top do ${partido}`;
   if (casa) return `Top da ${casa === 'camara' ? 'Câmara' : 'Senado'}`;
@@ -66,11 +57,18 @@ export default function RankingExplorer({ rows }: { rows: RankingExplorerRow[] }
   const [compareIds, setCompareIds] = useState<string[]>([]);
 
   const ufs = useMemo(
-    () => Array.from(new Set(rows.map((row) => row.uf).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'pt-BR')),
+    () =>
+      Array.from(new Set(rows.map((row) => row.uf).filter(Boolean))).sort((a, b) =>
+        a.localeCompare(b, 'pt-BR'),
+      ),
     [rows],
   );
+
   const partidos = useMemo(
-    () => Array.from(new Set(rows.map((row) => row.partidoSigla).filter(Boolean))).sort((a, b) => a.localeCompare(b, 'pt-BR')),
+    () =>
+      Array.from(new Set(rows.map((row) => row.partidoSigla).filter(Boolean))).sort((a, b) =>
+        a.localeCompare(b, 'pt-BR'),
+      ),
     [rows],
   );
 
@@ -83,6 +81,7 @@ export default function RankingExplorer({ rows }: { rows: RankingExplorerRow[] }
             .join(' ')
             .toLowerCase()
             .includes(query.toLowerCase());
+
         const byUf = !uf || row.uf === uf;
         const byParty = !partido || row.partidoSigla === partido;
         const byHouse = !casa || row.cargo.toLowerCase().includes(casa === 'camara' ? 'deputado' : 'senador');
@@ -112,14 +111,8 @@ export default function RankingExplorer({ rows }: { rows: RankingExplorerRow[] }
 
   function toggleCompare(id: string) {
     setCompareIds((current) => {
-      if (current.includes(id)) {
-        return current.filter((item) => item !== id);
-      }
-
-      if (current.length >= 4) {
-        return [...current.slice(1), id];
-      }
-
+      if (current.includes(id)) return current.filter((item) => item !== id);
+      if (current.length >= 4) return [...current.slice(1), id];
       return [...current, id];
     });
   }

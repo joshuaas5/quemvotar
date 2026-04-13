@@ -5,31 +5,33 @@ interface PartyMeta {
   secondary: string;
   family: string;
   spectrum: PartySpectrum;
+  economicAxis: -2 | -1 | 0 | 1 | 2;
+  socialAxis: -2 | -1 | 0 | 1 | 2;
 }
 
 export const PARTY_META: Record<string, PartyMeta> = {
-  AGIR: { primary: '#264653', secondary: '#5fa8d3', family: 'Centro reformista', spectrum: 'centro' },
-  AVANTE: { primary: '#f05d23', secondary: '#ffd166', family: 'Centro popular', spectrum: 'centro' },
-  CIDADANIA: { primary: '#ff7f11', secondary: '#1f2937', family: 'Centro liberal', spectrum: 'centro' },
-  MDB: { primary: '#f04e36', secondary: '#f9c74f', family: 'Centro democrático', spectrum: 'centro' },
-  MOBILIZA: { primary: '#1d4ed8', secondary: '#60a5fa', family: 'Centro conservador', spectrum: 'centro-direita' },
-  NOVO: { primary: '#f97316', secondary: '#0f172a', family: 'Liberal', spectrum: 'direita' },
-  PCdoB: { primary: '#c1121f', secondary: '#f6bd60', family: 'Comunista', spectrum: 'esquerda' },
-  PDT: { primary: '#dc2626', secondary: '#f59e0b', family: 'Trabalhista', spectrum: 'centro-esquerda' },
-  PL: { primary: '#1d4ed8', secondary: '#f59e0b', family: 'Liberal-conservador', spectrum: 'direita' },
-  PODE: { primary: '#1d3557', secondary: '#e63946', family: 'Centro reformista', spectrum: 'centro-direita' },
-  PP: { primary: '#2563eb', secondary: '#fde047', family: 'Conservador liberal', spectrum: 'centro-direita' },
-  PRD: { primary: '#2563eb', secondary: '#ef4444', family: 'Centro-direita', spectrum: 'centro-direita' },
-  PSB: { primary: '#f97316', secondary: '#ef4444', family: 'Socialista democrática', spectrum: 'centro-esquerda' },
-  PSD: { primary: '#1d4ed8', secondary: '#22c55e', family: 'Centro pragmático', spectrum: 'centro' },
-  PSDB: { primary: '#2563eb', secondary: '#f59e0b', family: 'Social-democrata', spectrum: 'centro' },
-  PSOL: { primary: '#dc2626', secondary: '#111827', family: 'Esquerda socialista', spectrum: 'esquerda' },
-  PT: { primary: '#d90429', secondary: '#111827', family: 'Esquerda trabalhista', spectrum: 'esquerda' },
-  PV: { primary: '#16a34a', secondary: '#84cc16', family: 'Ecologista', spectrum: 'centro-esquerda' },
-  REDE: { primary: '#16a34a', secondary: '#0891b2', family: 'Sustentabilidade', spectrum: 'centro-esquerda' },
-  REPUBLICANOS: { primary: '#1d4ed8', secondary: '#f97316', family: 'Conservador', spectrum: 'direita' },
-  SOLIDARIEDADE: { primary: '#7c3aed', secondary: '#ec4899', family: 'Sindical e popular', spectrum: 'centro' },
-  UNIÃO: { primary: '#1d4ed8', secondary: '#facc15', family: 'Centro liberal', spectrum: 'centro-direita' },
+  AGIR: { primary: '#264653', secondary: '#5fa8d3', family: 'Centro reformista', spectrum: 'centro', economicAxis: 0, socialAxis: 0 },
+  AVANTE: { primary: '#f05d23', secondary: '#ffd166', family: 'Centro popular', spectrum: 'centro', economicAxis: 0, socialAxis: 0 },
+  CIDADANIA: { primary: '#ff7f11', secondary: '#1f2937', family: 'Centro liberal', spectrum: 'centro', economicAxis: 1, socialAxis: 0 },
+  MDB: { primary: '#f04e36', secondary: '#f9c74f', family: 'Centro democrático', spectrum: 'centro', economicAxis: 0, socialAxis: 0 },
+  MOBILIZA: { primary: '#1d4ed8', secondary: '#60a5fa', family: 'Centro conservador', spectrum: 'centro-direita', economicAxis: 1, socialAxis: 1 },
+  NOVO: { primary: '#f97316', secondary: '#0f172a', family: 'Liberal', spectrum: 'direita', economicAxis: 2, socialAxis: 1 },
+  PCdoB: { primary: '#c1121f', secondary: '#f6bd60', family: 'Comunista', spectrum: 'esquerda', economicAxis: -2, socialAxis: -1 },
+  PDT: { primary: '#dc2626', secondary: '#f59e0b', family: 'Trabalhista', spectrum: 'centro-esquerda', economicAxis: -1, socialAxis: -1 },
+  PL: { primary: '#1d4ed8', secondary: '#f59e0b', family: 'Liberal-conservador', spectrum: 'direita', economicAxis: 2, socialAxis: 2 },
+  PODE: { primary: '#1d3557', secondary: '#e63946', family: 'Centro reformista', spectrum: 'centro-direita', economicAxis: 1, socialAxis: 1 },
+  PP: { primary: '#2563eb', secondary: '#fde047', family: 'Conservador liberal', spectrum: 'centro-direita', economicAxis: 2, socialAxis: 1 },
+  PRD: { primary: '#2563eb', secondary: '#ef4444', family: 'Centro-direita', spectrum: 'centro-direita', economicAxis: 1, socialAxis: 1 },
+  PSB: { primary: '#f97316', secondary: '#ef4444', family: 'Socialista democrática', spectrum: 'centro-esquerda', economicAxis: -1, socialAxis: -1 },
+  PSD: { primary: '#1d4ed8', secondary: '#22c55e', family: 'Centro pragmático', spectrum: 'centro', economicAxis: 0, socialAxis: 0 },
+  PSDB: { primary: '#2563eb', secondary: '#f59e0b', family: 'Social-democrata', spectrum: 'centro', economicAxis: 0, socialAxis: 0 },
+  PSOL: { primary: '#dc2626', secondary: '#111827', family: 'Esquerda socialista', spectrum: 'esquerda', economicAxis: -2, socialAxis: -2 },
+  PT: { primary: '#d90429', secondary: '#111827', family: 'Esquerda trabalhista', spectrum: 'esquerda', economicAxis: -2, socialAxis: -1 },
+  PV: { primary: '#16a34a', secondary: '#84cc16', family: 'Ecologista', spectrum: 'centro-esquerda', economicAxis: -1, socialAxis: -2 },
+  REDE: { primary: '#16a34a', secondary: '#0891b2', family: 'Sustentabilidade', spectrum: 'centro-esquerda', economicAxis: -1, socialAxis: -2 },
+  REPUBLICANOS: { primary: '#1d4ed8', secondary: '#f97316', family: 'Conservador', spectrum: 'direita', economicAxis: 1, socialAxis: 2 },
+  SOLIDARIEDADE: { primary: '#7c3aed', secondary: '#ec4899', family: 'Sindical e popular', spectrum: 'centro', economicAxis: -1, socialAxis: 0 },
+  UNIÃO: { primary: '#1d4ed8', secondary: '#facc15', family: 'Centro liberal', spectrum: 'centro-direita', economicAxis: 1, socialAxis: 0 },
 };
 
 export function getPartyMeta(sigla: string) {
@@ -38,6 +40,8 @@ export function getPartyMeta(sigla: string) {
     secondary: '#9ca3af',
     family: 'Centro político',
     spectrum: 'centro' as const,
+    economicAxis: 0 as const,
+    socialAxis: 0 as const,
   };
 }
 

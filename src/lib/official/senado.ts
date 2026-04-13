@@ -3,7 +3,8 @@ import type { PerfilDetalhadoPublico, PerfilItemLista, PerfilPublico } from './t
 import { buildVoteThemeCards } from '@/lib/political-themes';
 
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
-const AUTORIAS_AMOSTRA_ANALISADA = 40;
+const AUTORIAS_AMOSTRA_ANALISADA = 12;
+const REMOTE_REVALIDATE_SECONDS = 1800;
 
 interface SenadoTelefone {
   NumeroTelefone?: string;
@@ -160,7 +161,7 @@ function normalizeText(value: string) {
 async function fetchSenado<T>(path: string): Promise<T> {
   const response = await fetch(`${SENADO_API_ROOT}${path}`, {
     headers: { Accept: 'application/json' },
-    cache: 'no-store',
+    next: { revalidate: REMOTE_REVALIDATE_SECONDS },
   });
 
   if (!response.ok) {

@@ -1,10 +1,12 @@
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import MatchExperience, { type MatchRow } from '@/components/MatchExperience';
+import { normalizeUf } from '@/lib/geo';
 import { getParlamentares, getPartidos, getPerfilHref, getRankingParlamentares } from '@/lib/api';
 import type { PerfilPublico } from '@/lib/api';
+import { getPartyMeta } from '@/lib/party-meta';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 1800;
 
 function normalizeText(value: string) {
   return value
@@ -38,20 +40,24 @@ export default async function MatchPage() {
 
   const rows: MatchRow[] = ranking.map((item) => {
     const perfilLocal = findLocalPerfil(parlamentares, item.nome, item.cargo);
-    const partido = partidosMap.get(perfilLocal?.partido ?? item.partido);
+    const siglaPartido = perfilLocal?.partido ?? item.partido;
+    const partido = partidosMap.get(siglaPartido);
+    const partyMeta = getPartyMeta(siglaPartido);
 
     return {
       id: item.id,
       nome: item.nome,
       cargo: item.cargo,
-      partidoSigla: perfilLocal?.partido ?? item.partido,
+      partidoSigla: siglaPartido,
       partidoNome: partido?.nome ?? item.partido,
-      uf: perfilLocal?.uf ?? item.uf,
+      uf: normalizeUf(perfilLocal?.uf ?? item.uf),
       nota: item.ranking.nota,
       rankingGeral: item.ranking.rankingGeral,
       espectro: partido?.espectro ?? null,
       espectroEixo: partido?.espectroEixo ?? null,
       familiaPolitica: partido?.familiaPolitica ?? null,
+      economicAxis: partyMeta.economicAxis,
+      socialAxis: partyMeta.socialAxis,
       perfilHref: perfilLocal ? getPerfilHref(perfilLocal) : null,
       fonteUrl: item.fonteUrl,
     };
@@ -66,8 +72,8 @@ export default async function MatchPage() {
           <section className="bg-white border-4 border-black p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <h1 className="font-headline font-black text-5xl uppercase mb-4">Match eleitoral</h1>
             <p className="font-body font-bold text-lg uppercase opacity-80">
-              Filtre por estado, casa, campo político, família política e partido para encontrar
-              nomes mais próximos do que você procura.
+              Responda como você pensa sobre economia e costumes para encontrar parlamentares mais
+              próximos do seu perfil político.
             </p>
           </section>
 

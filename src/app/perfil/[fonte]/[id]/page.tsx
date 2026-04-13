@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import { getPartidoPorSigla, getPerfilDetalhado } from '@/lib/api';
 import type { PartidoResumo, PerfilDetalhadoPublico, PerfilItemLista } from '@/lib/official';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 1800;
 
 function formatDate(value?: string | null) {
   if (!value) return null;
