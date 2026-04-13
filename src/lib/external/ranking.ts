@@ -3,7 +3,7 @@ import type { PerfilPublico } from '@/lib/official';
 import type { RankingListaItem, RankingReferencia } from '@/lib/official/types';
 
 const RANKING_API_ROOT = 'https://www.politicos.org.br/api';
-const RANKING_SITE_ROOT = 'https://www.politicos.org.br';
+const RANKING_SITE_ROOT = 'https://ranking.org.br';
 
 interface RankingAnoApi {
   ano?: number;
@@ -39,6 +39,7 @@ interface RankingItemApi {
 interface RankingApiResponse {
   items?: RankingItemApi[];
   lastSync?: string;
+  totalPages?: number;
 }
 
 function normalizeText(value: string) {
@@ -50,7 +51,7 @@ function normalizeText(value: string) {
 }
 
 function getRankingSourceUrl(item: RankingItemApi) {
-  return item.slug ? `${RANKING_SITE_ROOT}/parlamentar/${item.slug}` : `${RANKING_SITE_ROOT}/ranking`;
+  return item.slug ? `${RANKING_SITE_ROOT}/perfil/${item.slug}` : `${RANKING_SITE_ROOT}/ranking`;
 }
 
 function buildRankingReferencia(item: RankingItemApi, lastSync?: string): RankingReferencia | null {
@@ -107,79 +108,84 @@ function matchesHouse(cargo: string | undefined, fonte: PerfilPublico['fonte']) 
 
 function findBestRankingMatch(items: RankingItemApi[], perfil: PerfilPublico) {
   const nomePerfil = normalizeText(perfil.nome_urna);
-  const ufPerfil = normalizeText(perfil.uf ?? '');
-
-  const sameHouse = items.filter((item) => matchesHouse(item.cargo, perfil.fonte));
-  const sameUf = sameHouse.filter((item) => normalizeText(item.uf ?? '') === ufPerfil);
-  const exactName = sameUf.find((item) => {
+  const exactName = items.find((item) => {
     const nomes = [item.nome_eleitoral, item.nome, item.nome_civil]
       .filter((value): value is string => Boolean(value))
       .map(normalizeText);
 
-    return nomes.includes(nomePerfil);
+    return matchesHouse(item.cargo, perfil.fonte) && nomes.includes(nomePerfil);
   });
 
   if (exactName) {
     return exactName;
   }
 
-  return sameHouse.find((item) => {
+  return items.find((item) => {
     const nomes = [item.nome_eleitoral, item.nome, item.nome_civil]
       .filter((value): value is string => Boolean(value))
       .map(normalizeText)
       .join(' ');
 
-    return nomes.includes(nomePerfil);
+    return matchesHouse(item.cargo, perfil.fonte) && nomes.includes(nomePerfil);
   });
 }
 
-export const fetchRankingForPerfil = cache(
-  async (perfil: PerfilPublico): Promise<RankingReferencia | null> => {
-    const query = encodeURIComponent(perfil.nome_urna);
-    const payload = await fetchRanking<RankingApiResponse>(
-      `/filter-items-ranking?page=1&per_page=10&current_tab=0&nome=${query}&ordenar_por=pontuacao&ordem=desc`,
-    );
+export const fetchRankingForPerfil = cache(async (perfil: PerfilPublico): Promise<RankingReferencia | null> => {
+  const query = encodeURIComponent(perfil.nome_urna);
+  const payload = await fetchRanking<RankingApiResponse>(
+    `/filter-items-ranking?page=1&per_page=10&current_tab=0&nome=${query}&ordenar_por=pontuacao&ordem=desc`,
+  );
 
-    const match = findBestRankingMatch(payload.items ?? [], perfil);
-    return match ? buildRankingReferencia(match, payload.lastSync) : null;
-  },
-);
+  const match = findBestRankingMatch(payload.items ?? [], perfil);
+  return match ? buildRankingReferencia(match, payload.lastSync) : null;
+});
 
 export const fetchRankingTop = cache(
-  async (
-    limit = 24,
-    fonte?: PerfilPublico['fonte'],
-  ): Promise<RankingListaItem[]> => {
-    const perPage = fonte ? Math.max(limit * 2, 40) : limit;
-    const payload = await fetchRanking<RankingApiResponse>(
-      `/filter-items-ranking?page=1&per_page=${perPage}&current_tab=0&ordenar_por=pontuacao&ordem=desc`,
-    );
-
+  async (limit = 24, fonte?: PerfilPublico['fonte']): Promise<RankingListaItem[]> => {
     const items: RankingListaItem[] = [];
+    const perPage = 100;
+    let page = 1;
+    let totalPages = 1;
+    let lastSync: string | undefined;
 
-    for (const item of payload.items ?? []) {
-      if (fonte && !matchesHouse(item.cargo, fonte)) {
-        continue;
+    while (items.length < limit && page <= totalPages) {
+      const payload = await fetchRanking<RankingApiResponse>(
+        `/filter-items-ranking?page=${page}&per_page=${perPage}&current_tab=0&ordenar_por=pontuacao&ordem=desc`,
+      );
+
+      totalPages = payload.totalPages ?? totalPages;
+      lastSync = payload.lastSync ?? lastSync;
+
+      for (const item of payload.items ?? []) {
+        if (fonte && !matchesHouse(item.cargo, fonte)) {
+          continue;
+        }
+
+        const ranking = buildRankingReferencia(item, lastSync);
+
+        if (!ranking) {
+          continue;
+        }
+
+        items.push({
+          id: String(item.id),
+          nome: item.nome_eleitoral ?? item.nome ?? 'Parlamentar',
+          nomeCivil: item.nome_civil ?? null,
+          cargo: item.cargo ?? 'Parlamentar',
+          partido: item.partido ?? '--',
+          uf: item.uf ?? '--',
+          fotoUrl: item.url_foto ?? null,
+          slug: item.slug ?? null,
+          fonteUrl: getRankingSourceUrl(item),
+          ranking,
+        });
+
+        if (items.length >= limit) {
+          break;
+        }
       }
 
-      const ranking = buildRankingReferencia(item, payload.lastSync);
-
-      if (!ranking) {
-        continue;
-      }
-
-      items.push({
-        id: String(item.id),
-        nome: item.nome_eleitoral ?? item.nome ?? 'Parlamentar',
-        nomeCivil: item.nome_civil ?? null,
-        cargo: item.cargo ?? 'Parlamentar',
-        partido: item.partido ?? '--',
-        uf: item.uf ?? '--',
-        fotoUrl: item.url_foto ?? null,
-        slug: item.slug ?? null,
-        fonteUrl: getRankingSourceUrl(item),
-        ranking,
-      });
+      page += 1;
     }
 
     return items.slice(0, limit);

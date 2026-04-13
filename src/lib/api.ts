@@ -90,6 +90,7 @@ export async function getPerfilDetalhado(
     fetchGovernismoForPerfil(perfil).catch(() => null),
     fonte === 'camara' ? fetchCamaraVotesForPerfil(perfil).catch(() => []) : Promise.resolve([]),
   ]);
+
   const [presenca, partidoResumo, temasCamara] = await Promise.all([
     fetchAssiduidadeForPerfil(perfil).catch(() => null),
     getPartido(perfil.partido).catch(() => null),

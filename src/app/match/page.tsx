@@ -1,48 +1,77 @@
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Header from '@/components/Header';
+import MatchExperience, { type MatchRow } from '@/components/MatchExperience';
+import { getParlamentares, getPartidos, getPerfilHref, getRankingParlamentares } from '@/lib/api';
+import type { PerfilPublico } from '@/lib/api';
 
-export default function MatchPage() {
+export const dynamic = 'force-dynamic';
+
+function normalizeText(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase()
+    .trim();
+}
+
+function findLocalPerfil(perfis: PerfilPublico[], nome: string, cargo: string) {
+  const nomeNormalizado = normalizeText(nome);
+  const cargoNormalizado = normalizeText(cargo);
+
+  return perfis.find((perfil) => {
+    const mesmaCasa =
+      (perfil.fonte === 'camara' && cargoNormalizado.includes('deputado')) ||
+      (perfil.fonte === 'senado' && cargoNormalizado.includes('senador'));
+
+    return mesmaCasa && normalizeText(perfil.nome_urna) === nomeNormalizado;
+  });
+}
+
+export default async function MatchPage() {
+  const [ranking, parlamentares, partidos] = await Promise.all([
+    getRankingParlamentares(350),
+    getParlamentares(),
+    getPartidos(),
+  ]);
+
+  const partidosMap = new Map(partidos.map((partido) => [partido.sigla, partido]));
+
+  const rows: MatchRow[] = ranking.map((item) => {
+    const perfilLocal = findLocalPerfil(parlamentares, item.nome, item.cargo);
+    const partido = partidosMap.get(perfilLocal?.partido ?? item.partido);
+
+    return {
+      id: item.id,
+      nome: item.nome,
+      cargo: item.cargo,
+      partidoSigla: perfilLocal?.partido ?? item.partido,
+      partidoNome: partido?.nome ?? item.partido,
+      uf: perfilLocal?.uf ?? item.uf,
+      nota: item.ranking.nota,
+      rankingGeral: item.ranking.rankingGeral,
+      espectro: partido?.espectro ?? null,
+      espectroEixo: partido?.espectroEixo ?? null,
+      familiaPolitica: partido?.familiaPolitica ?? null,
+      perfilHref: perfilLocal ? getPerfilHref(perfilLocal) : null,
+      fonteUrl: item.fonteUrl,
+    };
+  });
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="flex-grow bg-surface-container flex flex-col items-center justify-center p-6 relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[40vw] font-black text-black opacity-5 pointer-events-none select-none font-headline tracking-tighter">
-          MATCH
-        </div>
-
-        <div className="w-full max-w-3xl z-10">
-          <div className="bg-white border-4 border-black p-12 text-center shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] mb-12">
-            <span className="material-symbols-outlined text-5xl mb-6 text-tertiary">rule</span>
-            <h1 className="font-headline font-black text-4xl md:text-6xl uppercase leading-none mb-6">
-              Match em constru��o com votos oficiais
-            </h1>
-            <p className="font-body font-medium text-lg max-w-xl mx-auto opacity-80">
-              Esta tela n�o vai fingir alinhamento ideol�gico enquanto a ingest�o de vota��es
-              nominais da C�mara e do Senado n�o estiver auditada de ponta a ponta.
+      <main className="flex-grow bg-surface-container py-16 px-6">
+        <div className="max-w-7xl mx-auto space-y-10">
+          <section className="bg-white border-4 border-black p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <h1 className="font-headline font-black text-5xl uppercase mb-4">Match eleitoral</h1>
+            <p className="font-body font-bold text-lg uppercase opacity-80">
+              Filtre por estado, casa, campo político, família política e partido para encontrar
+              nomes mais próximos do que você procura.
             </p>
-          </div>
+          </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-primary-container border-4 border-black p-6">
-              <p className="font-headline font-black text-2xl uppercase mb-2">1. Coletar</p>
-              <p className="font-body font-medium">
-                Vota��es nominais oficiais das casas legislativas.
-              </p>
-            </div>
-            <div className="bg-secondary-fixed border-4 border-black p-6">
-              <p className="font-headline font-black text-2xl uppercase mb-2">2. Explicar</p>
-              <p className="font-body font-medium">
-                Tema, contexto e regra de compara��o vis�veis para o usu�rio.
-              </p>
-            </div>
-            <div className="bg-white border-4 border-black p-6">
-              <p className="font-headline font-black text-2xl uppercase mb-2">3. Liberar</p>
-              <p className="font-body font-medium">
-                Match s�quando o resultado puder ser auditado por qualquer pessoa.
-              </p>
-            </div>
-          </div>
+          <MatchExperience rows={rows} />
         </div>
       </main>
 
