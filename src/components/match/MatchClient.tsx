@@ -194,23 +194,9 @@ export function MatchClient({
                   <span className="absolute left-[5px] sm:-left-3 top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">Esquerda</span>
                   <span className="absolute right-[5px] sm:-right-3 top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">Direita</span>
                 </div>
-                <div 
-                  className="absolute w-4 h-4 bg-black rounded-full shadow-[0_0_0_4px_white] z-10 transition-all duration-1000"
-                  style={{
-                    bottom: `${results.nolan.econPercent}%`,
-                    left: `${results.nolan.personalPercent}%`,
-                    transform: 'translate(-50%, 50%)'
-                  }}
-                />
-                
-                <span className="absolute top-2 left-2 -rotate-45 text-[10px] font-bold uppercase">Esquerda</span>
-                <span className="absolute bottom-2 right-2 -rotate-45 text-[10px] font-bold uppercase">Direita</span>
-                <span className="absolute top-2 right-2 -rotate-45 text-[10px] font-bold uppercase">Libertário</span>
-                <span className="absolute bottom-2 left-2 -rotate-45 text-[10px] font-bold uppercase">Estatista</span>
               </div>
-            </div>
-          )}
 
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {results.scored.map((pol) => (
               <div key={pol.idOrigem} className="bg-white border-4 border-black p-6 flex flex-col items-center text-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] relative">
@@ -243,4 +229,6 @@ export function MatchClient({
     </div>
   );
 }
+
+
 
