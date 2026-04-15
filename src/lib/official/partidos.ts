@@ -3,6 +3,7 @@ import type { LiderancaCongresso, PartidoLideranca, PartidoResumo, PerfilPublico
 import { fetchDeputados } from './camara';
 import { fetchSenadores } from './senado';
 import { buildPartyBadgeDataUrl, getPartyMeta, getSpectrumLabel } from '@/lib/party-meta';
+import { getPartyLogoBySigla } from '@/lib/party-logos';
 
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
@@ -66,7 +67,7 @@ interface TsePartyDetail {
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url, {
     headers: { Accept: 'application/json' },
-    cache: 'no-store',
+    next: { revalidate: 86400 },
   });
 
   if (!response.ok) {
@@ -79,7 +80,7 @@ async function fetchJson<T>(url: string): Promise<T> {
 async function fetchText(url: string): Promise<string> {
   const response = await fetch(url, {
     headers: { Accept: 'text/html,application/xhtml+xml' },
-    cache: 'no-store',
+    next: { revalidate: 86400 },
   });
 
   if (!response.ok) {
@@ -87,10 +88,6 @@ async function fetchText(url: string): Promise<string> {
   }
 
   return response.text();
-}
-
-function compact<T>(values: Array<T | null | undefined | false>): T[] {
-  return values.filter(Boolean) as T[];
 }
 
 function cleanText(value?: string | null) {
@@ -197,23 +194,6 @@ function parseFirstStatuteLink(html: string) {
   return match?.[1] ?? null;
 }
 
-async function fetchWebsiteDescription(url?: string | null) {
-  if (!url) {
-    return null;
-  }
-
-  try {
-    const html = await fetchText(url);
-    const meta =
-      html.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)/i) ??
-      html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)/i);
-
-    return cleanText(meta?.[1] ?? null);
-  } catch {
-    return null;
-  }
-}
-
 const fetchTsePartyDetail = cache(async (sigla: string): Promise<TsePartyDetail | null> => {
   const registry = await fetchTsePartyRegistry();
   const tseUrl = registry.get(sigla);
@@ -225,7 +205,6 @@ const fetchTsePartyDetail = cache(async (sigla: string): Promise<TsePartyDetail 
   try {
     const html = await fetchText(tseUrl);
     const siteOficial = parseTsePartyLink(html, 'Endereço Internet');
-    const definicaoCurta = (await fetchWebsiteDescription(siteOficial)) ?? null;
 
     return {
       tseUrl,
@@ -233,7 +212,7 @@ const fetchTsePartyDetail = cache(async (sigla: string): Promise<TsePartyDetail 
       presidenteNacional: parseTsePartyField(html, 'Presidente Nacional'),
       siteOficial,
       estatutoUrl: parseFirstStatuteLink(html),
-      definicaoCurta,
+      definicaoCurta: null,
     };
   } catch {
     return { tseUrl };
@@ -306,10 +285,12 @@ export const fetchPartidosResumo = cache(async (): Promise<PartidoResumo[]> => {
       ),
     );
 
+    const localLogo = getPartyLogoBySigla(totaisPartido.sigla);
     const logoUrl =
-      detalheCamara?.urlLogo && !detalheCamara.urlLogo.toLowerCase().endsWith('.gif')
+      localLogo ??
+      (detalheCamara?.urlLogo && !detalheCamara.urlLogo.toLowerCase().endsWith('.gif')
         ? detalheCamara.urlLogo
-        : buildPartyBadgeDataUrl(totaisPartido.sigla, meta.primary, meta.secondary);
+        : buildPartyBadgeDataUrl(totaisPartido.sigla, meta.primary, meta.secondary));
 
     return {
       sigla: totaisPartido.sigla,

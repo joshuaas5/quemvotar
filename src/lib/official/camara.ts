@@ -2,8 +2,8 @@ import { cache } from 'react';
 import type { PerfilDetalhadoPublico, PerfilItemLista, PerfilPublico } from './types';
 
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
-const AUTORIAS_AMOSTRA_ANALISADA = 12;
-const REMOTE_REVALIDATE_SECONDS = 1800;
+const AUTORIAS_AMOSTRA_ANALISADA = 8;
+const CAMARA_TIMEOUT_MS = 2500;
 
 interface CamaraLink {
   rel?: string;
@@ -92,8 +92,9 @@ interface CamaraProposicaoDetalhe {
 
 async function fetchCamara<T>(path: string): Promise<T> {
   const response = await fetch(`${CAMARA_API_ROOT}${path}`, {
+    signal: AbortSignal.timeout(CAMARA_TIMEOUT_MS),
     headers: { Accept: 'application/json' },
-    next: { revalidate: REMOTE_REVALIDATE_SECONDS },
+    next: { revalidate: 3600 },
   });
 
   if (!response.ok) {
@@ -383,3 +384,6 @@ export const fetchDeputadoDetalhado = cache(
     };
   },
 );
+
+
+

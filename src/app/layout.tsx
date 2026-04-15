@@ -15,10 +15,10 @@ const workSans = Work_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "QuemVotar - Descubra quem �quem na pol�tica.",
+  title: "QuemVotar - Descubra quem é quem na política.",
   description:
-    "Consulte parlamentares em exerc�cio com dados oficiais e rastre�veis da C�mara dos Deputados e do Senado Federal.",
-  keywords: ["elei��es", "pol�tica", "dados p�blicos", "congresso", "quemvotar", "candidatos"],
+    "Consulte parlamentares em exercício com dados oficiais e rastreáveis da Câmara dos Deputados e do Senado Federal.",
+  keywords: ["eleições", "política", "dados públicos", "congresso", "quemvotar", "candidatos"],
 };
 
 export default function RootLayout({

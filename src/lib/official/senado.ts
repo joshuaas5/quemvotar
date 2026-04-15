@@ -3,8 +3,8 @@ import type { PerfilDetalhadoPublico, PerfilItemLista, PerfilPublico } from './t
 import { buildVoteThemeCards } from '@/lib/political-themes';
 
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
-const AUTORIAS_AMOSTRA_ANALISADA = 12;
-const REMOTE_REVALIDATE_SECONDS = 1800;
+const AUTORIAS_AMOSTRA_ANALISADA = 8;
+const SENADO_TIMEOUT_MS = 2500;
 
 interface SenadoTelefone {
   NumeroTelefone?: string;
@@ -160,8 +160,9 @@ function normalizeText(value: string) {
 
 async function fetchSenado<T>(path: string): Promise<T> {
   const response = await fetch(`${SENADO_API_ROOT}${path}`, {
+    signal: AbortSignal.timeout(SENADO_TIMEOUT_MS),
     headers: { Accept: 'application/json' },
-    next: { revalidate: REMOTE_REVALIDATE_SECONDS },
+    next: { revalidate: 3600 },
   });
 
   if (!response.ok) {
@@ -562,3 +563,5 @@ export const fetchSenadorDetalhado = cache(
     };
   },
 );
+
+
