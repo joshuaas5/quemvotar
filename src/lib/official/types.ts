@@ -1,4 +1,4 @@
-export interface PerfilPublico {
+﻿export interface PerfilPublico {
   id: string;
   idOrigem: string;
   nome_urna: string;
@@ -32,6 +32,7 @@ export interface PerfilLinkOficial {
 }
 
 export interface PerfilDetalhadoPublico extends PerfilPublico {
+  biografia?: string | null;
   nomeCompleto?: string | null;
   sexo?: string | null;
   email?: string | null;
@@ -218,3 +219,4 @@ export interface CnjProcessoResumo {
   ultimaAtualizacao: string | null;
   fonteUrl: string;
 }
+

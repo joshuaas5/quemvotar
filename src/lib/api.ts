@@ -1,4 +1,4 @@
-import {
+﻿import {
   fetchOfficialCongressProfiles,
   getLiderancasCongresso,
   getOfficialCongressProfile,
@@ -85,16 +85,25 @@ export async function getPerfilDetalhado(
     return null;
   }
 
-  const [ranking, governismo, votacoesCamara] = await Promise.all([
+  const termoBuscaBiografia = perfil.nomeCompleto || perfil.nome_urna;
+  
+  const [ranking, governismo, votacoesCamara, presenca, partidoResumo, temasCamara, biografia] = await Promise.all([
     fetchRankingForPerfil(perfil).catch(() => null),
     fetchGovernismoForPerfil(perfil).catch(() => null),
     fonte === 'camara' ? fetchCamaraVotesForPerfil(perfil).catch(() => []) : Promise.resolve([]),
-  ]);
-
-  const [presenca, partidoResumo, temasCamara] = await Promise.all([
     fetchAssiduidadeForPerfil(perfil).catch(() => null),
     getPartido(perfil.partido).catch(() => null),
     fonte === 'camara' ? fetchCamaraVoteThemesForPerfil(perfil).catch(() => []) : Promise.resolve([]),
+    fetch(`https://pt.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=true&explaintext=true&format=json&redirects=true&titles=${encodeURIComponent(termoBuscaBiografia)}`, { next: { revalidate: 86400 } })
+      .then(r => r.json())
+      .then(d => {
+        const pages = d?.query?.pages;
+        if (!pages) return null;
+        const pageId = Object.keys(pages)[0];
+        const extract = pages[pageId]?.extract;
+        if (extract && !extract.includes("pode referir-se a:")) return extract.split("\n")[0]; // Retorna apenas o primeiro paragrafo
+        return null;
+      }).catch(() => null)
   ]);
 
   return {
@@ -102,6 +111,7 @@ export async function getPerfilDetalhado(
     ranking,
     governismo,
     presenca,
+    biografia: biografia || null,
     espectro:
       partidoResumo?.espectroEixo && partidoResumo.espectro
         ? {

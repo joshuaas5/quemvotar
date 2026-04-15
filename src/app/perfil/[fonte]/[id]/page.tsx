@@ -390,8 +390,7 @@ export default async function PerfilPage({
                     {perfil.nome_urna}
                   </h1>
                   <p className="font-body font-bold text-lg mt-4 max-w-3xl">
-                    O que mais importa para decidir voto vem primeiro: nota pública, presença,
-                    alinhamento, partido e temas em que mais vota.
+                    {perfil.biografia ? perfil.biografia : "O que mais importa para decidir voto vem primeiro: nota pública, presença, alinhamento, partido e temas em que mais vota."}
                   </p>
                 </div>
 
@@ -558,5 +557,9 @@ export default async function PerfilPage({
     </div>
   );
 }
+
+
+
+
 
 

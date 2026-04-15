@@ -1,4 +1,4 @@
-import { cache } from 'react';
+﻿import { cache } from 'react';
 import type { PerfilDetalhadoPublico, PerfilItemLista, PerfilPublico } from './types';
 
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
@@ -125,13 +125,13 @@ function formatGabinete(gabinete?: CamaraGabinete): string | null {
   }
 
   const partes = compact([
-    gabinete.predio ? `Prédio ${gabinete.predio}` : null,
-    gabinete.andar ? `${gabinete.andar}º andar` : null,
+    gabinete.predio ? `PrÃ©dio ${gabinete.predio}` : null,
+    gabinete.andar ? `${gabinete.andar}Âº andar` : null,
     gabinete.sala ? `Sala ${gabinete.sala}` : null,
     gabinete.nome ? `Gabinete ${gabinete.nome}` : null,
   ]);
 
-  return partes.length > 0 ? partes.join(' • ') : null;
+  return partes.length > 0 ? partes.join(' â€¢ ') : null;
 }
 
 function getCamaraPublicProfileUrl(id: string) {
@@ -215,14 +215,14 @@ function normalizeDeputado(deputado: CamaraDeputado): PerfilPublico {
 function mapDespesa(despesa: CamaraDespesa): PerfilItemLista {
   return {
     titulo: despesa.tipoDespesa ?? 'Despesa parlamentar',
-    descricao: despesa.nomeFornecedor ?? 'Fornecedor não informado',
+    descricao: despesa.nomeFornecedor ?? 'Fornecedor nÃ£o informado',
     detalhe: compact([
       despesa.tipoDocumento ?? null,
       despesa.numDocumento ? `Documento ${despesa.numDocumento}` : null,
       typeof despesa.valorGlosa === 'number' && despesa.valorGlosa > 0
         ? `Glosa de ${formatCurrency(despesa.valorGlosa)}`
         : null,
-    ]).join(' • '),
+    ]).join(' â€¢ '),
     data: despesa.dataDocumento ?? undefined,
     destaque: formatCurrency(despesa.valorLiquido ?? despesa.valorDocumento) ?? undefined,
     href: despesa.urlDocumento ?? undefined,
@@ -237,8 +237,8 @@ function mapAutoria(proposicao: CamaraProposicao): PerfilItemLista {
   ]).join('/');
 
   return {
-    titulo: identificacao || `Proposição ${proposicao.id}`,
-    descricao: proposicao.ementa ?? 'Sem ementa resumida disponível.',
+    titulo: identificacao || `ProposiÃ§Ã£o ${proposicao.id}`,
+    descricao: proposicao.ementa ?? 'Sem ementa resumida disponÃ­vel.',
     data: proposicao.dataApresentacao ?? undefined,
     href: getCamaraProposicaoUrl(proposicao.id),
   };
@@ -290,7 +290,7 @@ export const fetchDeputadoDetalhado = cache(
     const [detalhePayload, despesasPayload, autoriasResumo] = await Promise.all([
       fetchCamara<CamaraResponse<CamaraDeputadoDetalhe>>(`/deputados/${id}`),
       fetchCamara<CamaraResponse<CamaraDespesa[]>>(
-        `/deputados/${id}/despesas?ordem=DESC&ordenarPor=dataDocumento&itens=6`,
+        `/deputados/${id}/despesas?ordem=DESC&ordenarPor=ano&itens=6`,
       ),
       fetchAutoriasResumo(id),
     ]);
@@ -339,9 +339,9 @@ export const fetchDeputadoDetalhado = cache(
         { label: 'Cargo', value: 'Deputado Federal' },
         perfilBase.partido ? { label: 'Partido', value: perfilBase.partido } : null,
         perfilBase.uf ? { label: 'UF', value: perfilBase.uf } : null,
-        ultimoStatus?.situacao ? { label: 'Situação', value: ultimoStatus.situacao } : null,
+        ultimoStatus?.situacao ? { label: 'SituaÃ§Ã£o', value: ultimoStatus.situacao } : null,
         ultimoStatus?.condicaoEleitoral
-          ? { label: 'Condição', value: ultimoStatus.condicaoEleitoral }
+          ? { label: 'CondiÃ§Ã£o', value: ultimoStatus.condicaoEleitoral }
           : null,
         gabinete ? { label: 'Gabinete', value: gabinete } : null,
         detalhe.escolaridade ? { label: 'Escolaridade', value: detalhe.escolaridade } : null,
@@ -354,8 +354,8 @@ export const fetchDeputadoDetalhado = cache(
           ? {
               titulo: `Legislatura ${ultimoStatus.idLegislatura}`,
               descricao: ultimoStatus?.data
-                ? `Atualização oficial publicada em ${ultimoStatus.data}`
-                : 'Registro atual de exercício na Câmara dos Deputados.',
+                ? `AtualizaÃ§Ã£o oficial publicada em ${ultimoStatus.data}`
+                : 'Registro atual de exercÃ­cio na Câmara dos Deputados.',
               data: ultimoStatus?.data ?? undefined,
               destaque: ultimoStatus?.condicaoEleitoral ?? undefined,
             }
@@ -376,7 +376,7 @@ export const fetchDeputadoDetalhado = cache(
           href,
         })),
       ]),
-      notas: ['Dados desta página são carregados a partir das fontes oficiais da Câmara dos Deputados.'],
+      notas: ['Dados desta pÃ¡gina sÃ£o carregados a partir das fontes oficiais da Câmara dos Deputados.'],
       autoriasTotal: autoriasResumo.total,
       autoriasAprovadas: autoriasResumo.aprovadas,
       autoriasAmostraAnalisada: AUTORIAS_AMOSTRA_ANALISADA,
