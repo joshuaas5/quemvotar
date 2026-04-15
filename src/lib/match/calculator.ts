@@ -74,3 +74,27 @@ export function calculateMatchScoreDetailed(
   if (totalWeight === 0) return 0;
   return (earnedPoints / (totalWeight * MAX_DIST)) * 100;
 }
+
+export function calculateNolanChart(userAnswers: UserAnswersMap) {
+  const safeScore = (key: string) => userAnswers[key]?.score ?? 3; // Default 3 (neutron)
+  
+  // Liberdade Econômica (1 a 5)
+  // +pvt, -impostos(6-val), +clt, +agr
+  const econ = (safeScore('pvt') + (6 - safeScore('impostos')) + safeScore('clt') + safeScore('agr')) / 4;
+  
+  // Liberdade Pessoal (1 a 5)
+  // +drogas, +armas, +abor, -religiao(6-val)
+  const personal = (safeScore('drogas') + safeScore('armas') + safeScore('abor') + (6 - safeScore('religiao'))) / 4;
+  
+  // Converter 1..5 para 0..100%
+  const econPercent = ((econ - 1) / 4) * 100;
+  const personalPercent = ((personal - 1) / 4) * 100;
+  
+  let label = 'Centro';
+  if (econ > 3 && personal > 3) label = 'Liberalismo / Libertário';
+  else if (econ > 3 && personal <= 3) label = 'Conservador';
+  else if (econ <= 3 && personal > 3) label = 'Progressista / Esquerda';
+  else if (econ <= 3 && personal <= 3) label = 'Estatista / Populista';
+
+  return { econPercent, personalPercent, label };
+}

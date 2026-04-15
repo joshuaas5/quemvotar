@@ -40,12 +40,11 @@ function formatPercent(value?: number | null) {
 function getParliamentSalaryLabel(fonte: PerfilDetalhadoPublico['fonte']) {
   return {
     value: 'R$ 46.366,19',
-    helper:
-      fonte === 'camara'
-        ? 'Subsidio mensal bruto do deputado federal, definido em lei.'
-        : 'Subsidio mensal bruto do senador, definido em lei.',
+    helper: 'Salário bruto por lei.',
+    auxilios: fonte === 'camara' ? '+ até R$ 160 mil mensais em verba de gabinete e auxílios.' : '+ até R$ 130 mil mensais em verba de gabinete e auxílios.',
   };
 }
+
 
 function renderListSection(title: string, description: string, items: PerfilItemLista[], emptyText: string) {
   return (
@@ -152,7 +151,7 @@ function renderSobreSection(perfil: PerfilDetalhadoPublico) {
 function renderTopCards(perfil: PerfilDetalhadoPublico, partido: PartidoResumo | null) {
   const cards = [
     {
-      title: 'Nota',
+      title: 'Nota (Ranking dos Políticos)',
       value: perfil.ranking ? formatScore(perfil.ranking.nota) : '-',
       helper: perfil.ranking?.rankingGeral
         ? `Ranking geral #${perfil.ranking.rankingGeral}`
@@ -349,10 +348,12 @@ export default async function PerfilPage({
           >
             <div className="absolute right-4 top-4 md:right-6 md:top-6 bg-black text-white border-4 border-white px-4 py-3 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.35)] text-right max-w-[240px] z-10">
               <p className="font-label font-bold uppercase text-[10px] tracking-[0.2em] opacity-80">
-                Subsidio bruto mensal
+                Salário mensal bruto
               </p>
               <p className="font-headline font-black text-2xl leading-none mt-1">{getParliamentSalaryLabel(perfil.fonte).value}</p>
               <p className="font-body font-bold text-[11px] mt-2 leading-tight">{getParliamentSalaryLabel(perfil.fonte).helper}</p>
+              <div className="bg-white/30 h-[2px] w-full my-2"></div>
+              <p className="font-body text-[10px] leading-tight opacity-90">{getParliamentSalaryLabel(perfil.fonte).auxilios}</p>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)]">
               <div className="bg-white/20 border-b-4 lg:border-b-0 lg:border-r-4 border-black">
@@ -557,4 +558,5 @@ export default async function PerfilPage({
     </div>
   );
 }
+
 

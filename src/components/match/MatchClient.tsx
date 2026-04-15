@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { MatchQuiz } from './MatchQuiz';
-import { calculateMatchScoreDetailed, type UserAnswersMap } from '@/lib/match/calculator';
+import { calculateMatchScoreDetailed, calculateNolanChart, type UserAnswersMap } from '@/lib/match/calculator';
 import type { PerfilPublico } from '@/lib/api';
 
 type Question = {
@@ -64,7 +64,13 @@ const QUESTIONS: Question[] = [
   }
 ];
 
-export function MatchClient({ parlamentares }: { parlamentares: PerfilPublico[] }) {
+export function MatchClient({ 
+  parlamentares, 
+  rankings 
+}: { 
+  parlamentares: PerfilPublico[],
+  rankings: Record<string, number> 
+}) {
   const [answers, setAnswers] = useState<UserAnswersMap>({});
   const [showResults, setShowResults] = useState(false);
 
@@ -73,15 +79,21 @@ export function MatchClient({ parlamentares }: { parlamentares: PerfilPublico[] 
   };
 
   const results = useMemo(() => {
-    if (!showResults) return [];
+    if (!showResults) return { scored: [], nolan: null };
+
+    const nolan = calculateNolanChart(answers);
 
     const scored = parlamentares.map(pol => {
       const score = calculateMatchScoreDetailed(answers, pol.idOrigem || pol.nome_urna, pol.partido || '');
-      return { ...pol, score };
+      const rankingNota = rankings[pol.nome_urna] ?? null;
+      return { ...pol, score, rankingNota };
     });
 
-    return scored.sort((a, b) => b.score - a.score).slice(0, 12);
-  }, [answers, parlamentares, showResults]);
+    return { 
+      scored: scored.sort((a, b) => b.score - a.score).slice(0, 12),
+      nolan
+    };
+  }, [answers, parlamentares, showResults, rankings]);
 
   const progress = Math.round((Object.keys(answers).length / QUESTIONS.length) * 100);
 
@@ -150,13 +162,55 @@ export function MatchClient({ parlamentares }: { parlamentares: PerfilPublico[] 
             </button>
           </div>
 
+          {results.nolan && (
+            <div className="bg-white border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <div>
+                <h3 className="font-headline font-black text-3xl uppercase mb-4 text-primary-fixed">O Seu Espectro</h3>
+                <p className="font-body font-bold text-lg mb-2">Seu posicionamento, calculado no Diagrama de Nolan pelas suas respostas, sugere o eixo: <strong className="bg-[#ffc6ff] border-2 border-black px-2">{results.nolan.label}</strong>.</p>
+                <ul className="space-y-2 mt-4 font-body font-medium">
+                  <li><strong>Liberdade Econômica:</strong> {results.nolan.econPercent.toFixed(0)}%</li>
+                  <li><strong>Liberdade Pessoal:</strong> {results.nolan.personalPercent.toFixed(0)}%</li>
+                </ul>
+              </div>
+              <div className="relative w-full aspect-square max-w-[300px] mx-auto border-4 border-black bg-gray-100 rotate-45 transform origin-center overflow-hidden">
+                <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
+                  <div className="bg-blue-200"></div>
+                  <div className="bg-red-200"></div>
+                  <div className="bg-yellow-200"></div>
+                  <div className="bg-purple-200"></div>
+                </div>
+                <div 
+                  className="absolute w-4 h-4 bg-black rounded-full shadow-[0_0_0_4px_white] z-10 transition-all duration-1000"
+                  style={{
+                    bottom: `${results.nolan.econPercent}%`,
+                    left: `${results.nolan.personalPercent}%`,
+                    transform: 'translate(-50%, 50%)'
+                  }}
+                />
+                
+                <span className="absolute top-2 left-2 -rotate-45 text-[10px] font-bold uppercase">Esquerda</span>
+                <span className="absolute bottom-2 right-2 -rotate-45 text-[10px] font-bold uppercase">Direita</span>
+                <span className="absolute top-2 right-2 -rotate-45 text-[10px] font-bold uppercase">Libertário</span>
+                <span className="absolute bottom-2 left-2 -rotate-45 text-[10px] font-bold uppercase">Estatista</span>
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {results.map((pol) => (
-              <div key={pol.idOrigem} className="bg-white border-4 border-black p-6 flex flex-col items-center text-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-                <div className="w-32 h-32 border-4 border-black bg-gray-200 rounded-full mb-4 overflow-hidden">
+            {results.scored.map((pol) => (
+              <div key={pol.idOrigem} className="bg-white border-4 border-black p-6 flex flex-col items-center text-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] relative">
+                {pol.rankingNota !== null && (
+                   <div className="absolute top-[-10px] right-[-10px] bg-[#ffe066] border-4 border-black px-3 py-1 font-headline font-black text-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-10">
+                     Nota {pol.rankingNota.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+                   </div>
+                )}
+                
+                <div className="w-32 h-32 border-4 border-black bg-gray-200 rounded-full mb-4 overflow-hidden relative">
                   {pol.foto_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img src={pol.foto_url} alt={pol.nome_urna} className="w-full h-full object-cover object-top" />
                   ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img src="https://fakeimg.pl/640x640?text=Sem+Foto" alt="Sem Foto" className="w-full h-full object-cover object-top" />
                   )}
                 </div>
