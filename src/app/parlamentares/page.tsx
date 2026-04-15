@@ -3,6 +3,7 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { getCasaBadge, getParlamentares, getPartidos, getPerfilHref } from '@/lib/api';
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
+import { getPartyMeta } from '@/lib/party-meta';
 
 export const revalidate = 1800;
 
@@ -130,13 +131,15 @@ export default async function ParlamentaresPage({
             {resultados.map((perfil) => {
               const logo = getPartyLogoBySigla(perfil.partido);
               const visual = getPartyVisualEmoji(perfil.partido);
+              const partyMeta = getPartyMeta(perfil.partido);
 
               return (
                 <Link
                   key={`${perfil.fonte}-${perfil.id}`}
                   href={getPerfilHref(perfil)}
-                  className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all"
+                  className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:shadow-[0_10px_20px_rgba(0,0,0,0.14)] transition-shadow duration-200"
                 >
+                  <div className="h-1 w-full" style={{ backgroundColor: partyMeta.primary }} />
                   <div className="aspect-square border-b-4 border-black bg-surface-container-high overflow-hidden">
                     {perfil.foto_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -152,7 +155,7 @@ export default async function ParlamentaresPage({
                     )}
                   </div>
                   <div className="p-5 md:p-6 space-y-3">
-                    <span className="font-label font-bold uppercase text-xs opacity-70">
+                    <span className="font-label font-bold uppercase text-xs text-on-surface-variant/90">
                       {getCasaBadge(perfil)}
                     </span>
                     <h2 className="font-headline font-black text-2xl md:text-3xl uppercase leading-none">
@@ -163,7 +166,7 @@ export default async function ParlamentaresPage({
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={logo} alt={`Logo ${perfil.partido}`} className="w-8 h-8 object-contain rounded-full bg-white border-2 border-black p-1" />
                       ) : null}
-                      <p className="font-body font-bold uppercase text-sm">
+                      <p className="font-body font-bold uppercase text-sm text-on-surface/90">
                         {visual} {perfil.partido} {perfil.uf ? `• ${perfil.uf}` : ''} • {perfil.cargo}
                       </p>
                     </div>
@@ -182,3 +185,5 @@ export default async function ParlamentaresPage({
     </div>
   );
 }
+
+

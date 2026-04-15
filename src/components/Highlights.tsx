@@ -1,6 +1,7 @@
 ﻿import Link from 'next/link';
 import { getCasaBadge, getHighlights, getPerfilHref } from '@/lib/api';
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
+import { getPartyMeta } from '@/lib/party-meta';
 
 type CardConfig = {
   bgClass: string;
@@ -43,17 +44,19 @@ export default async function Highlights() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
             {candidatos.map((candidato, index) => {
               const config = getCardConfig(index);
               const logo = getPartyLogoBySigla(candidato.partido);
               const visual = getPartyVisualEmoji(candidato.partido);
+              const partyMeta = getPartyMeta(candidato.partido);
 
               return (
                 <article
                   key={`${candidato.fonte}-${candidato.id}`}
-                  className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-100 group"
+                  className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:shadow-[0_10px_20px_rgba(0,0,0,0.14)] transition-shadow duration-200 group"
                 >
+                  <div className="h-1 w-full" style={{ backgroundColor: partyMeta.primary }} />
                   <div className={`${config.bgClass} ${config.textClass} px-4 py-3 font-headline font-black uppercase flex justify-between items-center`}>
                     <span>{getCasaBadge(candidato)}</span>
                     <span className="flex items-center gap-2">
@@ -87,7 +90,7 @@ export default async function Highlights() {
                     <h3 className="font-headline font-black text-2xl md:text-3xl xl:text-4xl leading-none uppercase mb-4">
                       {candidato.nome_urna}
                     </h3>
-                    <p className="font-body font-medium mb-6 text-sm flex-grow">
+                    <p className="font-body font-medium mb-6 text-sm text-on-surface/85 flex-grow">
                       {candidato.cargo} em exercício. Perfil exibido a partir de fonte oficial já
                       disponível na base do projeto.
                     </p>
@@ -107,3 +110,5 @@ export default async function Highlights() {
     </section>
   );
 }
+
+

@@ -1,8 +1,8 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 
 export default function Header() {
   return (
-    <nav className="flex justify-between items-center w-full px-6 py-4 sticky top-0 z-50 bg-[#f5f6f7] border-b-4 border-black neo-brutalist-shadow">
+    <nav className="flex justify-between items-center w-full px-6 py-4 sticky top-0 z-50 bg-[#f7f6f2] border-b border-[#e5e5e5]">
       <Link href="/" className="text-3xl font-black text-black tracking-tighter font-headline uppercase">
         QUEM VOTAR.
       </Link>
@@ -39,10 +39,11 @@ export default function Header() {
 
       <Link
         href="/parlamentares"
-        className="bg-primary-container text-black border-4 border-black px-6 py-2 font-headline font-black uppercase tracking-tighter hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-75 active:scale-95 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+        className="bg-[#ffd709] text-black border-4 border-black px-6 py-2 font-headline font-black uppercase tracking-tighter hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-75 active:scale-95 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
       >
         Explorar
       </Link>
     </nav>
   );
 }
+

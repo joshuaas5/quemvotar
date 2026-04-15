@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -17,15 +17,15 @@ export default function Hero() {
   return (
     <section className="relative overflow-hidden pt-20 pb-24 px-6 max-w-7xl mx-auto flex flex-col items-center text-center">
       <div
-        className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none -z-10"
-        style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDFFhzqNWAOgdq2JT-9K1XQv-khLCVzlrzGEImfn4g99fwwLhOkg3Ppi0tsznx95QMkSKLKJ8iSald66hpMq8rI7QNZiqsiI5q0sFxOU3qxaMcNWXQFJGm7dgstjySQptrbEhSXW0AzRslA-xnDKGfwMLgp25Zeee0BLMcnVAacIbsf61V2QvCf7OH4yj3mLo-FLhGufSIEG9fd6GMAo0xuSbX9lIeZn9ohudnMhd9N28kZIa3dPAWRzyzUVr6zH5wfoyl764F6W8E')" }}
+        className="absolute inset-0 opacity-5 pointer-events-none -z-10"
+        style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '18px 18px' }}
       />
       <h1 className="font-headline font-black text-6xl md:text-8xl leading-none tracking-tighter mb-6 text-on-background uppercase">
-        NÃO ELEJA <br /> NO <span className="bg-primary-container px-4 text-on-primary-fixed">ESCURO</span>. <br /> VOTE COM DADOS.
+        NÃƒO ELEJA <br /> NO <span className="bg-primary-container px-4 text-on-primary-fixed">ESCURO</span>. <br /> VOTE COM DADOS.
       </h1>
-      <p className="font-body font-bold text-xl md:text-2xl max-w-3xl mb-12 uppercase">
-        Consulte deputados, senadores, partidos, lideranças e notas públicas com base em dados
-        oficiais e referências auditáveis.
+      <p className="font-body font-medium text-xl md:text-2xl max-w-3xl mb-12 uppercase">
+        Consulte deputados, senadores, partidos, lideranÃ§as e notas pÃºblicas com base em dados
+        oficiais e referÃªncias auditÃ¡veis.
       </p>
 
       <form
@@ -53,14 +53,16 @@ export default function Hero() {
       <div className="mt-8 flex flex-col md:flex-row gap-4 font-label font-bold text-sm uppercase">
         <span className="flex items-center gap-2 bg-on-background text-white px-3 py-1">
           <span className="material-symbols-outlined text-sm">verified</span> Dados oficiais da
-          Câmara e do Senado
+          CÃ¢mara e do Senado
         </span>
 
         <span className="flex items-center gap-2 bg-on-background text-white px-3 py-1">
-          <span className="material-symbols-outlined text-sm">leaderboard</span> Referências
-          públicas de acompanhamento legislativo
+          <span className="material-symbols-outlined text-sm">leaderboard</span> ReferÃªncias
+          pÃºblicas de acompanhamento legislativo
         </span>
       </div>
     </section>
   );
 }
+
+
