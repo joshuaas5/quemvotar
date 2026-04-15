@@ -1,7 +1,6 @@
 ﻿import Link from 'next/link';
 import { getCasaBadge, getHighlights, getPerfilHref } from '@/lib/api';
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
-import { getPartyMeta } from '@/lib/party-meta';
 
 type CardConfig = {
   bgClass: string;
@@ -27,7 +26,7 @@ export default async function Highlights() {
       <div className="max-w-7xl mx-auto">
         <div className="mb-10 md:mb-16">
           <h2 className="font-headline font-black text-3xl md:text-5xl uppercase tracking-tighter mb-2">
-            PARLAMENTARES EM EXERCICIO
+            PARLAMENTARES EM EXERCÍCIO
           </h2>
           <p className="font-body font-bold text-base md:text-xl uppercase opacity-70">
             Perfis em destaque nesta visita.
@@ -37,7 +36,7 @@ export default async function Highlights() {
         {candidatos.length === 0 ? (
           <div className="bg-white border-4 border-black p-8 md:p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <h3 className="font-headline font-black text-2xl md:text-3xl uppercase mb-3">
-              NENHUM DADO DISPONIVEL NO MOMENTO
+              NENHUM DADO DISPONÍVEL NO MOMENTO
             </h3>
             <p className="font-body font-bold">
               A vitrine depende da resposta das APIs oficiais consultadas pelo projeto.
@@ -49,14 +48,13 @@ export default async function Highlights() {
               const config = getCardConfig(index);
               const logo = getPartyLogoBySigla(candidato.partido);
               const visual = getPartyVisualEmoji(candidato.partido);
-              const partyMeta = getPartyMeta(candidato.partido);
 
               return (
                 <article
                   key={`${candidato.fonte}-${candidato.id}`}
                   className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:shadow-[0_10px_20px_rgba(0,0,0,0.14)] transition-shadow duration-200 group"
                 >
-                  <div className="h-1 w-full" style={{ backgroundColor: partyMeta.primary }} />
+                  
                   <div className={`${config.bgClass} ${config.textClass} px-4 py-3 font-headline font-black uppercase flex justify-between items-center`}>
                     <span>{getCasaBadge(candidato)}</span>
                     <span className="flex items-center gap-2">
@@ -110,5 +108,9 @@ export default async function Highlights() {
     </section>
   );
 }
+
+
+
+
 
 

@@ -3,7 +3,6 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { getCasaBadge, getParlamentares, getPartidos, getPerfilHref } from '@/lib/api';
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
-import { getPartyMeta } from '@/lib/party-meta';
 
 export const revalidate = 1800;
 
@@ -131,7 +130,6 @@ export default async function ParlamentaresPage({
             {resultados.map((perfil) => {
               const logo = getPartyLogoBySigla(perfil.partido);
               const visual = getPartyVisualEmoji(perfil.partido);
-              const partyMeta = getPartyMeta(perfil.partido);
 
               return (
                 <Link
@@ -139,7 +137,7 @@ export default async function ParlamentaresPage({
                   href={getPerfilHref(perfil)}
                   className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:shadow-[0_10px_20px_rgba(0,0,0,0.14)] transition-shadow duration-200"
                 >
-                  <div className="h-1 w-full" style={{ backgroundColor: partyMeta.primary }} />
+                  
                   <div className="aspect-square border-b-4 border-black bg-surface-container-high overflow-hidden">
                     {perfil.foto_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -185,5 +183,9 @@ export default async function ParlamentaresPage({
     </div>
   );
 }
+
+
+
+
 
 

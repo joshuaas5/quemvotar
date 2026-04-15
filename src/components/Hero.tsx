@@ -21,11 +21,11 @@ export default function Hero() {
         style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '18px 18px' }}
       />
       <h1 className="font-headline font-black text-6xl md:text-8xl leading-none tracking-tighter mb-6 text-on-background uppercase">
-        NÃƒO ELEJA <br /> NO <span className="bg-primary-container px-4 text-on-primary-fixed">ESCURO</span>. <br /> VOTE COM DADOS.
+        NÃO ELEJA <br /> NO <span className="bg-primary-container px-4 text-on-primary-fixed">ESCURO</span>. <br /> VOTE COM DADOS.
       </h1>
       <p className="font-body font-medium text-xl md:text-2xl max-w-3xl mb-12 uppercase">
-        Consulte deputados, senadores, partidos, lideranÃ§as e notas pÃºblicas com base em dados
-        oficiais e referÃªncias auditÃ¡veis.
+        Consulte deputados, senadores, partidos, LIDERANÇAS e notas PÚBLICAS com base em dados
+        oficiais e REFERÊNCIAS AUDITÁVEIS.
       </p>
 
       <form
@@ -53,12 +53,12 @@ export default function Hero() {
       <div className="mt-8 flex flex-col md:flex-row gap-4 font-label font-bold text-sm uppercase">
         <span className="flex items-center gap-2 bg-on-background text-white px-3 py-1">
           <span className="material-symbols-outlined text-sm">verified</span> Dados oficiais da
-          CÃ¢mara e do Senado
+          CÂMARA e do Senado
         </span>
 
         <span className="flex items-center gap-2 bg-on-background text-white px-3 py-1">
-          <span className="material-symbols-outlined text-sm">leaderboard</span> ReferÃªncias
-          pÃºblicas de acompanhamento legislativo
+          <span className="material-symbols-outlined text-sm">leaderboard</span> REFERÊNCIAS
+          PÚBLICAS de acompanhamento legislativo
         </span>
       </div>
     </section>
