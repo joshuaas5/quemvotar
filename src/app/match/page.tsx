@@ -1,67 +1,12 @@
-import Footer from '@/components/Footer';
+﻿import Footer from '@/components/Footer';
 import Header from '@/components/Header';
-import MatchExperience, { type MatchRow } from '@/components/MatchExperience';
-import { normalizeUf } from '@/lib/geo';
-import { getParlamentares, getPartidos, getPerfilHref, getRankingParlamentares } from '@/lib/api';
-import type { PerfilPublico } from '@/lib/api';
-import { getPartyMeta } from '@/lib/party-meta';
+import { MatchClient } from '@/components/match/MatchClient';
+import { getParlamentares } from '@/lib/api';
 
 export const revalidate = 1800;
 
-function normalizeText(value: string) {
-  return value
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .toLowerCase()
-    .trim();
-}
-
-function findLocalPerfil(perfis: PerfilPublico[], nome: string, cargo: string) {
-  const nomeNormalizado = normalizeText(nome);
-  const cargoNormalizado = normalizeText(cargo);
-
-  return perfis.find((perfil) => {
-    const mesmaCasa =
-      (perfil.fonte === 'camara' && cargoNormalizado.includes('deputado')) ||
-      (perfil.fonte === 'senado' && cargoNormalizado.includes('senador'));
-
-    return mesmaCasa && normalizeText(perfil.nome_urna) === nomeNormalizado;
-  });
-}
-
 export default async function MatchPage() {
-  const [ranking, parlamentares, partidos] = await Promise.all([
-    getRankingParlamentares(350),
-    getParlamentares(),
-    getPartidos(),
-  ]);
-
-  const partidosMap = new Map(partidos.map((partido) => [partido.sigla, partido]));
-
-  const rows: MatchRow[] = ranking.map((item) => {
-    const perfilLocal = findLocalPerfil(parlamentares, item.nome, item.cargo);
-    const siglaPartido = perfilLocal?.partido ?? item.partido;
-    const partido = partidosMap.get(siglaPartido);
-    const partyMeta = getPartyMeta(siglaPartido);
-
-    return {
-      id: item.id,
-      nome: item.nome,
-      cargo: item.cargo,
-      partidoSigla: siglaPartido,
-      partidoNome: partido?.nome ?? item.partido,
-      uf: normalizeUf(perfilLocal?.uf ?? item.uf),
-      nota: item.ranking.nota,
-      rankingGeral: item.ranking.rankingGeral,
-      espectro: partido?.espectro ?? null,
-      espectroEixo: partido?.espectroEixo ?? null,
-      familiaPolitica: partido?.familiaPolitica ?? null,
-      economicAxis: partyMeta.economicAxis,
-      socialAxis: partyMeta.socialAxis,
-      perfilHref: perfilLocal ? getPerfilHref(perfilLocal) : null,
-      fonteUrl: item.fonteUrl,
-    };
-  });
+  const parlamentares = await getParlamentares();
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -72,12 +17,12 @@ export default async function MatchPage() {
           <section className="bg-white border-4 border-black p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <h1 className="font-headline font-black text-5xl uppercase mb-4">Match eleitoral</h1>
             <p className="font-body font-bold text-lg uppercase opacity-80">
-              Responda como você pensa sobre economia e costumes para encontrar parlamentares mais
-              próximos do seu perfil político.
+              Responda aos temas abaixo para encontrar parlamentares mais próximos do seu perfil
+              político.
             </p>
           </section>
 
-          <MatchExperience rows={rows} />
+          <MatchClient parlamentares={parlamentares} />
         </div>
       </main>
 
