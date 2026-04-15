@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import { MatchClient } from '@/components/match/MatchClient';
 import { getParlamentares, getRankingParlamentares } from '@/lib/api';
 
-export const revalidate = 1800;
+export const revalidate = 86400;
 
 export default async function MatchPage() {
   const parlamentares = await getParlamentares();
@@ -40,3 +40,4 @@ export default async function MatchPage() {
     </div>
   );
 }
+

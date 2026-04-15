@@ -172,12 +172,27 @@ export function MatchClient({
                   <li><strong>Liberdade Pessoal:</strong> {results.nolan.personalPercent.toFixed(0)}%</li>
                 </ul>
               </div>
-              <div className="relative w-full aspect-square max-w-[300px] mx-auto border-4 border-black bg-gray-100 rotate-45 transform origin-center overflow-hidden">
-                <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
-                  <div className="bg-blue-200"></div>
-                  <div className="bg-red-200"></div>
-                  <div className="bg-yellow-200"></div>
-                  <div className="bg-purple-200"></div>
+              <div className="relative w-full aspect-square max-w-[320px] mx-auto flex items-center justify-center my-8">
+                  <div className="relative w-[70%] h-[70%] border-4 border-black bg-gray-100 rotate-45 origin-center justify-center overflow-hidden">
+                    <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
+                      <div className="bg-[#b3d4ff]"></div>
+                      <div className="bg-[#ffb3b3]"></div>
+                      <div className="bg-[#e6ccff]"></div>
+                      <div className="bg-[#ffe6b3]"></div>
+                    </div>
+                    <div 
+                      className="absolute w-[4%] h-[4%] bg-black rounded-full shadow-[0_0_0_4px_white] z-20 transition-all duration-1000"
+                      style={{
+                        bottom: `calc(${results.nolan.econPercent}% - 2%)`,
+                        left: `calc(${results.nolan.personalPercent}% - 2%)`
+                      }}
+                    />
+                  </div>
+                  
+                  <span className="absolute top-[5px] sm:-top-2 left-1/2 -translate-x-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">Libertário</span>
+                  <span className="absolute bottom-[5px] sm:-bottom-2 left-1/2 -translate-x-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">Estatista</span>
+                  <span className="absolute left-[5px] sm:-left-3 top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">Esquerda</span>
+                  <span className="absolute right-[5px] sm:-right-3 top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">Direita</span>
                 </div>
                 <div 
                   className="absolute w-4 h-4 bg-black rounded-full shadow-[0_0_0_4px_white] z-10 transition-all duration-1000"
@@ -228,3 +243,4 @@ export function MatchClient({
     </div>
   );
 }
+

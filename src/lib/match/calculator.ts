@@ -44,12 +44,20 @@ export function calculateMatchScoreDetailed(
   userAnswers: UserAnswersMap,
   politicianId: string,
   politicianParty: string,
+  politicianRanking?: number | null,
 ): number {
   const topics = Object.keys(userAnswers);
   if (topics.length === 0) return 0;
 
   const partyMeta = getPartyMeta(politicianParty);
-  const spectrumIdx = getSpectrumIndex(partyMeta.spectrum);
+  let spectrumIdx = getSpectrumIndex(partyMeta.spectrum);
+  if (politicianRanking != null) {
+    if (politicianRanking < 3) spectrumIdx = 0; // esquerda
+    else if (politicianRanking < 5) spectrumIdx = 1; // centro-esquerda
+    else if (politicianRanking < 7) spectrumIdx = 2; // centro
+    else if (politicianRanking < 8.5) spectrumIdx = 3; // centro-direita
+    else spectrumIdx = 4; // direita
+  }
 
   let totalWeight = 0;
   let earnedPoints = 0;
@@ -98,3 +106,4 @@ export function calculateNolanChart(userAnswers: UserAnswersMap) {
 
   return { econPercent, personalPercent, label };
 }
+

@@ -1,10 +1,10 @@
-import { cache } from 'react';
+﻿import { cache } from 'react';
 import type { PerfilPublico } from '@/lib/official';
 import type { RankingListaItem, RankingReferencia } from '@/lib/official/types';
 
 const RANKING_API_ROOT = 'https://www.politicos.org.br/api';
 const RANKING_SITE_ROOT = 'https://ranking.org.br';
-const REMOTE_REVALIDATE_SECONDS = 1800;
+const REMOTE_REVALIDATE_SECONDS = 86400;
 
 interface RankingAnoApi {
   ano?: number;
@@ -84,7 +84,7 @@ async function fetchRanking<T>(path: string): Promise<T> {
   });
 
   if (!response.ok) {
-    throw new Error(`Falha ao consultar o Ranking dos Políticos: ${response.status}`);
+    throw new Error(`Falha ao consultar o Ranking dos PolÃ­ticos: ${response.status}`);
   }
 
   return response.json() as Promise<T>;
@@ -172,3 +172,4 @@ export const fetchRankingTop = cache(
     return items.slice(0, limit);
   },
 );
+

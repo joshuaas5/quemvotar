@@ -94,7 +94,7 @@ async function fetchCamara<T>(path: string): Promise<T> {
   const response = await fetch(`${CAMARA_API_ROOT}${path}`, {
     signal: AbortSignal.timeout(CAMARA_TIMEOUT_MS),
     headers: { Accept: 'application/json' },
-    next: { revalidate: 3600 },
+    next: { revalidate: 86400 },
   });
 
   if (!response.ok) {
@@ -384,6 +384,7 @@ export const fetchDeputadoDetalhado = cache(
     };
   },
 );
+
 
 
 

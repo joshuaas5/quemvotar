@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import { getPartidoPorSigla, getPerfilDetalhado } from '@/lib/api';
 import type { PartidoResumo, PerfilDetalhadoPublico, PerfilItemLista } from '@/lib/official';
 
-export const revalidate = 1800;
+export const revalidate = 86400;
 
 function formatDate(value?: string | null) {
   if (!value) return null;
@@ -201,7 +201,7 @@ function renderTopCards(perfil: PerfilDetalhadoPublico, partido: PartidoResumo |
           className={`${card.bg} border-4 border-black p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]`}
         >
           <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">{card.title}</p>
-          <p className="font-headline font-black text-4xl leading-none">{card.value}</p>
+          <p className="font-headline font-black text-3xl xl:text-4xl leading-none break-words overflow-hidden">{card.value}</p>
           <p className="font-body font-bold mt-3">{card.helper}</p>
           {card.href ? (
             card.href.startsWith('/') ? (
@@ -557,6 +557,7 @@ export default async function PerfilPage({
     </div>
   );
 }
+
 
 
 

@@ -1,11 +1,11 @@
-import { cache } from 'react';
+﻿import { cache } from 'react';
 import type { PerfilItemLista, PerfilPublico } from '@/lib/official';
 import type { GovernismoReferencia, PresencaReferencia } from '@/lib/official/types';
 import { buildVoteThemeCards } from '@/lib/political-themes';
 
 const RADAR_API_ROOT = 'https://radar.congressoemfoco.com.br/api';
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
-const REMOTE_REVALIDATE_SECONDS = 1800;
+const REMOTE_REVALIDATE_SECONDS = 86400;
 const CAMARA_VOTE_SAMPLE_SIZE = 12;
 
 interface RadarBuscaItem {
@@ -99,7 +99,7 @@ async function fetchCamara<T>(path: string): Promise<T> {
   });
 
   if (!response.ok) {
-    throw new Error(`Falha ao consultar a API da Câmara: ${response.status}`);
+    throw new Error(`Falha ao consultar a API da CÃ¢mara: ${response.status}`);
   }
 
   return response.json() as Promise<T>;
@@ -117,7 +117,7 @@ function findRadarMatch(items: RadarBuscaItem[], perfil: PerfilPublico) {
     const partidoCompativel =
       !perfil.partido || !item.parlamentarPartido?.sigla || item.parlamentarPartido.sigla === perfil.partido;
 
-    return casaCompativel && nomeCompativel && ufCompativel && partidoCompativel;
+    return casaCompativel && nomeCompativel && ufCompativel;
   });
 }
 
@@ -127,15 +127,15 @@ function getRadarPerfilUrl(idParlamentarVoz: string) {
 
 function mapRadarVote(code: number | undefined) {
   if (code === 1) return 'Votou sim';
-  if (code === -1) return 'Votou não';
-  if (code === 0) return 'Abstenção registrada';
-  if (code === 2) return 'Obstrução registrada';
+  if (code === -1) return 'Votou nÃ£o';
+  if (code === 0) return 'AbstenÃ§Ã£o registrada';
+  if (code === 2) return 'ObstruÃ§Ã£o registrada';
   return 'Voto registrado';
 }
 
 function buildVoteTitle(votacao: CamaraVoteItem['votacao']) {
   const materia = votacao.proposicoesAfetadas?.[0] ?? votacao.objetosPossiveis?.[0];
-  if (!materia) return 'Votação nominal';
+  if (!materia) return 'VotaÃ§Ã£o nominal';
 
   const partes = compact([
     materia.siglaTipo ?? null,
@@ -143,7 +143,7 @@ function buildVoteTitle(votacao: CamaraVoteItem['votacao']) {
     typeof materia.ano === 'number' && materia.ano > 0 ? String(materia.ano) : null,
   ]);
 
-  return partes.length > 0 ? partes.join('/') : 'Votação nominal';
+  return partes.length > 0 ? partes.join('/') : 'VotaÃ§Ã£o nominal';
 }
 
 function buildVoteHref(votacao: CamaraVoteItem['votacao']) {
@@ -253,11 +253,11 @@ export const fetchCamaraVotesForPerfil = cache(async (perfil: PerfilPublico): Pr
 
     return {
       titulo: buildVoteTitle(votacao),
-      descricao: materia?.ementa ?? votacao.descricao ?? 'Votação nominal registrada na Câmara dos Deputados.',
+      descricao: materia?.ementa ?? votacao.descricao ?? 'VotaÃ§Ã£o nominal registrada na CÃ¢mara dos Deputados.',
       detalhe: compact([
         mapRadarVote(voto),
-        votacao.aprovacao === 1 ? 'Resultado: aprovada' : 'Resultado: não aprovada',
-      ]).join(' • '),
+        votacao.aprovacao === 1 ? 'Resultado: aprovada' : 'Resultado: nÃ£o aprovada',
+      ]).join(' â€¢ '),
       data: votacao.data,
       destaque: mapRadarVote(voto),
       href: buildVoteHref(votacao),
@@ -284,3 +284,5 @@ export const fetchCamaraVoteThemesForPerfil = cache(
     );
   },
 );
+
+
