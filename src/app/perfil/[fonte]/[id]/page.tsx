@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -34,6 +34,17 @@ function formatScore(value?: number | null) {
 function formatPercent(value?: number | null) {
   if (typeof value !== 'number') return null;
   return `${value.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}%`;
+}
+
+
+function getParliamentSalaryLabel(fonte: PerfilDetalhadoPublico['fonte']) {
+  return {
+    value: 'R$ 46.366,19',
+    helper:
+      fonte === 'camara'
+        ? 'Subsidio mensal bruto do deputado federal, definido em lei.'
+        : 'Subsidio mensal bruto do senador, definido em lei.',
+  };
 }
 
 function renderListSection(title: string, description: string, items: PerfilItemLista[], emptyText: string) {
@@ -331,11 +342,18 @@ export default async function PerfilPage({
           </Link>
 
           <section
-            className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
+            className="relative border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
             style={{
               background: `linear-gradient(135deg, ${cores[0]} 0%, ${cores[1]} 100%)`,
             }}
           >
+            <div className="absolute right-4 top-4 md:right-6 md:top-6 bg-black text-white border-4 border-white px-4 py-3 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.35)] text-right max-w-[240px] z-10">
+              <p className="font-label font-bold uppercase text-[10px] tracking-[0.2em] opacity-80">
+                Subsidio bruto mensal
+              </p>
+              <p className="font-headline font-black text-2xl leading-none mt-1">{getParliamentSalaryLabel(perfil.fonte).value}</p>
+              <p className="font-body font-bold text-[11px] mt-2 leading-tight">{getParliamentSalaryLabel(perfil.fonte).helper}</p>
+            </div>
             <div className="grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)]">
               <div className="bg-white/20 border-b-4 lg:border-b-0 lg:border-r-4 border-black">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -539,3 +557,4 @@ export default async function PerfilPage({
     </div>
   );
 }
+
