@@ -43,11 +43,11 @@ export {
 export { getThemeVisual, THEME_VISUALS, type ThemeVisual } from './political-themes';
 
 export function getCasaBadge(perfil: PerfilPublico): string {
-  return perfil.casa === 'Senado Federal' ? 'SENADO FEDERAL' : 'CMARA DOS DEPUTADOS';
+  return perfil.casa === 'Senado Federal' ? 'SENADO FEDERAL' : 'CÂMARA DOS DEPUTADOS';
 }
 
 export function getFonteBadge(perfil: PerfilPublico): string {
-  return perfil.fonte === 'camara' ? 'FONTE OFICIAL: CMARA' : 'FONTE OFICIAL: SENADO';
+  return perfil.fonte === 'camara' ? 'FONTE OFICIAL: CÂMARA' : 'FONTE OFICIAL: SENADO';
 }
 
 export async function getHighlights(): Promise<PerfilPublico[]> {

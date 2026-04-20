@@ -1,6 +1,7 @@
-﻿import { cache } from 'react';
+import { cache } from 'react';
 import type { PerfilDetalhadoPublico, PerfilItemLista, PerfilPublico } from './types';
 import { buildVoteThemeCards } from '@/lib/political-themes';
+import { improveProfilePhotoUrl } from '@/lib/utils/profile-image';
 
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
 const AUTORIAS_AMOSTRA_ANALISADA = 8;
@@ -204,7 +205,7 @@ function normalizeSenador(parlamentar: SenadoParlamentarLista): PerfilPublico {
     partido: info.SiglaPartidoParlamentar ?? '--',
     uf: info.UfParlamentar ?? '',
     cargo: 'Senador',
-    foto_url: info.UrlFotoParlamentar ?? '',
+    foto_url: improveProfilePhotoUrl('senado', String(info.CodigoParlamentar ?? info.CodigoPublicoNaLegAtual ?? ''), info.UrlFotoParlamentar),
     casa: 'Senado Federal',
     fonte: 'senado',
     fonteUrl: info.UrlPaginaParlamentar ?? `${SENADO_API_ROOT}/senador/lista/atual`,

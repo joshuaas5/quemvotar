@@ -1,4 +1,4 @@
-﻿import Header from "@/components/Header";
+import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import Highlights from "@/components/Highlights";
 import QuizBand from "@/components/QuizBand";
@@ -6,7 +6,6 @@ import StatsDashboard from "@/components/StatsDashboard";
 import Footer from "@/components/Footer";
 
 export const revalidate = 1800;
-export const dynamic = 'force-dynamic';
 
 export default function Home() {
   return (
@@ -24,4 +23,3 @@ export default function Home() {
     </>
   );
 }
-

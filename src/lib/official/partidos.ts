@@ -4,10 +4,13 @@ import { fetchDeputados } from './camara';
 import { fetchSenadores } from './senado';
 import { buildPartyBadgeDataUrl, getPartyMeta, getSpectrumLabel } from '@/lib/party-meta';
 import { getPartyLogoBySigla } from '@/lib/party-logos';
+import { normalizeRemoteImageUrl, upgradeCamaraPhotoUrl } from '@/lib/utils/profile-image';
 
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
 const TSE_PARTIDOS_URL = 'https://www.tse.jus.br/partidos/partidos-registrados-no-tse';
+const OFFICIAL_FETCH_TIMEOUT_MS = 4000;
+const OFFICIAL_FETCH_MAX_ATTEMPTS = 2;
 
 interface CamaraPartido {
   id: number;
@@ -64,29 +67,35 @@ interface TsePartyDetail {
   definicaoCurta?: string | null;
 }
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const response = await fetch(url, {
-    headers: { Accept: 'application/json' },
-    next: { revalidate: 86400 },
-  });
+async function fetchOfficial(url: string, accept: string, attempt = 1): Promise<Response> {
+  try {
+    const response = await fetch(url, {
+      signal: AbortSignal.timeout(OFFICIAL_FETCH_TIMEOUT_MS),
+      headers: { Accept: accept },
+      next: { revalidate: 86400 },
+    });
 
-  if (!response.ok) {
-    throw new Error(`Falha ao consultar fonte oficial: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`Falha ao consultar fonte oficial: ${response.status}`);
+    }
+
+    return response;
+  } catch (error) {
+    if (attempt < OFFICIAL_FETCH_MAX_ATTEMPTS) {
+      return fetchOfficial(url, accept, attempt + 1);
+    }
+
+    throw error;
   }
+}
 
+async function fetchJson<T>(url: string): Promise<T> {
+  const response = await fetchOfficial(url, 'application/json');
   return response.json() as Promise<T>;
 }
 
 async function fetchText(url: string): Promise<string> {
-  const response = await fetch(url, {
-    headers: { Accept: 'text/html,application/xhtml+xml' },
-    next: { revalidate: 86400 },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Falha ao consultar página: ${response.status}`);
-  }
-
+  const response = await fetchOfficial(url, 'text/html,application/xhtml+xml');
   return response.text();
 }
 
@@ -288,8 +297,9 @@ export const fetchPartidosResumo = cache(async (): Promise<PartidoResumo[]> => {
     const localLogo = getPartyLogoBySigla(totaisPartido.sigla);
     const logoUrl =
       localLogo ??
-      (detalheCamara?.urlLogo && !detalheCamara.urlLogo.toLowerCase().endsWith('.gif')
-        ? detalheCamara.urlLogo
+      (normalizeRemoteImageUrl(detalheCamara?.urlLogo) &&
+      !normalizeRemoteImageUrl(detalheCamara?.urlLogo).toLowerCase().endsWith('.gif')
+        ? normalizeRemoteImageUrl(detalheCamara?.urlLogo)
         : buildPartyBadgeDataUrl(totaisPartido.sigla, meta.primary, meta.secondary));
 
     return {
@@ -316,7 +326,7 @@ export const fetchPartidosResumo = cache(async (): Promise<PartidoResumo[]> => {
             casa: 'CD',
             partido: totaisPartido.sigla,
             uf: detalheCamara.status.lider.uf,
-            fotoUrl: detalheCamara.status.lider.urlFoto,
+            fotoUrl: upgradeCamaraPhotoUrl(detalheCamara.status.lider.urlFoto),
           }
         : getPartyLeader(liderancas, totaisPartido.sigla, 'CD'),
       liderSenado: getPartyLeader(liderancas, totaisPartido.sigla, 'SF'),

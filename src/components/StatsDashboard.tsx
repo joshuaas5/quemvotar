@@ -15,9 +15,15 @@ const LIDERANCA_STYLE: Record<string, { emoji: string; bg: string; border: strin
 
 export default async function StatsDashboard() {
   const [panorama, partidos, liderancas] = await Promise.all([
-    getPanoramaDados(),
-    getPartidos(),
-    getLiderancas(),
+    getPanoramaDados().catch(() => ({
+      totalParlamentares: null,
+      totalDeputados: null,
+      totalSenadores: null,
+      totalUfs: null,
+      fonteAtual: 'indisponivel' as const,
+    })),
+    getPartidos().catch(() => []),
+    getLiderancas().catch(() => []),
   ]);
 
   const topPartidos = partidos.slice(0, 8);

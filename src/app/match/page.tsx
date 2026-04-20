@@ -2,20 +2,38 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { MatchClient } from '@/components/match/MatchClient';
 import { getParlamentares, getRankingParlamentares } from '@/lib/api';
+import { buildRankingLookupKey, rankingHouseFromCargo } from '@/lib/match/ranking-key';
 
 export const revalidate = 86400;
 
 export default async function MatchPage() {
   const parlamentares = await getParlamentares();
-  
-  // Pega o ranking de até 600 (ampla maioria dos deputados e senadores) e cria um map ID -> Nota
+
+  // Cria índice de notas por chave composta para evitar colisões por homônimos.
   const rankingList = await getRankingParlamentares(600).catch(() => []);
   const rankingsMap: Record<string, number> = {};
-  
-  // Faz match simplificado por nome_urna (como RankList devolve) vs nome da camara
+
   rankingList.forEach((r) => {
-    rankingsMap[r.nome] = r.ranking.nota;
-    if (r.nomeCivil) rankingsMap[r.nomeCivil] = r.ranking.nota;
+    const casa = rankingHouseFromCargo(r.cargo);
+    if (!casa) return;
+
+    const keyPrincipal = buildRankingLookupKey({
+      nome: r.nome,
+      partido: r.partido,
+      uf: r.uf,
+      casa,
+    });
+    rankingsMap[keyPrincipal] = r.ranking.nota;
+
+    if (r.nomeCivil) {
+      const keyNomeCivil = buildRankingLookupKey({
+        nome: r.nomeCivil,
+        partido: r.partido,
+        uf: r.uf,
+        casa,
+      });
+      rankingsMap[keyNomeCivil] = r.ranking.nota;
+    }
   });
 
   return (
@@ -40,4 +58,3 @@ export default async function MatchPage() {
     </div>
   );
 }
-

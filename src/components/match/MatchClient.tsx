@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { MatchQuiz } from './MatchQuiz';
 import { calculateMatchScoreDetailed, calculateNolanChart, type UserAnswersMap } from '@/lib/match/calculator';
+import { buildRankingLookupKey } from '@/lib/match/ranking-key';
 import type { PerfilPublico } from '@/lib/api';
 
 type Question = {
@@ -43,7 +44,7 @@ const QUESTIONS: Question[] = [
       'O acesso à posse e ao porte de armas de fogo pelo cidadão comum sem antecedentes criminais deve ser facilitado para defesa pessoal.',
   },
   {
-    id: 'quotas',
+    id: 'cotas',
     title: 'Cotas',
     description:
       'Reservas de vagas (cotas raciais e sociais) em universidades e concursos públicos são políticas fundamentais para reduzir desigualdades.',
@@ -108,8 +109,19 @@ export function MatchClient({
     const nolan = calculateNolanChart(answers);
 
     const scored = parlamentares.map((pol) => {
-      const score = calculateMatchScoreDetailed(answers, pol.idOrigem || pol.nome_urna, pol.partido || '');
-      const rankingNota = rankings[pol.nome_urna] ?? null;
+      const rankingKey = buildRankingLookupKey({
+        nome: pol.nome_urna,
+        partido: pol.partido,
+        uf: pol.uf,
+        casa: pol.fonte,
+      });
+      const rankingNota = rankings[rankingKey] ?? null;
+      const score = calculateMatchScoreDetailed(
+        answers,
+        pol.idOrigem || pol.nome_urna,
+        pol.partido || '',
+        rankingNota,
+      );
       return { ...pol, score, rankingNota };
     });
 
@@ -211,7 +223,7 @@ export function MatchClient({
                 </ul>
               </div>
               <div className="relative w-full aspect-square max-w-[300px] sm:max-w-[320px] mx-auto flex items-center justify-center my-4 sm:my-8 overflow-hidden sm:overflow-visible">
-                <div className="relative w-[70%] h-[70%] border-4 border-black bg-gray-100 rotate-45 origin-center justify-center overflow-hidden">
+                <div className="relative w-[70%] h-[70%] border-4 border-black bg-gray-100 justify-center overflow-hidden">
                   <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
                     <div className="bg-[#b3d4ff]" />
                     <div className="bg-[#ffb3b3]" />
@@ -221,8 +233,8 @@ export function MatchClient({
                   <div
                     className="absolute w-[4%] h-[4%] bg-black rounded-full shadow-[0_0_0_4px_white] z-20 transition-all duration-1000"
                     style={{
-                      bottom: `calc(${results.nolan.econPercent}% - 2%)`,
-                      left: `calc(${results.nolan.personalPercent}% - 2%)`,
+                      bottom: `calc(${results.nolan.personalPercent}% - 2%)`,
+                      left: `calc(${results.nolan.econPercent}% - 2%)`,
                     }}
                   />
                 </div>

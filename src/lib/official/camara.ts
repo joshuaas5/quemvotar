@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import type { PerfilDetalhadoPublico, PerfilItemLista, PerfilPublico } from './types';
+import { improveProfilePhotoUrl } from '@/lib/utils/profile-image';
 
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
 const AUTORIAS_AMOSTRA_ANALISADA = 8;
@@ -205,7 +206,7 @@ function normalizeDeputado(deputado: CamaraDeputado): PerfilPublico {
     partido: deputado.siglaPartido,
     uf: deputado.siglaUf,
     cargo: 'Deputado Federal',
-    foto_url: deputado.urlFoto ?? '',
+    foto_url: improveProfilePhotoUrl('camara', String(deputado.id), deputado.urlFoto),
     casa: 'Câmara dos Deputados',
     fonte: 'camara',
     fonteUrl: getCamaraPublicProfileUrl(String(deputado.id)),
@@ -304,7 +305,7 @@ export const fetchDeputadoDetalhado = cache(
       partido: ultimoStatus?.siglaPartido ?? '--',
       uf: ultimoStatus?.siglaUf ?? '',
       cargo: 'Deputado Federal',
-      foto_url: ultimoStatus?.urlFoto ?? '',
+      foto_url: improveProfilePhotoUrl('camara', String(detalhe.id), ultimoStatus?.urlFoto),
       casa: 'Câmara dos Deputados',
       fonte: 'camara',
       fonteUrl: getCamaraPublicProfileUrl(String(detalhe.id)),
