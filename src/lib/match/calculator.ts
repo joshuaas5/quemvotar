@@ -1,4 +1,4 @@
-﻿import { getPartyMeta } from '@/lib/party-meta';
+import { getPartyMeta } from '@/lib/party-meta';
 
 export type UserAnswer = {
   score: number;
@@ -99,11 +99,22 @@ export function calculateNolanChart(userAnswers: UserAnswersMap) {
   const personalPercent = ((personal - 1) / 4) * 100;
   
   let label = 'Centro';
-  if (econ > 3 && personal > 3) label = 'Liberalismo / Libertário';
-  else if (econ > 3 && personal <= 3) label = 'Conservador';
-  else if (econ <= 3 && personal > 3) label = 'Progressista / Esquerda';
-  else if (econ <= 3 && personal <= 3) label = 'Estatista / Populista';
+  let description = 'Você busca o equilíbrio entre a liberdade individual e a ordem social. Prefere mudanças graduais e tende a avaliar caso a caso sem se prender rigidamente a dogmas de esquerda ou direita.';
 
-  return { econPercent, personalPercent, label };
+  if (econ > 3 && personal > 3) {
+    label = 'Liberalismo / Libertário';
+    description = 'Você valoriza a liberdade máxima tanto no campo econômico quanto no pessoal. Defende que o Estado deve interferir o mínimo possível na vida do cidadão e no mercado.';
+  } else if (econ > 3 && personal <= 3) {
+    label = 'Conservador';
+    description = 'Você defende a liberdade econômica e o livre mercado, mas acredita que o Estado deve atuar para preservar valores morais, tradições e a segurança pública.';
+  } else if (econ <= 3 && personal > 3) {
+    label = 'Progressista / Esquerda';
+    description = 'Você prioriza a liberdade pessoal e os direitos sociais, mas defende que o Estado deve atuar na economia para reduzir desigualdades e garantir serviços públicos.';
+  } else if (econ <= 3 && personal <= 3) {
+    label = 'Estatista / Populista';
+    description = 'Você acredita que o Estado deve ter papel central tanto na regulação da economia quanto na manutenção da ordem social e moral da sociedade.';
+  }
+
+  return { econPercent, personalPercent, label, description };
 }
 

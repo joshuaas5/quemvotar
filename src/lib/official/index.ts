@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { fetchDeputadoDetalhado, fetchDeputados } from './camara';
+import { fetchDeputadoDetalhado, fetchDeputados, fetchCamaraDespesas, fetchCamaraAutorias } from './camara';
 import { searchCnjProcessByNumber } from './cnj';
 import { fetchLiderancasCongresso, fetchPartidosResumo, getPartidoResumo } from './partidos';
 import { fetchSenadorDetalhado, fetchSenadores } from './senado';
@@ -222,5 +222,7 @@ export async function getCnjProcessoByNumero(
 ): Promise<CnjProcessoResumo | null> {
   return searchCnjProcessByNumber(tribunalSlug, numeroProcesso);
 }
+
+export { fetchCamaraDespesas, fetchCamaraAutorias };
 
 

@@ -1,6 +1,7 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
 import { MatchQuiz } from './MatchQuiz';
 import { calculateMatchScoreDetailed, calculateNolanChart, type UserAnswersMap } from '@/lib/match/calculator';
 import type { PerfilPublico } from '@/lib/api';
@@ -73,27 +74,32 @@ export function MatchClient({
 }) {
   const [answers, setAnswers] = useState<UserAnswersMap>({});
   const [showResults, setShowResults] = useState(false);
+  const [selectedUf, setSelectedUf] = useState<string>('');
 
   const handleAnswer = (questionId: string, answer: { score: number; weight: number }) => {
     setAnswers(prev => ({ ...prev, [questionId]: answer }));
   };
+
+  const ufs = useMemo(() => Array.from(new Set(parlamentares.map(p => p.uf).filter(Boolean))).sort(), [parlamentares]);
 
   const results = useMemo(() => {
     if (!showResults) return { scored: [], nolan: null };
 
     const nolan = calculateNolanChart(answers);
 
-    const scored = parlamentares.map(pol => {
-      const score = calculateMatchScoreDetailed(answers, pol.idOrigem || pol.nome_urna, pol.partido || '');
-      const rankingNota = rankings[pol.nome_urna] ?? null;
-      return { ...pol, score, rankingNota };
-    });
+    const scored = parlamentares
+      .filter(pol => selectedUf ? pol.uf === selectedUf : true)
+      .map(pol => {
+        const score = calculateMatchScoreDetailed(answers, pol.idOrigem || pol.nome_urna, pol.partido || '');
+        const rankingNota = rankings[pol.nome_urna] ?? null;
+        return { ...pol, score, rankingNota };
+      });
 
     return { 
       scored: scored.sort((a, b) => b.score - a.score).slice(0, 12),
       nolan
     };
-  }, [answers, parlamentares, showResults, rankings]);
+  }, [answers, parlamentares, showResults, rankings, selectedUf]);
 
   const progress = Math.round((Object.keys(answers).length / QUESTIONS.length) * 100);
 
@@ -154,75 +160,128 @@ export function MatchClient({
               <p className="font-body font-bold mt-2 opacity-80 max-w-xl">Encontramos os parlamentares que possuem o perfil mais alinhado com base em espectro partidário e análise de inclinações em votações teóricas.</p>
             </div>
             
-            <button 
-              onClick={() => setShowResults(false)}
-              className="bg-white border-4 border-black font-headline font-black px-6 py-4 uppercase text-lg hover:bg-gray-100 whitespace-nowrap"
-            >
-              Afinar Respostas
-            </button>
+            <div className="flex items-center gap-4">
+              <select 
+                value={selectedUf} 
+                onChange={e => setSelectedUf(e.target.value)} 
+                className="bg-white border-4 border-black font-headline font-black px-4 py-4 uppercase text-lg cursor-pointer max-w-[200px]"
+              >
+                <option value="">Brasil Inteiro (Sem Filtro)</option>
+                {ufs.map(uf => <option key={uf} value={uf}>{uf}</option>)}
+              </select>
+              <button 
+                onClick={() => setShowResults(false)}
+                className="bg-white border-4 border-black font-headline font-black px-6 py-4 uppercase text-lg hover:bg-gray-100 whitespace-nowrap"
+              >
+                Afinar Respostas
+              </button>
+            </div>
           </div>
 
           {results.nolan && (
-            <div className="bg-white border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              <div>
-                <h3 className="font-headline font-black text-3xl uppercase mb-4 text-primary-fixed">O Seu Espectro</h3>
-                <p className="font-body font-bold text-lg mb-2">Seu posicionamento, calculado no Diagrama de Nolan pelas suas respostas, sugere o eixo: <strong className="bg-[#ffc6ff] border-2 border-black px-2">{results.nolan.label}</strong>.</p>
-                <ul className="space-y-2 mt-4 font-body font-medium">
-                  <li><strong>Liberdade Econômica:</strong> {results.nolan.econPercent.toFixed(0)}%</li>
-                  <li><strong>Liberdade Pessoal:</strong> {results.nolan.personalPercent.toFixed(0)}%</li>
-                </ul>
+            <div className="bg-white border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] grid grid-cols-1 md:grid-cols-2 gap-8 items-center border-t-[12px]">
+              <div className="space-y-4">
+                <p className="font-label font-bold uppercase tracking-widest text-xs opacity-60">Sua Análise de Identidade</p>
+                <h3 className="font-headline font-black text-4xl uppercase leading-none">
+                  Você é <span className="bg-primary-fixed border-2 border-black px-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">{results.nolan.label}</span>
+                </h3>
+                <p className="font-body font-bold text-xl leading-relaxed">
+                  {results.nolan.description}
+                </p>
+                <div className="pt-4 grid grid-cols-2 gap-4">
+                  <div className="border-4 border-black p-4 bg-gray-50">
+                     <p className="font-label font-bold uppercase text-[10px] opacity-60">Liberdade Econômica</p>
+                     <p className="font-headline font-black text-3xl">{results.nolan.econPercent.toFixed(0)}%</p>
+                  </div>
+                  <div className="border-4 border-black p-4 bg-gray-50">
+                     <p className="font-label font-bold uppercase text-[10px] opacity-60">Liberdade Pessoal</p>
+                     <p className="font-headline font-black text-3xl">{results.nolan.personalPercent.toFixed(0)}%</p>
+                  </div>
+                </div>
               </div>
-              <div className="relative w-full aspect-square max-w-[320px] mx-auto flex items-center justify-center my-8">
-                  <div className="relative w-[70%] h-[70%] border-4 border-black bg-gray-100 rotate-45 origin-center justify-center overflow-hidden">
+              <div className="relative w-full aspect-square max-w-[340px] mx-auto flex items-center justify-center">
+                  {/* Grid Lines */}
+                  <div className="absolute inset-0 border-2 border-dashed border-black/10 rounded-full" />
+                  
+                  <div className="relative w-[70%] h-[70%] border-4 border-black bg-gray-100 rotate-45 origin-center overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,.1)]">
                     <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
-                      <div className="bg-[#b3d4ff]"></div>
-                      <div className="bg-[#ffb3b3]"></div>
-                      <div className="bg-[#e6ccff]"></div>
-                      <div className="bg-[#ffe6b3]"></div>
+                      <div className="bg-[#b3d4ff] hover:brightness-95 transition-all"></div>
+                      <div className="bg-[#ffb3b3] hover:brightness-95 transition-all"></div>
+                      <div className="bg-[#e6ccff] hover:brightness-95 transition-all"></div>
+                      <div className="bg-[#ffe6b3] hover:brightness-95 transition-all"></div>
                     </div>
                     <div 
-                      className="absolute w-[4%] h-[4%] bg-black rounded-full shadow-[0_0_0_4px_white] z-20 transition-all duration-1000"
+                      className="absolute w-[8%] h-[8%] bg-black rounded-full shadow-[0_0_0_4px_white] z-20 transition-all duration-1000 ease-out animate-pulse"
                       style={{
-                        bottom: `calc(${results.nolan.econPercent}% - 2%)`,
-                        left: `calc(${results.nolan.personalPercent}% - 2%)`
+                        bottom: `calc(${results.nolan.econPercent}% - 4%)`,
+                        left: `calc(${results.nolan.personalPercent}% - 4%)`
                       }}
                     />
                   </div>
                   
-                  <span className="absolute top-[5px] sm:-top-2 left-1/2 -translate-x-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">Libertário</span>
-                  <span className="absolute bottom-[5px] sm:-bottom-2 left-1/2 -translate-x-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">Estatista</span>
-                  <span className="absolute left-[5px] sm:-left-3 top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">Esquerda</span>
-                  <span className="absolute right-[5px] sm:-right-3 top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">Direita</span>
+                  <span className="absolute top-[0px] left-1/2 -translate-x-1/2 font-headline font-black uppercase text-[10px] bg-white border-2 border-black px-2 py-1 z-30 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">Libertário</span>
+                  <span className="absolute bottom-[0px] left-1/2 -translate-x-1/2 font-headline font-black uppercase text-[10px] bg-white border-2 border-black px-2 py-1 z-30 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">Estatista</span>
+                  <span className="absolute left-[0px] top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] bg-white border-2 border-black px-2 py-1 z-30 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">Esquerda</span>
+                  <span className="absolute right-[0px] top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] bg-white border-2 border-black px-2 py-1 z-30 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">Direita</span>
                 </div>
               </div>
-
           )}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {results.scored.map((pol) => (
-              <div key={pol.idOrigem} className="bg-white border-4 border-black p-6 flex flex-col items-center text-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] relative">
-                {pol.rankingNota !== null && (
-                   <div className="absolute top-[-10px] right-[-10px] bg-[#ffe066] border-4 border-black px-3 py-1 font-headline font-black text-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-10">
-                     Nota {pol.rankingNota.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
-                   </div>
-                )}
-                
-                <div className="w-32 h-32 border-4 border-black bg-gray-200 rounded-full mb-4 overflow-hidden relative">
-                  {pol.foto_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={pol.foto_url} alt={pol.nome_urna} className="w-full h-full object-cover object-top" />
-                  ) : (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src="https://fakeimg.pl/640x640?text=Sem+Foto" alt="Sem Foto" className="w-full h-full object-cover object-top" />
+
+          <div className="pt-6">
+            <h3 className="font-headline font-black text-3xl uppercase mb-6 flex items-center gap-3">
+              🎯 Parlamentares mais próximos de você
+              {selectedUf && <span className="text-sm bg-black text-white px-3 py-1">Filtrado por: {selectedUf}</span>}
+            </h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {results.scored.map((pol, idx) => (
+                <Link 
+                  href={`/perfil/${pol.fonte}/${pol.idOrigem}`} 
+                  key={pol.idOrigem} 
+                  className={`bg-white border-4 border-black p-6 flex flex-col items-center text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer relative group ${idx === 0 ? 'border-primary-fixed border-t-[12px]' : ''}`}
+                >
+                  {idx === 0 && (
+                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black text-white px-4 py-1 font-headline font-black uppercase text-xs tracking-tighter">
+                      Sua melhor opção
+                    </div>
                   )}
-                </div>
-                <h3 className="font-headline font-black text-2xl uppercase leading-tight mb-2">{pol.nome_urna}</h3>
-                <p className="font-label font-bold text-sm uppercase opacity-70 mb-4 bg-gray-100 px-3 py-1 border-2 border-black">{pol.partido} - {pol.uf}</p>
-                <div className="mt-auto w-full bg-secondary-fixed border-4 border-black py-4">
-                  <span className="font-headline font-black text-4xl">{pol.score.toFixed(1)}%</span>
-                  <span className="block text-sm font-bold uppercase mt-1 opacity-90">De Afinidade Total</span>
-                </div>
-              </div>
-            ))}
+
+                  {pol.rankingNota !== null && (
+                     <div className="absolute top-[-10px] right-[-10px] bg-[#ffe066] border-4 border-black px-3 py-1 font-headline font-black text-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-10 group-hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-shadow">
+                       {pol.rankingNota.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+                     </div>
+                  )}
+                  
+                  <div className="w-32 h-32 border-4 border-black bg-gray-200 rounded-full mb-4 overflow-hidden relative group-hover:scale-105 transition-transform">
+                    {pol.foto_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={pol.foto_url} alt={pol.nome_urna} className="w-full h-full object-cover object-top" />
+                    ) : (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src="https://fakeimg.pl/640x640?text=Sem+Foto" alt="Sem Foto" className="w-full h-full object-cover object-top" />
+                    )}
+                  </div>
+                  
+                  <h3 className="font-headline font-black text-2xl uppercase leading-tight mb-2 group-hover:underline">{pol.nome_urna}</h3>
+                  <p className="font-label font-bold text-xs uppercase opacity-70 mb-4 bg-gray-100 px-3 py-1 border-2 border-black">{pol.partido} - {pol.uf}</p>
+                  
+                  <div className="mt-auto w-full bg-surface-container border-4 border-black py-4 group-hover:bg-primary-container transition-colors relative overflow-hidden">
+                    <div 
+                       className="absolute left-0 top-0 bottom-0 bg-primary-fixed/20 transition-all duration-1000"
+                       style={{ width: `${pol.score}%` }}
+                    />
+                    <div className="relative z-10">
+                      <span className="font-headline font-black text-4xl">{pol.score.toFixed(1)}%</span>
+                      <span className="block text-[10px] font-black uppercase mt-1 opacity-70 tracking-tighter">Afinidade Ideológica</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 border-b-4 border-black font-headline font-black uppercase text-xs w-max tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">
+                    Visualizar ficha completa →
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       )}

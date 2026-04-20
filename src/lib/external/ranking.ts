@@ -84,7 +84,7 @@ async function fetchRanking<T>(path: string): Promise<T> {
   });
 
   if (!response.ok) {
-    throw new Error(`Falha ao consultar o Ranking dos PolÃ­ticos: ${response.status}`);
+    throw new Error(`Falha ao consultar o Ranking dos Políticos: ${response.status}`);
   }
 
   return response.json() as Promise<T>;

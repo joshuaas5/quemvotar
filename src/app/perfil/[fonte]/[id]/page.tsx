@@ -451,7 +451,7 @@ async function EnrichedProfile({
       {renderListSection(
         'Projetos e requerimentos',
         'Matérias e autorias legislativas localizadas para este parlamentar.',
-        perfil.autorias,
+        enriched.autorias,
         'A fonte não retornou autorias recentes nesta consulta.',
       )}
 
@@ -488,13 +488,44 @@ async function EnrichedProfile({
         perfil.fonte === 'camara'
           ? 'Despesas recentes da cota parlamentar retornadas pela Câmara dos Deputados.'
           : 'Filiações partidárias históricas retornadas pelo Senado Federal.',
-        perfil.fonte === 'camara' ? perfil.despesas : perfil.filiacoes,
+        perfil.fonte === 'camara' ? enriched.despesas : perfil.filiacoes,
         perfil.fonte === 'camara'
           ? 'A Câmara não retornou despesas recentes para este perfil nesta consulta.'
           : 'O Senado não retornou histórico partidário para este perfil nesta consulta.',
       )}
     </>
   );
+}
+
+/* ── metadata ──────────────────────────────────────────────────────── */
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ fonte: string; id: string }> }
+) {
+  const { fonte, id } = await params;
+  const result = await getPerfilBasico(fonte as any, id);
+
+  if (!result) {
+    return {
+      title: 'Perfil não encontrado | QuemVotar',
+      description: 'Não foi possível localizar o perfil na base de dados.',
+    };
+  }
+
+  const { perfil } = result;
+  const sigla = perfil.partido;
+  const estado = perfil.uf ? `-${perfil.uf}` : '';
+  const cargo = perfil.cargo;
+
+  return {
+    title: `${perfil.nome_urna} (${sigla}${estado}) - ${cargo} | QuemVotar`,
+    description: `Acompanhe o mandato oficial de ${perfil.nomeCompleto || perfil.nome_urna}. Veja gastos, presença em plenário, alinhamento político e projetos com dados do ${perfil.casa}.`,
+    openGraph: {
+      title: `${perfil.nome_urna} - Ficha do ${cargo}`,
+      description: `Acompanhe a ficha pública, gastos e histórico de votações de ${perfil.nome_urna}.`,
+      images: perfil.foto_url ? [perfil.foto_url] : [],
+    },
+  };
 }
 
 /* ── page ────────────────────────────────────────────────────────── */
@@ -519,9 +550,27 @@ export default async function PerfilPage({
   const { perfil, partido } = result;
   const cores = partido?.cores ?? ['#111827', '#d1d5db'];
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: perfil.nomeCompleto || perfil.nome_urna,
+    alternateName: perfil.nome_urna,
+    jobTitle: perfil.cargo,
+    memberOf: {
+      '@type': 'Organization',
+      name: `Partido ${perfil.partido}`,
+    },
+    url: `https://quemvotar.com.br/perfil/${fonte}/${id}`,
+    image: perfil.foto_url,
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
       <main className="flex-grow bg-surface-container py-6 sm:py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto space-y-6 sm:space-y-10">

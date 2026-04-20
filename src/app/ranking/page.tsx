@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { getParlamentares, getPerfilHref, getRankingParlamentares, type PerfilPublico } from '@/lib/api';
@@ -31,17 +31,31 @@ function findLocalPerfil(perfis: PerfilPublico[], nome: string, cargo: string, u
   const nomeNormalizado = normalizeText(nome);
   const cargoNormalizado = normalizeText(cargo);
 
-  return perfis.find((perfil) => {
+  const filterCasaEState = (perfil: PerfilPublico) => {
     const mesmaCasa =
       (perfil.fonte === 'camara' && cargoNormalizado.includes('deputado')) ||
       (perfil.fonte === 'senado' && cargoNormalizado.includes('senador'));
+    return mesmaCasa && (!uf || perfil.uf === uf);
+  };
 
-    return (
-      mesmaCasa &&
-      normalizeText(perfil.nome_urna) === nomeNormalizado &&
-      (!uf || perfil.uf === uf)
-    );
-  });
+  // Exact match
+  let target = perfis.find((perfil) => filterCasaEState(perfil) && normalizeText(perfil.nome_urna) === nomeNormalizado);
+  
+  if (!target) {
+    // Fuzzy match
+    target = perfis.find((perfil) => {
+      if (!filterCasaEState(perfil)) return false;
+      const pnome = normalizeText(perfil.nome_urna);
+      const partesNome = nomeNormalizado.split(' ');
+      const partesPnome = pnome.split(' ');
+      
+      // If at least half the parts match
+      const acertos = partesNome.filter(p => pnome.includes(p) || p.length > 3 && partesPnome.some(pp => pp.includes(p) || p.includes(pp)));
+      return acertos.length >= Math.min(2, partesNome.length);
+    });
+  }
+  
+  return target;
 }
 
 export default async function RankingPage({

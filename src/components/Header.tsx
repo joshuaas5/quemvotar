@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 const NAV_LINKS = [
@@ -13,6 +14,7 @@ const NAV_LINKS = [
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <>
@@ -22,33 +24,18 @@ export default function Header() {
         </Link>
 
         <div className="hidden md:flex gap-8 items-center font-headline font-black uppercase tracking-tighter">
-          <Link href="/parlamentares" className="text-black border-b-4 border-black pb-1 active:scale-95 cursor-pointer">
-            Parlamentares
-          </Link>
-          <Link
-            href="/ranking"
-            className="text-black/60 hover:text-black hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-75 active:scale-95 cursor-pointer"
-          >
-            Ranking
-          </Link>
-          <Link
-            href="/match"
-            className="text-black/60 hover:text-black hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-75 active:scale-95 cursor-pointer"
-          >
-            Match
-          </Link>
-          <Link
-            href="/partidos"
-            className="text-black/60 hover:text-black hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-75 active:scale-95 cursor-pointer"
-          >
-            Partidos
-          </Link>
-          <Link
-            href="/#dados"
-            className="text-black/60 hover:text-black hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-75 active:scale-95 cursor-pointer"
-          >
-            Panorama
-          </Link>
+          {NAV_LINKS.map(({ href, label }) => {
+            const isActive = pathname === href || (href !== '/' && pathname.startsWith(href) && href !== '/#dados');
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`${isActive ? 'text-black border-b-4 border-black pb-1' : 'text-black/60 hover:text-black hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-75'} active:scale-95 cursor-pointer`}
+              >
+                {label}
+              </Link>
+            );
+          })}
         </div>
 
         <div className="flex items-center gap-3">

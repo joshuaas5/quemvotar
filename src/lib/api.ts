@@ -8,6 +8,8 @@ import {
   getPartido,
   getPartidosResumo,
   searchOfficialCongressProfiles,
+  fetchCamaraDespesas,
+  fetchCamaraAutorias,
   type LiderancaCongresso,
   type PanoramaDados,
   type PartidoResumo,
@@ -40,11 +42,11 @@ export {
 export { getThemeVisual, THEME_VISUALS, type ThemeVisual } from './political-themes';
 
 export function getCasaBadge(perfil: PerfilPublico): string {
-  return perfil.casa === 'Senado Federal' ? 'SENADO FEDERAL' : 'CÂMARA DOS DEPUTADOS';
+  return perfil.casa === 'Senado Federal' ? 'SENADO FEDERAL' : 'CMARA DOS DEPUTADOS';
 }
 
 export function getFonteBadge(perfil: PerfilPublico): string {
-  return perfil.fonte === 'camara' ? 'FONTE OFICIAL: CÂMARA' : 'FONTE OFICIAL: SENADO';
+  return perfil.fonte === 'camara' ? 'FONTE OFICIAL: CMARA' : 'FONTE OFICIAL: SENADO';
 }
 
 export async function getHighlights(): Promise<PerfilPublico[]> {
@@ -96,6 +98,8 @@ export interface PerfilEnriquecido {
   votacoes: PerfilDetalhadoPublico['votacoes'];
   temasVotacao: PerfilDetalhadoPublico['temasVotacao'];
   biografia: string | null;
+  despesas: PerfilDetalhadoPublico['despesas'];
+  autorias: PerfilDetalhadoPublico['autorias'];
 }
 
 /** Slow path: ALL external fetches in a single Promise.all (maximum parallelism). */
@@ -106,7 +110,7 @@ export async function getPerfilEnriquecido(
   const fonte = perfil.fonte;
   const termoBuscaBiografia = perfil.nomeCompleto || perfil.nome_urna;
 
-  const [ranking, governismo, votacoesCamara, presenca, temasCamara, biografia] = await Promise.all([
+  const [ranking, governismo, votacoesCamara, presenca, temasCamara, biografia, despesas, autorias] = await Promise.all([
     fetchRankingForPerfil(perfil).catch(() => null),
     fetchGovernismoForPerfil(perfil).catch(() => null),
     fonte === 'camara' ? fetchCamaraVotesForPerfil(perfil).catch(() => []) : Promise.resolve([]),
@@ -121,7 +125,9 @@ export async function getPerfilEnriquecido(
         const extract = pages[pageId]?.extract;
         if (extract && !extract.includes("pode referir-se a:")) return extract.split("\n")[0];
         return null;
-      }).catch(() => null)
+      }).catch(() => null),
+    fonte === 'camara' && (!perfil.despesas || perfil.despesas.length === 0) ? fetchCamaraDespesas(perfil.idOrigem).catch(() => []) : Promise.resolve(perfil.despesas || []),
+    fonte === 'camara' && (!perfil.autorias || perfil.autorias.length === 0) ? fetchCamaraAutorias(perfil.idOrigem).catch(() => []) : Promise.resolve(perfil.autorias || []),
   ]);
 
   return {
@@ -140,6 +146,8 @@ export async function getPerfilEnriquecido(
         : null,
     votacoes: perfil.votacoes.length > 0 ? perfil.votacoes : votacoesCamara,
     temasVotacao: perfil.temasVotacao.length > 0 ? perfil.temasVotacao : temasCamara,
+    despesas,
+    autorias,
   };
 }
 

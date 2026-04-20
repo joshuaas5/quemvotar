@@ -99,7 +99,7 @@ async function fetchCamara<T>(path: string): Promise<T> {
   });
 
   if (!response.ok) {
-    throw new Error(`Falha ao consultar a API da CÃ¢mara: ${response.status}`);
+    throw new Error(`Falha ao consultar a API da Câmara: ${response.status}`);
   }
 
   return response.json() as Promise<T>;
@@ -127,15 +127,15 @@ function getRadarPerfilUrl(idParlamentarVoz: string) {
 
 function mapRadarVote(code: number | undefined) {
   if (code === 1) return 'Votou sim';
-  if (code === -1) return 'Votou nÃ£o';
-  if (code === 0) return 'AbstenÃ§Ã£o registrada';
-  if (code === 2) return 'ObstruÃ§Ã£o registrada';
+  if (code === -1) return 'Votou não';
+  if (code === 0) return 'Abstenção registrada';
+  if (code === 2) return 'Obstrução registrada';
   return 'Voto registrado';
 }
 
 function buildVoteTitle(votacao: CamaraVoteItem['votacao']) {
   const materia = votacao.proposicoesAfetadas?.[0] ?? votacao.objetosPossiveis?.[0];
-  if (!materia) return 'VotaÃ§Ã£o nominal';
+  if (!materia) return 'Votação nominal';
 
   const partes = compact([
     materia.siglaTipo ?? null,
@@ -143,7 +143,7 @@ function buildVoteTitle(votacao: CamaraVoteItem['votacao']) {
     typeof materia.ano === 'number' && materia.ano > 0 ? String(materia.ano) : null,
   ]);
 
-  return partes.length > 0 ? partes.join('/') : 'VotaÃ§Ã£o nominal';
+  return partes.length > 0 ? partes.join('/') : 'Votação nominal';
 }
 
 function buildVoteHref(votacao: CamaraVoteItem['votacao']) {
@@ -253,10 +253,10 @@ export const fetchCamaraVotesForPerfil = cache(async (perfil: PerfilPublico): Pr
 
     return {
       titulo: buildVoteTitle(votacao),
-      descricao: materia?.ementa ?? votacao.descricao ?? 'VotaÃ§Ã£o nominal registrada na CÃ¢mara dos Deputados.',
+      descricao: materia?.ementa ?? votacao.descricao ?? 'Votação nominal registrada na Câmara dos Deputados.',
       detalhe: compact([
         mapRadarVote(voto),
-        votacao.aprovacao === 1 ? 'Resultado: aprovada' : 'Resultado: nÃ£o aprovada',
+        votacao.aprovacao === 1 ? 'Resultado: aprovada' : 'Resultado: não aprovada',
       ]).join(' â€¢ '),
       data: votacao.data,
       destaque: mapRadarVote(voto),

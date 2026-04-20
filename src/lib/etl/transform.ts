@@ -16,7 +16,7 @@ export type DbVote = {
 export function transformaVotoCamaraParaDB(candidatoId: string, apiData: CamaraApiVote): DbVote {
   // Normaliza votos "Não" "Não " "nao"
   let parsedVote = apiData.voto.toUpperCase().trim();
-  if (parsedVote.includes('NÃO') || parsedVote.includes('NÃƒO') || parsedVote === 'NAO') {
+  if (parsedVote.includes('NÃO') || parsedVote.includes('NÃO') || parsedVote === 'NAO') {
     parsedVote = 'NAO';
   } else if (parsedVote.includes('SIM')) {
     parsedVote = 'SIM';

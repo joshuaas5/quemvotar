@@ -245,7 +245,7 @@ function mapMandato(mandato: SenadoMandato): PerfilItemLista {
     descricao: compact([
       mandato.DescricaoParticipacao ?? null,
       mandato.UfParlamentar ? `Mandato pela UF ${mandato.UfParlamentar}` : null,
-      suplentes ? `SuplÃªncia: ${suplentes}` : null,
+      suplentes ? `Suplência: ${suplentes}` : null,
     ]).join(' â€¢ '),
     data: mandato.PrimeiraLegislaturaDoMandato?.DataInicio ?? undefined,
     destaque: mandato.DescricaoParticipacao ?? undefined,
@@ -257,10 +257,10 @@ function mapComissao(comissao: SenadoComissao): PerfilItemLista {
     titulo:
       comissao.IdentificacaoComissao?.SiglaComissao ??
       comissao.IdentificacaoComissao?.NomeComissao ??
-      'ComissÃ£o',
+      'Comissão',
     descricao:
       comissao.IdentificacaoComissao?.NomeComissao ??
-      'ComissÃ£o retornada pela fonte oficial do Senado.',
+      'Comissão retornada pela fonte oficial do Senado.',
     detalhe: compact([
       comissao.DescricaoParticipacao ?? null,
       comissao.IdentificacaoComissao?.SiglaCasaComissao ?? null,
@@ -275,7 +275,7 @@ function mapCargo(cargo: SenadoCargo): PerfilItemLista {
     descricao:
       cargo.IdentificacaoComissao?.NomeComissao ??
       cargo.IdentificacaoComissao?.SiglaComissao ??
-      'Ã“rgÃ£o nÃ£o informado',
+      'Órgão não informado',
     detalhe: compact([
       cargo.IdentificacaoComissao?.SiglaComissao ?? null,
       cargo.IdentificacaoComissao?.SiglaCasaComissao ?? null,
@@ -286,17 +286,17 @@ function mapCargo(cargo: SenadoCargo): PerfilItemLista {
 
 function mapVotacao(votacao: SenadoVotacao): PerfilItemLista {
   return {
-    titulo: votacao.Materia?.DescricaoIdentificacao ?? 'VotaÃ§Ã£o nominal',
+    titulo: votacao.Materia?.DescricaoIdentificacao ?? 'Votação nominal',
     descricao:
       votacao.Materia?.Ementa ??
       votacao.DescricaoVotacao ??
-      'VotaÃ§Ã£o retornada pela API oficial do Senado.',
+      'Votação retornada pela API oficial do Senado.',
     detalhe: compact([
       votacao.DescricaoResultado ?? null,
       votacao.SiglaDescricaoVoto ?? null,
       votacao.TotalVotosSim ? `Sim ${votacao.TotalVotosSim}` : null,
-      votacao.TotalVotosNao ? `NÃ£o ${votacao.TotalVotosNao}` : null,
-      votacao.TotalVotosAbstencao ? `AbstenÃ§Ã£o ${votacao.TotalVotosAbstencao}` : null,
+      votacao.TotalVotosNao ? `Não ${votacao.TotalVotosNao}` : null,
+      votacao.TotalVotosAbstencao ? `Abstenção ${votacao.TotalVotosAbstencao}` : null,
     ]).join(' â€¢ '),
     data: votacao.SessaoPlenaria?.DataSessao ?? undefined,
     destaque: votacao.SiglaDescricaoVoto ?? undefined,
@@ -306,13 +306,13 @@ function mapVotacao(votacao: SenadoVotacao): PerfilItemLista {
 
 function mapAutoria(autoria: SenadoAutoria): PerfilItemLista {
   return {
-    titulo: autoria.Materia?.DescricaoIdentificacao ?? 'MatÃ©ria de autoria',
-    descricao: autoria.Materia?.Ementa ?? 'MatÃ©ria legislativa retornada pela API oficial do Senado.',
+    titulo: autoria.Materia?.DescricaoIdentificacao ?? 'Matéria de autoria',
+    descricao: autoria.Materia?.Ementa ?? 'Matéria legislativa retornada pela API oficial do Senado.',
     data: autoria.Materia?.Data ?? undefined,
     destaque:
       autoria.IndicadorAutorPrincipal === 'Sim'
         ? 'Autor principal'
-        : autoria.IndicadorAutorPrincipal === 'NÃ£o'
+        : autoria.IndicadorAutorPrincipal === 'Não'
           ? 'Coautoria'
           : undefined,
     href: getSenadoMateriaUrl(autoria.Materia?.Codigo),
@@ -322,10 +322,10 @@ function mapAutoria(autoria: SenadoAutoria): PerfilItemLista {
 function mapFiliacao(filiacao: SenadoFiliacao): PerfilItemLista {
   return {
     titulo: filiacao.Partido?.SiglaPartido ?? filiacao.Partido?.NomePartido ?? 'Partido',
-    descricao: filiacao.Partido?.NomePartido ?? 'FiliaÃ§Ã£o partidÃ¡ria registrada.',
+    descricao: filiacao.Partido?.NomePartido ?? 'Filiação partidária registrada.',
     detalhe: filiacao.DataDesfiliacao
-      ? `DesfiliaÃ§Ã£o em ${filiacao.DataDesfiliacao}`
-      : 'FiliaÃ§Ã£o sem data final informada.',
+      ? `Desfiliação em ${filiacao.DataDesfiliacao}`
+      : 'Filiação sem data final informada.',
     data: filiacao.DataFiliacao ?? undefined,
   };
 }
@@ -479,7 +479,7 @@ export const fetchSenadorDetalhado = cache(
     const autoriasResumo = await fetchAutoriasResumo(autorias);
     const temasVotacao = buildVoteThemeCards(
       votacoes.map((votacao) => ({
-        titulo: votacao.Materia?.DescricaoIdentificacao ?? 'VotaÃ§Ã£o nominal',
+        titulo: votacao.Materia?.DescricaoIdentificacao ?? 'Votação nominal',
         descricao: votacao.Materia?.Ementa ?? votacao.DescricaoVotacao,
         data: votacao.SessaoPlenaria?.DataSessao,
         voto: votacao.SiglaDescricaoVoto ?? votacao.DescricaoResultado ?? 'Voto registrado',
@@ -496,7 +496,7 @@ export const fetchSenadorDetalhado = cache(
       dataNascimento: dadosBasicos?.DataNascimento ?? null,
       naturalidade: naturalidade || null,
       escolaridade: null,
-      situacao: 'Em exercÃ­cio',
+      situacao: 'Em exercício',
       condicaoMandato: mandatoAtual?.DescricaoParticipacao ?? null,
       gabinete: dadosBasicos?.EnderecoParlamentar ?? null,
       sitePessoal: identificacao.UrlPaginaParticular ?? null,
@@ -507,15 +507,15 @@ export const fetchSenadorDetalhado = cache(
         perfilBase.partido ? { label: 'Partido', value: perfilBase.partido } : null,
         perfilBase.uf ? { label: 'UF', value: perfilBase.uf } : null,
         mandatoAtual?.DescricaoParticipacao
-          ? { label: 'ParticipaÃ§Ã£o', value: mandatoAtual.DescricaoParticipacao }
+          ? { label: 'Participação', value: mandatoAtual.DescricaoParticipacao }
           : null,
         bloco ? { label: 'Bloco', value: bloco } : null,
         identificacao.MembroMesa === 'Sim' ? { label: 'Mesa Diretora', value: 'Integra a Mesa' } : null,
         identificacao.MembroLideranca === 'Sim'
-          ? { label: 'LideranÃ§a', value: 'Exerce funÃ§Ã£o de lideranÃ§a' }
+          ? { label: 'Liderança', value: 'Exerce função de liderança' }
           : null,
         autoriasResumo.total ? { label: 'Autorias localizadas', value: `${autoriasResumo.total} registros` } : null,
-        votacoes.length ? { label: 'VotaÃ§Ãµes localizadas', value: `${votacoes.length} registros` } : null,
+        votacoes.length ? { label: 'Votações localizadas', value: `${votacoes.length} registros` } : null,
       ]),
       mandatos: compact([
         mandatoAtual ? mapMandato(mandatoAtual) : null,
@@ -550,12 +550,12 @@ export const fetchSenadorDetalhado = cache(
             ),
           )
           .map((servico) => ({
-            label: servico.NomeServico ?? 'ServiÃ§o relacionado',
+            label: servico.NomeServico ?? 'Serviço relacionado',
             href: servico.UrlServico ?? '',
           }))
           .filter((servico) => Boolean(servico.href)),
       ]),
-      notas: ['Dados desta pÃ¡gina sÃ£o carregados a partir das fontes oficiais do Senado Federal.'],
+      notas: ['Dados desta página são carregados a partir das fontes oficiais do Senado Federal.'],
       autoriasTotal: autoriasResumo.total,
       autoriasAprovadas: autoriasResumo.aprovadas,
       autoriasAmostraAnalisada: AUTORIAS_AMOSTRA_ANALISADA,
