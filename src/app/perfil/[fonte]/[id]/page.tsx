@@ -253,34 +253,36 @@ function renderListSection(title: string, description: string, items: PerfilItem
 /* ── section: top cards ──────────────────────────────────────────── */
 
 function renderTopCards(perfil: PerfilDetalhadoPublico, partido: PartidoResumo | null, enriched?: PerfilEnriquecido | null) {
+  const loadingEnrichedData = typeof enriched === "undefined";
+
   const cards = [
     {
       title: 'Nota',
       emoji: '⭐',
-      value: enriched?.ranking ? formatScore(enriched.ranking.nota) : (enriched === undefined ? '-' : '…'),
+      value: enriched?.ranking ? formatScore(enriched.ranking.nota) : (loadingEnrichedData ? '…' : '-'),
       helper: enriched?.ranking?.rankingGeral
         ? `Ranking geral #${enriched.ranking.rankingGeral}`
-        : enriched === undefined ? 'Sem nota pública localizada' : 'Carregando…',
+        : loadingEnrichedData ? 'Carregando dados externos…' : 'Sem nota pública localizada',
       href: enriched?.ranking?.fonteUrl,
       bg: 'bg-[#ffe066]',
     },
     {
       title: 'Presença',
       emoji: '✅',
-      value: enriched?.presenca ? formatPercent(enriched.presenca.percentual) : (enriched === undefined ? '-' : '…'),
+      value: enriched?.presenca ? formatPercent(enriched.presenca.percentual) : (loadingEnrichedData ? '…' : '-'),
       helper: enriched?.presenca
         ? `${enriched.presenca.presencas}/${enriched.presenca.sessoesDeliberativas} sessões no ano ${enriched.presenca.ano}`
-        : enriched === undefined ? 'Sem série de presença localizada' : 'Carregando…',
+        : loadingEnrichedData ? 'Carregando dados externos…' : 'Sem série de presença localizada',
       href: enriched?.presenca?.fonteUrl,
       bg: 'bg-[#9bf6ff]',
     },
     {
       title: 'Alinhamento',
       emoji: '🤝',
-      value: enriched?.governismo ? formatPercent(enriched.governismo.percentualFavoravel) : (enriched === undefined ? '-' : '…'),
+      value: enriched?.governismo ? formatPercent(enriched.governismo.percentualFavoravel) : (loadingEnrichedData ? '…' : '-'),
       helper: enriched?.governismo
         ? 'Percentual de apoio ao governo nas votações monitoradas'
-        : enriched === undefined ? 'Sem série localizada' : 'Carregando…',
+        : loadingEnrichedData ? 'Carregando dados externos…' : 'Sem série localizada',
       href: enriched?.governismo?.fonteUrl,
       bg: 'bg-[#ffd6a5]',
     },

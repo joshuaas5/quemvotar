@@ -6,6 +6,7 @@ import { buildVoteThemeCards } from '@/lib/political-themes';
 const RADAR_API_ROOT = 'https://radar.congressoemfoco.com.br/api';
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
 const REMOTE_REVALIDATE_SECONDS = 86400;
+const REMOTE_TIMEOUT_MS = 5000;
 const CAMARA_VOTE_SAMPLE_SIZE = 12;
 
 interface RadarBuscaItem {
@@ -95,6 +96,7 @@ function compact<T>(values: Array<T | null | undefined | false>): T[] {
 
 async function fetchRadar<T>(path: string): Promise<T> {
   const response = await fetch(`${RADAR_API_ROOT}${path}`, {
+    signal: AbortSignal.timeout(REMOTE_TIMEOUT_MS),
     headers: { Accept: 'application/json' },
     next: { revalidate: REMOTE_REVALIDATE_SECONDS },
   });
@@ -108,6 +110,7 @@ async function fetchRadar<T>(path: string): Promise<T> {
 
 async function fetchCamara<T>(path: string): Promise<T> {
   const response = await fetch(`${CAMARA_API_ROOT}${path}`, {
+    signal: AbortSignal.timeout(REMOTE_TIMEOUT_MS),
     headers: { Accept: 'application/json' },
     next: { revalidate: REMOTE_REVALIDATE_SECONDS },
   });

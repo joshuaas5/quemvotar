@@ -7,10 +7,10 @@ function formatNumber(value: number | null) {
 }
 
 const LIDERANCA_STYLE: Record<string, { emoji: string; bg: string; border: string; accent: string }> = {
-  governo: { emoji: '🟢', bg: 'bg-emerald-50', border: 'border-emerald-400', accent: 'text-emerald-800' },
-  oposicao: { emoji: '🔴', bg: 'bg-red-50', border: 'border-red-400', accent: 'text-red-800' },
-  maioria: { emoji: '🔵', bg: 'bg-blue-50', border: 'border-blue-400', accent: 'text-blue-800' },
-  minoria: { emoji: '🟡', bg: 'bg-amber-50', border: 'border-amber-400', accent: 'text-amber-800' },
+  governo: { emoji: '◼', bg: 'bg-slate-100', border: 'border-slate-400', accent: 'text-slate-900' },
+  oposicao: { emoji: '◆', bg: 'bg-zinc-100', border: 'border-zinc-400', accent: 'text-zinc-900' },
+  maioria: { emoji: '●', bg: 'bg-stone-100', border: 'border-stone-400', accent: 'text-stone-900' },
+  minoria: { emoji: '▲', bg: 'bg-neutral-100', border: 'border-neutral-400', accent: 'text-neutral-900' },
 };
 
 export default async function StatsDashboard() {

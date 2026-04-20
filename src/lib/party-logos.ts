@@ -1,5 +1,7 @@
 ﻿import { PARTY_LOGOS } from './party-logos.generated';
 
+const SIGLAS_COM_LOGO_INDISPONIVEL = new Set(['PRD']);
+
 export function normalizePartySigla(sigla: string): string {
   return sigla
     .normalize('NFD')
@@ -10,6 +12,11 @@ export function normalizePartySigla(sigla: string): string {
 
 export function getPartyLogoBySigla(sigla: string): string | null {
   const normalized = normalizePartySigla(sigla);
+
+  if (SIGLAS_COM_LOGO_INDISPONIVEL.has(normalized)) {
+    return null;
+  }
+
   return PARTY_LOGOS[normalized] ?? null;
 }
 

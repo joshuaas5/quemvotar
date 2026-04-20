@@ -1,10 +1,12 @@
 ﻿import { cache } from 'react';
 import type { PerfilPublico } from '@/lib/official';
 import type { RankingListaItem, RankingReferencia } from '@/lib/official/types';
+import { normalizeRemoteImageUrl } from '@/lib/utils/profile-image';
 
 const RANKING_API_ROOT = 'https://www.politicos.org.br/api';
 const RANKING_SITE_ROOT = 'https://ranking.org.br';
 const REMOTE_REVALIDATE_SECONDS = 86400;
+const RANKING_TIMEOUT_MS = 5000;
 
 interface RankingAnoApi {
   ano?: number;
@@ -79,6 +81,7 @@ function buildRankingReferencia(item: RankingItemApi, lastSync?: string): Rankin
 
 async function fetchRanking<T>(path: string): Promise<T> {
   const response = await fetch(`${RANKING_API_ROOT}${path}`, {
+    signal: AbortSignal.timeout(RANKING_TIMEOUT_MS),
     headers: { Accept: 'application/json' },
     next: { revalidate: REMOTE_REVALIDATE_SECONDS },
   });
@@ -157,7 +160,7 @@ export const fetchRankingTop = cache(
           cargo: item.cargo ?? 'Parlamentar',
           partido: item.partido ?? '--',
           uf: item.uf ?? '--',
-          fotoUrl: item.url_foto ?? null,
+          fotoUrl: normalizeRemoteImageUrl(item.url_foto) || null,
           slug: item.slug ?? null,
           fonteUrl: getRankingSourceUrl(item),
           ranking,
