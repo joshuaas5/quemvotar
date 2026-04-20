@@ -1,4 +1,4 @@
-﻿import {
+import {
   fetchOfficialCongressProfiles,
   getLiderancasCongresso,
   getOfficialCongressProfile,
@@ -37,6 +37,7 @@ export {
   getOfficialSourceStatus,
   getTseDatasets,
 } from './official';
+export { getThemeVisual, THEME_VISUALS, type ThemeVisual } from './political-themes';
 
 export function getCasaBadge(perfil: PerfilPublico): string {
   return perfil.casa === 'Senado Federal' ? 'SENADO FEDERAL' : 'CÂMARA DOS DEPUTADOS';
@@ -75,24 +76,41 @@ export async function getPerfil(
   return getOfficialCongressProfile(fonte, idOrigem);
 }
 
-export async function getPerfilDetalhado(
+/** Fast path: basic profile + partido (1-2 fetches). Used for immediate hero render. */
+export async function getPerfilBasico(
   fonte: PerfilPublico['fonte'],
   idOrigem: string,
-): Promise<PerfilDetalhadoPublico | null> {
+): Promise<{ perfil: PerfilDetalhadoPublico; partido: PartidoResumo | null } | null> {
   const perfil = await getOfficialProfileDetail(fonte, idOrigem);
+  if (!perfil) return null;
+  const partido = await getPartido(perfil.partido).catch(() => null);
+  return { perfil, partido };
+}
 
-  if (!perfil) {
-    return null;
-  }
+/** Enrichment data fetched in parallel via Suspense streaming. */
+export interface PerfilEnriquecido {
+  ranking: PerfilDetalhadoPublico['ranking'];
+  governismo: PerfilDetalhadoPublico['governismo'];
+  presenca: PerfilDetalhadoPublico['presenca'];
+  espectro: PerfilDetalhadoPublico['espectro'];
+  votacoes: PerfilDetalhadoPublico['votacoes'];
+  temasVotacao: PerfilDetalhadoPublico['temasVotacao'];
+  biografia: string | null;
+}
 
+/** Slow path: ALL external fetches in a single Promise.all (maximum parallelism). */
+export async function getPerfilEnriquecido(
+  perfil: PerfilDetalhadoPublico,
+  partido: PartidoResumo | null,
+): Promise<PerfilEnriquecido> {
+  const fonte = perfil.fonte;
   const termoBuscaBiografia = perfil.nomeCompleto || perfil.nome_urna;
-  
-  const [ranking, governismo, votacoesCamara, presenca, partidoResumo, temasCamara, biografia] = await Promise.all([
+
+  const [ranking, governismo, votacoesCamara, presenca, temasCamara, biografia] = await Promise.all([
     fetchRankingForPerfil(perfil).catch(() => null),
     fetchGovernismoForPerfil(perfil).catch(() => null),
     fonte === 'camara' ? fetchCamaraVotesForPerfil(perfil).catch(() => []) : Promise.resolve([]),
     fetchAssiduidadeForPerfil(perfil).catch(() => null),
-    getPartido(perfil.partido).catch(() => null),
     fonte === 'camara' ? fetchCamaraVoteThemesForPerfil(perfil).catch(() => []) : Promise.resolve([]),
     fetch(`https://pt.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=true&explaintext=true&format=json&redirects=true&titles=${encodeURIComponent(termoBuscaBiografia)}`, { next: { revalidate: 86400 } })
       .then(r => r.json())
@@ -101,29 +119,39 @@ export async function getPerfilDetalhado(
         if (!pages) return null;
         const pageId = Object.keys(pages)[0];
         const extract = pages[pageId]?.extract;
-        if (extract && !extract.includes("pode referir-se a:")) return extract.split("\n")[0]; // Retorna apenas o primeiro paragrafo
+        if (extract && !extract.includes("pode referir-se a:")) return extract.split("\n")[0];
         return null;
       }).catch(() => null)
   ]);
 
   return {
-    ...perfil,
     ranking,
     governismo,
     presenca,
     biografia: biografia || null,
     espectro:
-      partidoResumo?.espectroEixo && partidoResumo.espectro
+      partido?.espectroEixo && partido.espectro
         ? {
             fonte: 'partido_e_votacoes',
-            eixo: partidoResumo.espectroEixo,
-            label: partidoResumo.espectro,
+            eixo: partido.espectroEixo,
+            label: partido.espectro,
             resumo: `Campo aproximado alinhado ao posicionamento público do ${perfil.partido}.`,
           }
         : null,
     votacoes: perfil.votacoes.length > 0 ? perfil.votacoes : votacoesCamara,
     temasVotacao: perfil.temasVotacao.length > 0 ? perfil.temasVotacao : temasCamara,
   };
+}
+
+/** Legacy: full profile fetch (kept for backward compatibility). */
+export async function getPerfilDetalhado(
+  fonte: PerfilPublico['fonte'],
+  idOrigem: string,
+): Promise<PerfilDetalhadoPublico | null> {
+  const result = await getPerfilBasico(fonte, idOrigem);
+  if (!result) return null;
+  const enriched = await getPerfilEnriquecido(result.perfil, result.partido);
+  return { ...result.perfil, ...enriched };
 }
 
 export async function getPartidos(): Promise<PartidoResumo[]> {

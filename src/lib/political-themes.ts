@@ -1,5 +1,28 @@
 import type { PerfilItemLista } from '@/lib/official';
 
+export interface ThemeVisual {
+  emoji: string;
+  bg: string;
+  border: string;
+  accent: string;
+  badgeBg: string;
+}
+
+export const THEME_VISUALS: Record<string, ThemeVisual> = {
+  'Economia e impostos': { emoji: '💰', bg: 'bg-amber-50', border: 'border-amber-400', accent: 'text-amber-700', badgeBg: 'bg-amber-100' },
+  'Saúde': { emoji: '🏥', bg: 'bg-emerald-50', border: 'border-emerald-400', accent: 'text-emerald-700', badgeBg: 'bg-emerald-100' },
+  'Educação': { emoji: '📚', bg: 'bg-blue-50', border: 'border-blue-400', accent: 'text-blue-700', badgeBg: 'bg-blue-100' },
+  'Segurança': { emoji: '🛡️', bg: 'bg-red-50', border: 'border-red-400', accent: 'text-red-700', badgeBg: 'bg-red-100' },
+  'Meio ambiente': { emoji: '🌿', bg: 'bg-green-50', border: 'border-green-400', accent: 'text-green-700', badgeBg: 'bg-green-100' },
+  'Direitos sociais': { emoji: '⚖️', bg: 'bg-purple-50', border: 'border-purple-400', accent: 'text-purple-700', badgeBg: 'bg-purple-100' },
+  'Infraestrutura e cidades': { emoji: '🏗️', bg: 'bg-orange-50', border: 'border-orange-400', accent: 'text-orange-700', badgeBg: 'bg-orange-100' },
+  'Temas gerais': { emoji: '📋', bg: 'bg-slate-50', border: 'border-slate-400', accent: 'text-slate-700', badgeBg: 'bg-slate-100' },
+};
+
+export function getThemeVisual(tema: string): ThemeVisual {
+  return THEME_VISUALS[tema] ?? THEME_VISUALS['Temas gerais'];
+}
+
 interface VoteThemeSource {
   titulo: string;
   descricao?: string;

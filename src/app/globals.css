@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 
 @theme {
   --color-secondary: #006666;
@@ -80,7 +80,25 @@
 
 @layer utilities {
   .neo-brutalist-shadow {
-    box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+    box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
   }
+  @media (min-width: 640px) {
+    .neo-brutalist-shadow {
+      box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+    }
+  }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.2s ease-out;
 }
 

@@ -1,20 +1,12 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { getCasaBadge, getHighlights, getPerfilHref } from '@/lib/api';
-import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
 
-type CardConfig = {
-  bgClass: string;
-  textClass: string;
-  icon: string;
-};
-
-function getCardConfig(index: number): CardConfig {
-  const configs: CardConfig[] = [
-    { bgClass: 'bg-tertiary', textClass: 'text-white', icon: 'account_balance' },
-    { bgClass: 'bg-secondary-fixed', textClass: 'text-on-secondary-fixed', icon: 'how_to_vote' },
-    { bgClass: 'bg-primary-container', textClass: 'text-on-primary-fixed', icon: 'verified' },
+function getCardConfig(index: number) {
+  const configs = [
+    { bgClass: 'bg-primary-container', textClass: 'text-on-primary-fixed', shadowClass: 'shadow-primary-container' },
+    { bgClass: 'bg-[#9bf6ff]', textClass: 'text-black', shadowClass: 'shadow-[#9bf6ff]' },
+    { bgClass: 'bg-[#ffc6ff]', textClass: 'text-black', shadowClass: 'shadow-[#ffc6ff]' },
   ];
-
   return configs[index % configs.length];
 }
 
@@ -22,81 +14,67 @@ export default async function Highlights() {
   const candidatos = await getHighlights();
 
   return (
-    <section id="candidatos" className="bg-surface-container-low py-14 md:py-20 px-4 md:px-6 border-y-4 border-black">
+    <section id="candidatos" className="bg-surface-container-low py-12 sm:py-20 px-4 sm:px-6 border-y-4 border-black">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-10 md:mb-16">
-          <h2 className="font-headline font-black text-3xl md:text-5xl uppercase tracking-tighter mb-2">
+        <div className="mb-10 sm:mb-16">
+          <h2 className="font-headline font-black text-3xl sm:text-5xl uppercase tracking-tighter mb-2">
             PARLAMENTARES EM EXERCÍCIO
           </h2>
-          <p className="font-body font-bold text-base md:text-xl uppercase opacity-70">
+          <p className="font-body font-bold text-base sm:text-xl uppercase opacity-70">
             Perfis em destaque nesta visita.
           </p>
         </div>
 
         {candidatos.length === 0 ? (
-          <div className="bg-white border-4 border-black p-8 md:p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <h3 className="font-headline font-black text-2xl md:text-3xl uppercase mb-3">
+          <div className="bg-white border-4 border-black p-8 sm:p-12 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            <h3 className="font-headline font-black text-2xl sm:text-3xl uppercase mb-3">
               NENHUM DADO DISPONÍVEL NO MOMENTO
             </h3>
             <p className="font-body font-bold">
-              A vitrine depende da resposta das APIs oficiais consultadas pelo projeto.
+              Não conseguimos carregar os perfis das APIs oficiais agora. Tente em alguns minutos.
             </p>
           </div>
         ) : (
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-10">
             {candidatos.map((candidato, index) => {
               const config = getCardConfig(index);
-              const logo = getPartyLogoBySigla(candidato.partido);
-              const visual = getPartyVisualEmoji(candidato.partido);
 
               return (
                 <article
                   key={`${candidato.fonte}-${candidato.id}`}
-                  className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:shadow-[0_10px_20px_rgba(0,0,0,0.14)] transition-shadow duration-200 group"
+                  className="bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-100 group"
                 >
-                  
-                  <div className={`${config.bgClass} ${config.textClass} px-4 py-3 font-headline font-black uppercase flex justify-between items-center`}>
+                  <div className={`${config.bgClass} ${config.textClass} p-4 font-headline font-black uppercase flex justify-between items-center`}>
                     <span>{getCasaBadge(candidato)}</span>
-                    <span className="flex items-center gap-2">
-                      <span>{visual}</span>
-                      <span className="material-symbols-outlined">{config.icon}</span>
-                    </span>
+                    <span className="material-symbols-outlined">verified</span>
                   </div>
-                  <div className="aspect-square relative overflow-hidden border-b-4 border-black grayscale group-hover:grayscale-0 transition-all duration-300">
+
+                  <div className="aspect-square bg-gray-100 grayscale hover:grayscale-0 transition-all border-b-4 border-black overflow-hidden relative">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      className="w-full h-full object-cover object-top"
+                      src={candidato.foto_url}
                       alt={candidato.nome_urna}
-                      src={candidato.foto_url || 'https://fakeimg.pl/600x600?text=Sem+Foto'}
+                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
-                  <div className="p-5 md:p-6 flex-grow flex flex-col">
-                    <div className="flex items-center gap-3 mb-2">
-                      {logo ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={logo}
-                          alt={`Logo ${candidato.partido}`}
-                          className="w-9 h-9 rounded-full object-contain bg-white border-2 border-black p-1 shrink-0"
-                        />
-                      ) : null}
-                      <span className="font-headline font-black text-on-surface-variant text-sm block leading-tight">
-                        {candidato.partido} {candidato.uf ? `(${candidato.uf})` : ''}
-                      </span>
-                    </div>
 
-                    <h3 className="font-headline font-black text-2xl md:text-3xl xl:text-4xl leading-none uppercase mb-4">
+                  <div className="p-8 flex flex-col flex-grow">
+                    <span className="font-headline font-black text-on-surface-variant text-sm block mb-1">
+                      {candidato.partido} {candidato.uf ? `(${candidato.uf})` : ''}
+                    </span>
+                    <h3 className="font-headline font-black text-2xl sm:text-3xl xl:text-4xl leading-none uppercase mb-4">
                       {candidato.nome_urna}
                     </h3>
-                    <p className="font-body font-medium mb-6 text-sm text-on-surface/85 flex-grow">
-                      {candidato.cargo} em exercício. Perfil exibido a partir de fonte oficial já
-                      disponível na base do projeto.
+                    <p className="font-body font-medium mb-6 text-sm flex-grow">
+                      Consulte a nota no ranking, histórico de votações, assiduidade e principais
+                      temas defendidos.
                     </p>
+
                     <Link
                       href={getPerfilHref(candidato)}
-                      className="w-full bg-on-background text-white font-headline font-black py-4 uppercase border-4 border-transparent hover:bg-white hover:text-black hover:border-black transition-all cursor-pointer text-center"
+                      className="inline-block mt-auto bg-black text-white px-6 py-3 font-headline font-black text-lg uppercase border-2 border-black hover:bg-white hover:text-black transition-colors text-center"
                     >
-                      VER PERFIL
+                      Ver perfil completo
                     </Link>
                   </div>
                 </article>
@@ -108,9 +86,3 @@ export default async function Highlights() {
     </section>
   );
 }
-
-
-
-
-
-
