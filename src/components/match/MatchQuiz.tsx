@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import type { UserAnswer } from '@/lib/match/calculator';
 
 type MatchQuizProps = {
@@ -34,7 +34,7 @@ export function MatchQuiz({ questionId, title, description, currentAnswer, onAns
   return (
     <div className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col h-full">
       <h3 className="font-headline font-black text-2xl uppercase mb-2 leading-tight">{title}</h3>
-      <p className="font-body font-medium text-sm mb-6 flex-grow">{description}</p>
+      <p className="font-body font-medium text-sm mb-6">{description}</p>
       
       <div className="flex flex-col gap-2 mb-6">
         {LIKERT_OPTIONS.map((opt) => (

@@ -17,6 +17,7 @@ import {
   type PerfilPublico,
   type RankingListaItem,
 } from './official';
+import { decodeMojibake } from './utils/string';
 import {
   fetchAssiduidadeForPerfil,
   fetchCamaraVoteThemesForPerfil,
@@ -144,10 +145,27 @@ export async function getPerfilEnriquecido(
             resumo: `Campo aproximado alinhado ao posicionamento público do ${perfil.partido}.`,
           }
         : null,
-    votacoes: perfil.votacoes.length > 0 ? perfil.votacoes : votacoesCamara,
-    temasVotacao: perfil.temasVotacao.length > 0 ? perfil.temasVotacao : temasCamara,
-    despesas,
-    autorias,
+    despesas: despesas.map(d => ({
+      ...d,
+      titulo: decodeMojibake(d.titulo),
+      descricao: decodeMojibake(d.descricao),
+    })),
+    autorias: autorias.map(a => ({
+      ...a,
+      titulo: decodeMojibake(a.titulo),
+      descricao: decodeMojibake(a.descricao),
+    })),
+    votacoes: (perfil.votacoes.length > 0 ? perfil.votacoes : votacoesCamara).map(v => ({
+      ...v,
+      titulo: decodeMojibake(v.titulo),
+      descricao: decodeMojibake(v.descricao),
+    })),
+    temasVotacao: (perfil.temasVotacao.length > 0 ? perfil.temasVotacao : temasCamara).map(t => ({
+      ...t,
+      titulo: decodeMojibake(t.titulo),
+      destaque: decodeMojibake(t.destaque),
+      descricao: decodeMojibake(t.descricao),
+    })),
   };
 }
 

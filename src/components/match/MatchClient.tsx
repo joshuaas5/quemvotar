@@ -39,9 +39,14 @@ const QUESTIONS: Question[] = [
     description: 'O acesso à posse e ao porte de armas de fogo pelo cidadão comum sem antecedentes criminais deve ser facilitado para defesa pessoal.',
   },
   {
-    id: 'quotas',
-    title: 'Cotas',
-    description: 'Reservas de vagas (cotas raciais e sociais) em universidades e concursos públicos são políticas fundamentais para reduzir desigualdades.',
+    id: 'cotas_raciais',
+    title: 'Cotas Raciais',
+    description: 'Reservas de vagas baseadas em critérios raciais em universidades e concursos públicos são fundamentais para reparar injustiças históricas.',
+  },
+  {
+    id: 'cotas_sociais',
+    title: 'Cotas Sociais',
+    description: 'Reservas de vagas baseadas em critérios de renda e escola pública são a melhor forma de garantir igualdade de oportunidades no ensino superior.',
   },
   {
     id: 'abor',

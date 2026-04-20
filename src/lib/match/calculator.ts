@@ -13,11 +13,12 @@ export const THEMES_EXPECTED: Record<string, number[]> = {
   impostos: [5, 4, 3, 2, 1], 
   drogas:   [5, 4, 3, 2, 1], 
   armas:    [1, 1, 2, 4, 5], 
-  quotas:   [5, 4, 3, 2, 1], 
-  abor:     [5, 4, 3, 2, 1], 
-  religiao: [1, 2, 3, 4, 5], 
-  clt:      [1, 2, 3, 4, 5], 
-  meio_amb: [5, 5, 4, 3, 2], 
+  cotas_raciais: [5, 4, 3, 2, 1], 
+  cotas_sociais: [5, 5, 4, 3, 2], 
+  abor:          [5, 4, 3, 2, 1], 
+  religiao:      [1, 2, 3, 4, 5], 
+  clt:           [1, 2, 3, 4, 5], 
+  meio_amb:      [5, 5, 4, 3, 2], 
 };
 
 function getSpectrumIndex(spectrum: string): number {

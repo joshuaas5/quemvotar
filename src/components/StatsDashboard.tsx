@@ -64,7 +64,7 @@ export default async function StatsDashboard() {
                 >
                   <div className="flex items-center justify-between gap-2 sm:gap-4 mb-2">
                     <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-                      <div className="font-headline font-black text-xl sm:text-3xl uppercase shrink-0 w-14 sm:w-20">
+                      <div className="font-headline font-black text-xl sm:text-2xl uppercase shrink-0 min-w-[3.5rem] sm:min-w-[5rem] w-fit break-all sm:break-normal">
                         {partido.sigla}
                       </div>
                       <div className="min-w-0">
