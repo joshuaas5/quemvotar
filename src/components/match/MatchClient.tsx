@@ -1,6 +1,6 @@
-﻿'use client';
+'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { MatchQuiz } from './MatchQuiz';
 import { calculateMatchScoreDetailed, calculateNolanChart, type UserAnswersMap } from '@/lib/match/calculator';
 import type { PerfilPublico } from '@/lib/api';
@@ -15,67 +15,91 @@ const QUESTIONS: Question[] = [
   {
     id: 'pvt',
     title: 'Privatizações',
-    description: 'Empresas estatais (Correios, Petrobras) devem ser privatizadas para melhorar a eficiência da economia e remover corrupção.',
+    description:
+      'Empresas estatais (Correios, Petrobras) devem ser privatizadas para melhorar a eficiência da economia e remover corrupção.',
   },
   {
     id: 'agr',
     title: 'Agronegócio',
-    description: 'O agronegócio e a produção de alimentos devem ter mais liberdade para se expandir, mesmo que avance sobre áreas de preservação ambiental informais.',
+    description:
+      'O agronegócio e a produção de alimentos devem ter mais liberdade para se expandir, mesmo que avance sobre áreas de preservação ambiental informais.',
   },
   {
     id: 'impostos',
     title: 'Taxação de Fortunas',
-    description: 'O governo deve aumentar os impostos sobre grandes fortunas e grandes lucros para financiar mais programas de bem social e redução de desigualdade.',
+    description:
+      'O governo deve aumentar os impostos sobre grandes fortunas e grandes lucros para financiar mais programas de bem social e redução de desigualdade.',
   },
   {
     id: 'drogas',
     title: 'Drogas',
-    description: 'A legalização e regulamentação da maconha seria uma medida mais eficaz para combater o tráfico e a violência do que a proibição.',
+    description:
+      'A legalização e regulamentação da maconha seria uma medida mais eficaz para combater o tráfico e a violência do que a proibição.',
   },
   {
     id: 'armas',
     title: 'Posse de Armas',
-    description: 'O acesso à posse e ao porte de armas de fogo pelo cidadão comum sem antecedentes criminais deve ser facilitado para defesa pessoal.',
+    description:
+      'O acesso à posse e ao porte de armas de fogo pelo cidadão comum sem antecedentes criminais deve ser facilitado para defesa pessoal.',
   },
   {
     id: 'quotas',
     title: 'Cotas',
-    description: 'Reservas de vagas (cotas raciais e sociais) em universidades e concursos públicos são políticas fundamentais para reduzir desigualdades.',
+    description:
+      'Reservas de vagas (cotas raciais e sociais) em universidades e concursos públicos são políticas fundamentais para reduzir desigualdades.',
   },
   {
     id: 'abor',
     title: 'Aborto',
-    description: 'A decisão sobre a interrupção da gravidez (aborto) nas primeiras semanas deve pertencer somente à mulher, de forma descriminalizada e legalizada.',
+    description:
+      'A decisão sobre a interrupção da gravidez (aborto) nas primeiras semanas deve pertencer somente à mulher, de forma descriminalizada e legalizada.',
   },
   {
     id: 'religiao',
     title: 'Religião no Estado',
-    description: 'Valores cristãos e da família tradicional devem ser a principal base para as diretrizes morais de leis e do ensino público.',
+    description:
+      'Valores cristãos e da família tradicional devem ser a principal base para as diretrizes morais de leis e do ensino público.',
   },
   {
     id: 'clt',
     title: 'Leis Trabalhistas',
-    description: 'Leis de proteção ao emprego (nos moldes da CLT) precisam ser mais flexibilizadas, permitindo negociação direta entre empregador e empregado.',
+    description:
+      'Leis de proteção ao emprego (nos moldes da CLT) precisam ser mais flexibilizadas, permitindo negociação direta entre empregador e empregado.',
   },
   {
     id: 'meio_amb',
     title: 'Meio Ambiente',
-    description: 'Proteger o meio ambiente e preservar florestas deve ser prioridade máxima do Estado, ainda que signifique perder poder de crescimento econômico na região.',
-  }
+    description:
+      'Proteger o meio ambiente e preservar florestas deve ser prioridade máxima do Estado, ainda que signifique perder poder de crescimento econômico na região.',
+  },
 ];
 
-export function MatchClient({ 
-  parlamentares, 
-  rankings 
-}: { 
-  parlamentares: PerfilPublico[],
-  rankings: Record<string, number> 
+export function MatchClient({
+  parlamentares,
+  rankings,
+}: {
+  parlamentares: PerfilPublico[];
+  rankings: Record<string, number>;
 }) {
   const [answers, setAnswers] = useState<UserAnswersMap>({});
   const [showResults, setShowResults] = useState(false);
+  const spectrumSectionRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!showResults) return;
+
+    window.requestAnimationFrame(() => {
+      if (spectrumSectionRef.current) {
+        spectrumSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }, [showResults]);
 
   const handleAnswer = (questionId: string, answer: { score: number; weight: number }) => {
-    setAnswers(prev => ({ ...prev, [questionId]: answer }));
+    setAnswers((prev) => ({ ...prev, [questionId]: answer }));
   };
 
   const results = useMemo(() => {
@@ -83,143 +107,179 @@ export function MatchClient({
 
     const nolan = calculateNolanChart(answers);
 
-    const scored = parlamentares.map(pol => {
+    const scored = parlamentares.map((pol) => {
       const score = calculateMatchScoreDetailed(answers, pol.idOrigem || pol.nome_urna, pol.partido || '');
       const rankingNota = rankings[pol.nome_urna] ?? null;
       return { ...pol, score, rankingNota };
     });
 
-    return { 
+    return {
       scored: scored.sort((a, b) => b.score - a.score).slice(0, 12),
-      nolan
+      nolan,
     };
   }, [answers, parlamentares, showResults, rankings]);
 
   const progress = Math.round((Object.keys(answers).length / QUESTIONS.length) * 100);
 
   return (
-    <div className="max-w-6xl mx-auto w-full">
+    <div className="max-w-6xl mx-auto w-full overflow-x-hidden">
       {!showResults ? (
         <div className="space-y-8">
-          <div className="bg-white border-4 border-black p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="bg-white border-4 border-black p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
             <h1 className="font-headline font-black text-4xl uppercase mb-2">Descubra seu Match</h1>
             <p className="font-body font-bold opacity-80 max-w-2xl mx-auto">
-              Sua opinião importa. Analisaremos sua visão de mundo em economia, sociedade, costumes e meio ambiente para cruzar com a inclinação e histórico de cada parlamentar.
+              Sua opinião importa. Analisaremos sua visão de mundo em economia, sociedade, costumes e
+              meio ambiente para cruzar com a inclinação e histórico de cada parlamentar.
             </p>
-            
+
             <div className="mt-6 border-4 border-black h-8 bg-surface-container w-full max-w-xl mx-auto relative overflow-hidden">
-               <div 
-                 className="absolute left-0 top-0 bottom-0 bg-primary-fixed border-r-4 border-black transition-all duration-500 ease-out"
-                 style={{ width: `${progress}%` }}
-               />
-               <span className="absolute inset-0 flex items-center justify-center font-headline font-black uppercase text-sm z-10 mix-blend-difference text-white">
-                 Completado {progress}%
-               </span>
+              <div
+                className="absolute left-0 top-0 bottom-0 bg-primary-fixed border-r-4 border-black transition-all duration-500 ease-out"
+                style={{ width: `${progress}%` }}
+              />
+              <span className="absolute inset-0 flex items-center justify-center font-headline font-black uppercase text-sm z-10 mix-blend-difference text-white">
+                Completado {progress}%
+              </span>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {QUESTIONS.map(q => (
-              <MatchQuiz 
-                key={q.id} 
-                questionId={q.id} 
-                title={q.title} 
+            {QUESTIONS.map((q) => (
+              <MatchQuiz
+                key={q.id}
+                questionId={q.id}
+                title={q.title}
                 description={q.description}
                 currentAnswer={answers[q.id]}
-                onAnswer={handleAnswer} 
+                onAnswer={handleAnswer}
               />
             ))}
           </div>
 
-          <div className="flex justify-center mt-12 bg-white border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <div className="text-center">
+          <div className="flex justify-center mt-12 bg-white border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+            <div className="text-center w-full">
               <p className="font-label font-bold uppercase tracking-widest text-sm mb-4 opacity-70">
                 Responda todas para o melhor resultado
               </p>
-              <button 
+              <button
                 onClick={() => setShowResults(true)}
                 disabled={Object.keys(answers).length < 3}
-                className="bg-black text-white font-headline font-black text-3xl uppercase px-16 py-6 border-4 border-white hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:translate-x-0 disabled:hover:shadow-none transition-all"
+                className="bg-black text-white font-headline font-black text-2xl sm:text-3xl uppercase px-8 sm:px-16 py-6 border-4 border-white hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:translate-x-0 disabled:hover:shadow-none transition-all w-full sm:w-auto"
               >
-                Cruzar Dados e Ver Resultados!
+                Cruzar dados e ver resultados
               </button>
             </div>
           </div>
         </div>
       ) : (
         <div className="space-y-8">
-          <div className="flex flex-col md:flex-row md:justify-between items-center gap-4 bg-primary-container border-4 border-black p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-            <div>
-              <h2 className="font-headline font-black text-4xl uppercase leading-none">Resultado do Cruzamento</h2>
-              <p className="font-body font-bold mt-2 opacity-80 max-w-xl">Encontramos os parlamentares que possuem o perfil mais alinhado com base em espectro partidário e análise de inclinações em votações teóricas.</p>
+          <div className="flex flex-col md:flex-row md:justify-between items-stretch md:items-center gap-4 bg-primary-container border-4 border-black p-6 sm:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+            <div className="min-w-0">
+              <h2 className="font-headline font-black text-4xl uppercase leading-none">Resultado do cruzamento</h2>
+              <p className="font-body font-bold mt-2 opacity-80 max-w-xl">
+                Encontramos os parlamentares que possuem o perfil mais alinhado com base em espectro
+                partidário e análise de inclinações em votações teóricas.
+              </p>
             </div>
-            
-            <button 
+
+            <button
               onClick={() => setShowResults(false)}
-              className="bg-white border-4 border-black font-headline font-black px-6 py-4 uppercase text-lg hover:bg-gray-100 whitespace-nowrap"
+              className="bg-white border-4 border-black font-headline font-black px-6 py-4 uppercase text-lg hover:bg-gray-100 w-full md:w-auto text-center"
             >
-              Afinar Respostas
+              Afinar respostas
             </button>
           </div>
 
           {results.nolan && (
-            <div className="bg-white border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              <div>
-                <h3 className="font-headline font-black text-3xl uppercase mb-4 text-primary-fixed">O Seu Espectro</h3>
-                <p className="font-body font-bold text-lg mb-2">Seu posicionamento, calculado no Diagrama de Nolan pelas suas respostas, sugere o eixo: <strong className="bg-[#ffc6ff] border-2 border-black px-2">{results.nolan.label}</strong>.</p>
+            <div
+              ref={spectrumSectionRef}
+              className="bg-white border-4 border-black p-6 sm:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] grid grid-cols-1 md:grid-cols-2 gap-8 items-center scroll-mt-4 overflow-hidden"
+            >
+              <div className="min-w-0">
+                <h3 className="font-headline font-black text-3xl uppercase mb-4 text-primary-fixed">Seu eixo ideológico</h3>
+                <p className="font-body font-bold text-lg mb-2">
+                  Seu posicionamento, calculado no Diagrama de Nolan pelas suas respostas, sugere o eixo:{' '}
+                  <strong className="bg-[#ffc6ff] border-2 border-black px-2">{results.nolan.label}</strong>.
+                </p>
                 <ul className="space-y-2 mt-4 font-body font-medium">
-                  <li><strong>Liberdade Econômica:</strong> {results.nolan.econPercent.toFixed(0)}%</li>
-                  <li><strong>Liberdade Pessoal:</strong> {results.nolan.personalPercent.toFixed(0)}%</li>
+                  <li>
+                    <strong>Liberdade Econômica:</strong> {results.nolan.econPercent.toFixed(0)}%
+                  </li>
+                  <li>
+                    <strong>Liberdade Pessoal:</strong> {results.nolan.personalPercent.toFixed(0)}%
+                  </li>
                 </ul>
               </div>
-              <div className="relative w-full aspect-square max-w-[320px] mx-auto flex items-center justify-center my-8">
-                  <div className="relative w-[70%] h-[70%] border-4 border-black bg-gray-100 rotate-45 origin-center justify-center overflow-hidden">
-                    <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
-                      <div className="bg-[#b3d4ff]"></div>
-                      <div className="bg-[#ffb3b3]"></div>
-                      <div className="bg-[#e6ccff]"></div>
-                      <div className="bg-[#ffe6b3]"></div>
-                    </div>
-                    <div 
-                      className="absolute w-[4%] h-[4%] bg-black rounded-full shadow-[0_0_0_4px_white] z-20 transition-all duration-1000"
-                      style={{
-                        bottom: `calc(${results.nolan.econPercent}% - 2%)`,
-                        left: `calc(${results.nolan.personalPercent}% - 2%)`
-                      }}
-                    />
+              <div className="relative w-full aspect-square max-w-[300px] sm:max-w-[320px] mx-auto flex items-center justify-center my-4 sm:my-8 overflow-hidden sm:overflow-visible">
+                <div className="relative w-[70%] h-[70%] border-4 border-black bg-gray-100 rotate-45 origin-center justify-center overflow-hidden">
+                  <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
+                    <div className="bg-[#b3d4ff]" />
+                    <div className="bg-[#ffb3b3]" />
+                    <div className="bg-[#e6ccff]" />
+                    <div className="bg-[#ffe6b3]" />
                   </div>
-                  
-                  <span className="absolute top-[5px] sm:-top-2 left-1/2 -translate-x-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">Libertário</span>
-                  <span className="absolute bottom-[5px] sm:-bottom-2 left-1/2 -translate-x-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">Estatista</span>
-                  <span className="absolute left-[5px] sm:-left-3 top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">Esquerda</span>
-                  <span className="absolute right-[5px] sm:-right-3 top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">Direita</span>
+                  <div
+                    className="absolute w-[4%] h-[4%] bg-black rounded-full shadow-[0_0_0_4px_white] z-20 transition-all duration-1000"
+                    style={{
+                      bottom: `calc(${results.nolan.econPercent}% - 2%)`,
+                      left: `calc(${results.nolan.personalPercent}% - 2%)`,
+                    }}
+                  />
                 </div>
-              </div>
 
+                <span className="absolute top-1 left-1/2 -translate-x-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">
+                  Libertário
+                </span>
+                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">
+                  Estatista
+                </span>
+                <span className="absolute left-1 top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">
+                  Esquerda
+                </span>
+                <span className="absolute right-1 top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">
+                  Direita
+                </span>
+              </div>
+            </div>
           )}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {results.scored.map((pol) => (
-              <div key={pol.idOrigem} className="bg-white border-4 border-black p-6 flex flex-col items-center text-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] relative">
+              <div
+                key={pol.idOrigem}
+                className="bg-white border-4 border-black p-6 flex flex-col items-center text-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden"
+              >
                 {pol.rankingNota !== null && (
-                   <div className="absolute top-[-10px] right-[-10px] bg-[#ffe066] border-4 border-black px-3 py-1 font-headline font-black text-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-10">
-                     Nota {pol.rankingNota.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
-                   </div>
+                  <div className="absolute top-2 right-2 bg-[#ffe066] border-4 border-black px-2 py-1 font-headline font-black text-sm sm:text-base shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] z-10 max-w-[75%] text-right leading-tight">
+                    Nota{' '}
+                    {pol.rankingNota.toLocaleString('pt-BR', {
+                      minimumFractionDigits: 1,
+                      maximumFractionDigits: 1,
+                    })}
+                  </div>
                 )}
-                
+
                 <div className="w-32 h-32 border-4 border-black bg-gray-200 rounded-full mb-4 overflow-hidden relative">
                   {pol.foto_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={pol.foto_url} alt={pol.nome_urna} className="w-full h-full object-cover object-top" />
                   ) : (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src="https://fakeimg.pl/640x640?text=Sem+Foto" alt="Sem Foto" className="w-full h-full object-cover object-top" />
+                    <img
+                      src="https://fakeimg.pl/640x640?text=Sem+Foto"
+                      alt="Sem Foto"
+                      className="w-full h-full object-cover object-top"
+                    />
                   )}
                 </div>
-                <h3 className="font-headline font-black text-2xl uppercase leading-tight mb-2">{pol.nome_urna}</h3>
-                <p className="font-label font-bold text-sm uppercase opacity-70 mb-4 bg-gray-100 px-3 py-1 border-2 border-black">{pol.partido} - {pol.uf}</p>
+                <h3 className="font-headline font-black text-2xl uppercase leading-tight mb-2 break-words w-full">
+                  {pol.nome_urna}
+                </h3>
+                <p className="font-label font-bold text-sm uppercase opacity-70 mb-4 bg-gray-100 px-3 py-1 border-2 border-black w-full break-words">
+                  {pol.partido} - {pol.uf}
+                </p>
                 <div className="mt-auto w-full bg-secondary-fixed border-4 border-black py-4">
                   <span className="font-headline font-black text-4xl">{pol.score.toFixed(1)}%</span>
-                  <span className="block text-sm font-bold uppercase mt-1 opacity-90">De Afinidade Total</span>
+                  <span className="block text-sm font-bold uppercase mt-1 opacity-90">De afinidade total</span>
                 </div>
               </div>
             ))}
@@ -229,6 +289,3 @@ export function MatchClient({
     </div>
   );
 }
-
-
-

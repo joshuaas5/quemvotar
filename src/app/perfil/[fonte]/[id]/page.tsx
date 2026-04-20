@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -19,11 +19,6 @@ function formatDate(value?: string | null) {
   }
 
   return value;
-}
-
-function formatNumber(value?: number | null) {
-  if (typeof value !== 'number') return null;
-  return new Intl.NumberFormat('pt-BR').format(value);
 }
 
 function formatScore(value?: number | null) {
@@ -461,7 +456,7 @@ export default async function PerfilPage({
 
           {renderListSection(
             'Votações recentes',
-            'Votos nominais e deliberações localizadas nas fontes consultadas.',
+            'Votações nominais agrupadas por matéria para facilitar a leitura (uma matéria pode ter várias etapas de voto).',
             perfil.votacoes,
             'A fonte não retornou votações recentes para este perfil nesta consulta.',
           )}
