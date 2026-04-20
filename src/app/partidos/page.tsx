@@ -1,4 +1,4 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { getLiderancas, getPartidos, getParlamentares, getPerfilHref } from '@/lib/api';
@@ -21,7 +21,21 @@ function getCasaLabel(casa: string) {
 }
 
 export default async function PartidosPage() {
-  const [partidos, liderancas, parlamentares] = await Promise.all([getPartidos(), getLiderancas(), getParlamentares()]);
+  // Falhas temporárias de API/scraping não podem quebrar o build de produção.
+  const [partidos, liderancas, parlamentares] = await Promise.all([
+    getPartidos().catch((error) => {
+      console.error('Falha ao carregar partidos:', error);
+      return [];
+    }),
+    getLiderancas().catch((error) => {
+      console.error('Falha ao carregar lideranças:', error);
+      return [];
+    }),
+    getParlamentares().catch((error) => {
+      console.error('Falha ao carregar parlamentares:', error);
+      return [];
+    }),
+  ]);
   const normalizeNome = (value: string) => value.toLowerCase().replace(/ \([^)]+\)/g, '').trim();
 
   const liderancasComFoto = liderancas.map((l) => {
