@@ -1,4 +1,4 @@
-﻿import Footer from '@/components/Footer';
+import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { MatchClient } from '@/components/match/MatchClient';
 import { getParlamentares, getRankingParlamentares } from '@/lib/api';
@@ -22,7 +22,7 @@ export default async function MatchPage() {
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="flex-grow bg-surface-container py-16 px-6">
+      <main className="flex-grow bg-surface-container py-16 px-4 sm:px-6 overflow-x-clip">
         <div className="max-w-7xl mx-auto space-y-10">
           <section className="bg-white border-4 border-black p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <h1 className="font-headline font-black text-5xl uppercase mb-4">Match eleitoral</h1>

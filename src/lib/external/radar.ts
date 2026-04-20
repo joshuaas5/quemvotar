@@ -1,4 +1,4 @@
-﻿import { cache } from 'react';
+import { cache } from 'react';
 import type { PerfilItemLista, PerfilPublico } from '@/lib/official';
 import type { GovernismoReferencia, PresencaReferencia } from '@/lib/official/types';
 import { buildVoteThemeCards } from '@/lib/political-themes';
@@ -71,6 +71,20 @@ interface CamaraVoteItem {
   votacao: NonNullable<CamaraVotacaoDetalhe['dados']>;
 }
 
+interface CamaraVoteGroup {
+  titulo: string;
+  descricao?: string;
+  data?: string;
+  href?: string;
+  ultimaEtapa?: string;
+  ultimoVoto: number | undefined;
+  sim: number;
+  nao: number;
+  abstencao: number;
+  obstrucao: number;
+  total: number;
+}
+
 function normalizeText(value: string) {
   return value.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
 }
@@ -114,8 +128,6 @@ function findRadarMatch(items: RadarBuscaItem[], perfil: PerfilPublico) {
       (perfil.fonte === 'senado' && item.casa === 'senado');
     const nomeCompativel = normalizeText(item.nomeEleitoral ?? '') === nomePerfil;
     const ufCompativel = !perfil.uf || !item.uf || item.uf === perfil.uf;
-    const partidoCompativel =
-      !perfil.partido || !item.parlamentarPartido?.sigla || item.parlamentarPartido.sigla === perfil.partido;
 
     return casaCompativel && nomeCompativel && ufCompativel;
   });
@@ -151,6 +163,93 @@ function buildVoteHref(votacao: CamaraVoteItem['votacao']) {
   return materia?.id
     ? `https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=${materia.id}`
     : undefined;
+}
+
+function getVoteBucket(voto: number | undefined) {
+  if (voto === 1) return 'sim';
+  if (voto === -1) return 'nao';
+  if (voto === 0) return 'abstencao';
+  if (voto === 2) return 'obstrucao';
+  return 'outro';
+}
+
+function getVoteTrend(group: CamaraVoteGroup) {
+  if (group.sim > group.nao) return 'Tendência: mais votos favoráveis';
+  if (group.nao > group.sim) return 'Tendência: mais votos contrários';
+  if (group.abstencao > 0 && group.sim === 0 && group.nao === 0) {
+    return 'Tendência: abstenções';
+  }
+  if (group.obstrucao > 0 && group.sim === 0 && group.nao === 0) {
+    return 'Tendência: obstruções';
+  }
+
+  return 'Tendência: votos divididos';
+}
+
+function getGroupKey(item: CamaraVoteItem) {
+  const title = buildVoteTitle(item.votacao);
+  const href = buildVoteHref(item.votacao);
+
+  if (href) {
+    return `${title}::${href}`;
+  }
+
+  if (title !== 'Votação nominal') {
+    return `${title}::sem-link`;
+  }
+
+  return `${title}::${item.voteId}`;
+}
+
+function buildVoteGroups(detalhes: CamaraVoteItem[]): CamaraVoteGroup[] {
+  const grouped = new Map<string, CamaraVoteGroup>();
+
+  for (const item of detalhes) {
+    const key = getGroupKey(item);
+    const titulo = buildVoteTitle(item.votacao);
+    const href = buildVoteHref(item.votacao);
+    const materia = item.votacao.proposicoesAfetadas?.[0] ?? item.votacao.objetosPossiveis?.[0];
+    const etapa = item.votacao.descricao?.trim();
+    const bucket = getVoteBucket(item.voto);
+
+    const current =
+      grouped.get(key) ??
+      ({
+        titulo,
+        descricao: materia?.ementa ?? item.votacao.descricao,
+        data: item.votacao.data,
+        href,
+        ultimaEtapa: etapa,
+        ultimoVoto: item.voto,
+        sim: 0,
+        nao: 0,
+        abstencao: 0,
+        obstrucao: 0,
+        total: 0,
+      } satisfies CamaraVoteGroup);
+
+    current.total += 1;
+
+    if (bucket === 'sim') current.sim += 1;
+    if (bucket === 'nao') current.nao += 1;
+    if (bucket === 'abstencao') current.abstencao += 1;
+    if (bucket === 'obstrucao') current.obstrucao += 1;
+
+    const isMoreRecent = (item.votacao.data ?? '') > (current.data ?? '');
+    if (isMoreRecent) {
+      current.data = item.votacao.data;
+      current.ultimaEtapa = etapa;
+      current.ultimoVoto = item.voto;
+    }
+
+    if (!current.descricao) {
+      current.descricao = materia?.ementa ?? item.votacao.descricao;
+    }
+
+    grouped.set(key, current);
+  }
+
+  return Array.from(grouped.values()).sort((a, b) => (b.data ?? '').localeCompare(a.data ?? ''));
 }
 
 const findRadarPerfil = cache(async (perfil: PerfilPublico): Promise<RadarBuscaItem | null> => {
@@ -247,20 +346,28 @@ export const fetchAssiduidadeForPerfil = cache(
 
 export const fetchCamaraVotesForPerfil = cache(async (perfil: PerfilPublico): Promise<PerfilItemLista[]> => {
   const detalhes = await fetchCamaraVoteItems(perfil);
+  const groups = buildVoteGroups(detalhes);
 
-  return detalhes.slice(0, 6).map(({ votacao, voto }) => {
-    const materia = votacao.proposicoesAfetadas?.[0] ?? votacao.objetosPossiveis?.[0];
+  return groups.slice(0, 6).map((group) => {
+    const etapaLabel = group.total > 1 ? `${group.total} etapas desta matéria` : '1 etapa desta matéria';
+    const resumoContagem = compact([
+      group.sim > 0 ? `${group.sim} sim` : null,
+      group.nao > 0 ? `${group.nao} não` : null,
+      group.abstencao > 0 ? `${group.abstencao} abstenções` : null,
+      group.obstrucao > 0 ? `${group.obstrucao} obstruções` : null,
+    ]).join(' • ');
 
     return {
-      titulo: buildVoteTitle(votacao),
-      descricao: materia?.ementa ?? votacao.descricao ?? 'Votação nominal registrada na Câmara dos Deputados.',
+      titulo: group.titulo,
+      descricao: group.descricao ?? 'Votação nominal registrada na Câmara dos Deputados.',
       detalhe: compact([
-        mapRadarVote(voto),
-        votacao.aprovacao === 1 ? 'Resultado: aprovada' : 'Resultado: não aprovada',
-      ]).join(' â€¢ '),
-      data: votacao.data,
-      destaque: mapRadarVote(voto),
-      href: buildVoteHref(votacao),
+        etapaLabel,
+        resumoContagem || null,
+        group.ultimaEtapa ? `Última etapa: ${group.ultimaEtapa}` : null,
+      ]).join(' • '),
+      data: group.data,
+      destaque: `${mapRadarVote(group.ultimoVoto)} | ${getVoteTrend(group)}`,
+      href: group.href,
     } satisfies PerfilItemLista;
   });
 });
@@ -268,21 +375,25 @@ export const fetchCamaraVotesForPerfil = cache(async (perfil: PerfilPublico): Pr
 export const fetchCamaraVoteThemesForPerfil = cache(
   async (perfil: PerfilPublico): Promise<PerfilItemLista[]> => {
     const detalhes = await fetchCamaraVoteItems(perfil);
+    const groups = buildVoteGroups(detalhes);
 
     return buildVoteThemeCards(
-      detalhes.map(({ votacao, voto }) => {
-        const materia = votacao.proposicoesAfetadas?.[0] ?? votacao.objetosPossiveis?.[0];
+      groups.map((group) => {
+        const temaVoteLabel =
+          group.sim > group.nao
+            ? 'Mais votos favoráveis'
+            : group.nao > group.sim
+              ? 'Mais votos contrários'
+              : mapRadarVote(group.ultimoVoto);
 
         return {
-          titulo: buildVoteTitle(votacao),
-          descricao: materia?.ementa ?? votacao.descricao,
-          data: votacao.data,
-          voto: mapRadarVote(voto),
-          href: buildVoteHref(votacao),
+          titulo: group.titulo,
+          descricao: group.descricao,
+          data: group.data,
+          voto: temaVoteLabel,
+          href: group.href,
         };
       }),
     );
   },
 );
-
-
