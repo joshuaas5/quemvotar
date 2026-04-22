@@ -232,7 +232,7 @@ function mapMandato(mandato: SenadoMandato): PerfilItemLista {
     mandato.SegundaLegislaturaDoMandato?.NumeroLegislatura
       ? `Legislatura ${mandato.SegundaLegislaturaDoMandato.NumeroLegislatura}`
       : null,
-  ]).join(' â€¢ ');
+  ]).join(' • ');
 
   const suplentes = toArray(mandato.Suplentes?.Suplente)
     .map((suplente) =>

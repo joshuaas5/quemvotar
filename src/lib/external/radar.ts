@@ -177,17 +177,18 @@ function getVoteBucket(voto: number | undefined) {
   return 'outro';
 }
 
-function getVoteTrend(group: CamaraVoteGroup) {
-  if (group.sim > group.nao) return 'Tendência: mais votos favoráveis';
-  if (group.nao > group.sim) return 'Tendência: mais votos contrários';
+function getVoteTrend(group: CamaraVoteGroup, proposalTitle?: string) {
+  const proposal = proposalTitle ? ` em ${proposalTitle}` : '';
+  if (group.sim > group.nao) return `Tendência: mais votos favoráveis${proposal}`;
+  if (group.nao > group.sim) return `Tendência: mais votos contrários${proposal}`;
   if (group.abstencao > 0 && group.sim === 0 && group.nao === 0) {
-    return 'Tendência: abstenções';
+    return `Tendência: abstenções${proposal}`;
   }
   if (group.obstrucao > 0 && group.sim === 0 && group.nao === 0) {
-    return 'Tendência: obstruções';
+    return `Tendência: obstruções${proposal}`;
   }
 
-  return 'Tendência: votos divididos';
+  return `Tendência: votos divididos${proposal}`;
 }
 
 function getGroupKey(item: CamaraVoteItem) {
@@ -386,7 +387,7 @@ export const fetchCamaraVotesForPerfil = cache(async (perfil: PerfilPublico): Pr
         group.ultimaEtapa ? `Última etapa: ${group.ultimaEtapa}` : null,
       ]).join(' • '),
       data: group.data,
-      destaque: `${mapRadarVote(group.ultimoVoto)} | ${getVoteTrend(group)}`,
+      destaque: `${mapRadarVote(group.ultimoVoto)} — ${getVoteTrend(group, group.titulo)}`,
       href: group.href,
     } satisfies PerfilItemLista;
   });

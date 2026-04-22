@@ -494,9 +494,21 @@ function renderGastosPanel(despesas: PerfilItemLista[]) {
           return (
             <div key={`${item.titulo}-${index}`}>
               <div className="flex justify-between items-center mb-1">
-                <p className="font-label font-bold uppercase text-xs opacity-80 truncate max-w-[70%]">
-                  {item.titulo}
-                </p>
+                {item.href ? (
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-label font-bold uppercase text-xs opacity-80 truncate max-w-[70%] hover:underline hover:text-blue-700"
+                    title="Ver nota fiscal original"
+                  >
+                    {item.titulo}
+                  </a>
+                ) : (
+                  <p className="font-label font-bold uppercase text-xs opacity-80 truncate max-w-[70%]">
+                    {item.titulo}
+                  </p>
+                )}
                 <p className="font-headline font-black text-sm">{item.destaque}</p>
               </div>
               <div className="h-4 bg-surface-container-high border-2 border-black relative overflow-hidden">
@@ -505,7 +517,16 @@ function renderGastosPanel(despesas: PerfilItemLista[]) {
                   style={{ width: `${percent}%` }}
                 />
               </div>
-              {item.data ? (
+              {item.href ? (
+                <a
+                  href={item.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-label font-bold uppercase text-[10px] opacity-60 mt-1 hover:underline"
+                >
+                  Ver nota fiscal ↗
+                </a>
+              ) : item.data ? (
                 <p className="font-label font-bold uppercase text-[10px] opacity-60 mt-1">
                   {formatDate(item.data)}
                 </p>

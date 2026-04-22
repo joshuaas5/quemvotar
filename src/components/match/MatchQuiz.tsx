@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { UserAnswer } from '@/lib/match/calculator';
 
 type MatchQuizProps = {
@@ -19,7 +19,7 @@ const LIKERT_OPTIONS = [
 
 export function MatchQuiz({ questionId, title, description, currentAnswer, onAnswer }: MatchQuizProps) {
   const currentScore = currentAnswer?.score;
-  const currentWeight = currentAnswer?.weight ?? 2; // Default weight = normal
+  const currentWeight = currentAnswer?.weight ?? 2;
 
   const handleScoreClick = (score: number) => {
     onAnswer(questionId, { score, weight: currentWeight });
@@ -27,7 +27,7 @@ export function MatchQuiz({ questionId, title, description, currentAnswer, onAns
 
   const handleWeightChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (currentScore) {
-       onAnswer(questionId, { score: currentScore, weight: Number(e.target.value) });
+      onAnswer(questionId, { score: currentScore, weight: Number(e.target.value) });
     }
   };
 
@@ -35,10 +35,10 @@ export function MatchQuiz({ questionId, title, description, currentAnswer, onAns
     <div className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col h-full">
       <h3 className="font-headline font-black text-2xl uppercase mb-2 leading-tight">{title}</h3>
       <p className="font-body font-medium text-sm mb-6">{description}</p>
-      
+
       <div className="flex flex-col gap-2 mb-6">
         {LIKERT_OPTIONS.map((opt) => (
-          <button 
+          <button
             key={opt.score}
             onClick={() => handleScoreClick(opt.score)}
             className={`border-2 border-black px-4 py-2 font-headline font-bold uppercase transition-transform ${opt.color} ${currentScore === opt.score ? 'scale-105 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]' : 'opacity-80'}`}
@@ -48,20 +48,25 @@ export function MatchQuiz({ questionId, title, description, currentAnswer, onAns
         ))}
       </div>
 
-      {currentScore ? (
-        <div className="bg-surface-container p-4 border-2 border-black mt-auto">
-          <label className="block font-label font-bold uppercase text-xs mb-2">Qual a importância desse tema para você?</label>
-          <select 
-            value={currentWeight} 
-            onChange={handleWeightChange}
-            className="w-full border-2 border-black p-2 font-body font-bold"
-          >
-            <option value={1}>Pouco importante</option>
-            <option value={2}>Importante</option>
-            <option value={3}>Muito importante</option>
-          </select>
-        </div>
-      ) : null}
+      <div
+        className={`bg-surface-container p-4 border-2 border-black mt-auto transition-all duration-200 ${
+          currentScore ? 'opacity-100' : 'opacity-40 pointer-events-none'
+        }`}
+      >
+        <label className="block font-label font-bold uppercase text-xs mb-2">
+          Qual a importância desse tema para você?
+        </label>
+        <select
+          value={currentWeight}
+          onChange={handleWeightChange}
+          disabled={!currentScore}
+          className="w-full border-2 border-black p-2 font-body font-bold disabled:opacity-50"
+        >
+          <option value={1}>Pouco importante</option>
+          <option value={2}>Importante</option>
+          <option value={3}>Muito importante</option>
+        </select>
+      </div>
     </div>
   );
 }

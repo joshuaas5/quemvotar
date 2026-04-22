@@ -132,7 +132,7 @@ function formatGabinete(gabinete?: CamaraGabinete): string | null {
     gabinete.nome ? `Gabinete ${gabinete.nome}` : null,
   ]);
 
-  return partes.length > 0 ? partes.join(' â€¢ ') : null;
+  return partes.length > 0 ? partes.join(' • ') : null;
 }
 
 function getCamaraPublicProfileUrl(id: string) {
@@ -223,7 +223,7 @@ function mapDespesa(despesa: CamaraDespesa): PerfilItemLista {
       typeof despesa.valorGlosa === 'number' && despesa.valorGlosa > 0
         ? `Glosa de ${formatCurrency(despesa.valorGlosa)}`
         : null,
-    ]).join(' â€¢ '),
+    ]).join(' • '),
     data: despesa.dataDocumento ?? undefined,
     destaque: formatCurrency(despesa.valorLiquido ?? despesa.valorDocumento) ?? undefined,
     href: despesa.urlDocumento ?? undefined,

@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { MatchQuiz } from './MatchQuiz';
 import { calculateMatchScoreDetailed, calculateNolanChart, type UserAnswersMap } from '@/lib/match/calculator';
@@ -267,79 +268,96 @@ export function MatchClient({
                   </li>
                 </ul>
               </div>
-              <div className="relative w-full aspect-square max-w-[300px] sm:max-w-[320px] mx-auto flex items-center justify-center my-4 sm:my-8 overflow-hidden sm:overflow-visible">
-                <div className="relative w-[70%] h-[70%] border-4 border-black bg-gray-100 justify-center overflow-hidden">
-                  <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
+
+              {/*
+                Diagrama de Nolan — formato diamante:
+                O eixo X = Liberdade Econômica (0% = extremo esquerdo, 100% = extremo direito)
+                O eixo Y = Liberdade Pessoal (0% = extremo inferior, 100% = extremo superior)
+                Para posicionar no quadrado rotacionado 45°:
+                  - translação para centro do quadrado
+                  - rotação 45° (aqui feito com transform manual para manter responsivo)
+                  - translação de volta
+              */}
+              <div className="relative w-full max-w-[320px] mx-auto aspect-square flex items-center justify-center">
+                <div
+                  className="relative w-full h-full"
+                  style={{ transform: 'rotate(45deg)' }}
+                >
+                  <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 border-4 border-black overflow-hidden">
                     <div className="bg-[#b3d4ff]" />
                     <div className="bg-[#ffb3b3]" />
-                    <div className="bg-[#e6ccff]" />
                     <div className="bg-[#ffe6b3]" />
+                    <div className="bg-[#e6ccff]" />
                   </div>
                   <div
-                    className="absolute w-[4%] h-[4%] bg-black rounded-full shadow-[0_0_0_4px_white] z-20 transition-all duration-1000"
+                    className="absolute w-5 h-5 bg-black rounded-full shadow-[0_0_0_4px_white] z-20 transition-all duration-1000"
                     style={{
-                      bottom: `calc(${results.nolan.personalPercent}% - 2%)`,
-                      left: `calc(${results.nolan.econPercent}% - 2%)`,
+                      top: `calc(${results.nolan.personalPercent}% - 10px)`,
+                      left: `calc(${results.nolan.econPercent}% - 10px)`,
                     }}
                   />
                 </div>
 
-                <span className="absolute top-1 left-1/2 -translate-x-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">
+                <span className="absolute top-0 left-1/2 -translate-x-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">
                   Libertário
                 </span>
-                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">
                   Estatista
                 </span>
-                <span className="absolute left-1 top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">
+                <span className="absolute left-0 top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">
                   Esquerda
                 </span>
-                <span className="absolute right-1 top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">
+                <span className="absolute right-0 top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">
                   Direita
                 </span>
               </div>
             </div>
           )}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {results.scored.map((pol) => (
-              <div
-                key={pol.idOrigem}
-                className="bg-white border-4 border-black p-6 flex flex-col items-center text-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden"
-              >
-                {pol.rankingNota !== null && (
-                  <div className="absolute top-2 right-2 bg-[#ffe066] border-4 border-black px-2 py-1 font-headline font-black text-sm sm:text-base shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] z-10 max-w-[75%] text-right leading-tight">
-                    Nota{' '}
-                    {pol.rankingNota.toLocaleString('pt-BR', {
-                      minimumFractionDigits: 1,
-                      maximumFractionDigits: 1,
-                    })}
-                  </div>
-                )}
-
-                <div className="w-32 h-32 border-4 border-black bg-gray-200 rounded-full mb-4 overflow-hidden relative">
-                  {pol.foto_url ? (
-                    <Image src={pol.foto_url} alt={pol.nome_urna} fill sizes="128px" className="object-cover object-top" />
-                  ) : (
-                    <Image
-                      src="https://fakeimg.pl/640x640?text=Sem+Foto"
-                      alt="Sem Foto"
-                      fill
-                      sizes="128px"
-                      className="object-cover object-top"
-                    />
+            {results.scored.map((pol) => {
+              const perfilHref = `/perfil/${pol.fonte}/${pol.idOrigem}`;
+              return (
+                <Link
+                  key={pol.idOrigem}
+                  href={perfilHref}
+                  className="bg-white border-4 border-black p-6 flex flex-col items-center text-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-shadow cursor-pointer"
+                >
+                  {pol.rankingNota !== null && (
+                    <div className="absolute top-2 right-2 bg-[#ffe066] border-4 border-black px-2 py-1 font-headline font-black text-sm sm:text-base shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] z-10 max-w-[75%] text-right leading-tight">
+                      Nota{' '}
+                      {pol.rankingNota.toLocaleString('pt-BR', {
+                        minimumFractionDigits: 1,
+                        maximumFractionDigits: 1,
+                      })}
+                    </div>
                   )}
-                </div>
-                <h3 className="font-headline font-black text-2xl uppercase leading-tight mb-2 break-words w-full">
-                  {pol.nome_urna}
-                </h3>
-                <p className="font-label font-bold text-sm uppercase opacity-70 mb-4 bg-gray-100 px-3 py-1 border-2 border-black w-full break-words">
-                  {pol.partido} - {pol.uf}
-                </p>
-                <div className="mt-auto w-full bg-secondary-fixed border-4 border-black py-4">
-                  <span className="font-headline font-black text-4xl">{pol.score.toFixed(1)}%</span>
-                  <span className="block text-sm font-bold uppercase mt-1 opacity-90">De afinidade total</span>
-                </div>
-              </div>
-            ))}
+
+                  <div className="w-32 h-32 border-4 border-black bg-gray-200 rounded-full mb-4 overflow-hidden relative">
+                    {pol.foto_url ? (
+                      <Image src={pol.foto_url} alt={pol.nome_urna} fill sizes="128px" className="object-cover object-top" />
+                    ) : (
+                      <Image
+                        src="https://fakeimg.pl/640x640?text=Sem+Foto"
+                        alt="Sem Foto"
+                        fill
+                        sizes="128px"
+                        className="object-cover object-top"
+                      />
+                    )}
+                  </div>
+                  <h3 className="font-headline font-black text-2xl uppercase leading-tight mb-2 break-words w-full">
+                    {pol.nome_urna}
+                  </h3>
+                  <p className="font-label font-bold text-sm uppercase opacity-70 mb-4 bg-gray-100 px-3 py-1 border-2 border-black w-full break-words">
+                    {pol.partido} - {pol.uf}
+                  </p>
+                  <div className="mt-auto w-full bg-secondary-fixed border-4 border-black py-4">
+                    <span className="font-headline font-black text-4xl">{pol.score.toFixed(1)}%</span>
+                    <span className="block text-sm font-bold uppercase mt-1 opacity-90">De afinidade total</span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       )}
