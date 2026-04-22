@@ -269,35 +269,85 @@ export function MatchClient({
                 </ul>
               </div>
 
-              <div className="relative w-full max-w-[300px] mx-auto aspect-square flex items-center justify-center">
-                <div className="relative w-full h-full border-4 border-black overflow-hidden">
-                  <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
-                    <div className="bg-[#b3d4ff] flex items-center justify-center"><span className="text-[10px] sm:text-xs font-bold uppercase opacity-50 text-center leading-tight px-1">Esquerda<br/>Progressista</span></div>
-                    <div className="bg-[#ffb3b3] flex items-center justify-center"><span className="text-[10px] sm:text-xs font-bold uppercase opacity-50 text-center leading-tight px-1">Libertário<br/>Liberal</span></div>
-                    <div className="bg-[#e6ccff] flex items-center justify-center"><span className="text-[10px] sm:text-xs font-bold uppercase opacity-50 text-center leading-tight px-1">Estatista<br/>Autoritário</span></div>
-                    <div className="bg-[#ffe6b3] flex items-center justify-center"><span className="text-[10px] sm:text-xs font-bold uppercase opacity-50 text-center leading-tight px-1">Conservador<br/>Tradicional</span></div>
-                  </div>
-                  <div
-                    className="absolute w-5 h-5 bg-black rounded-full shadow-[0_0_0_4px_white] z-20 transition-all duration-700"
-                    style={{
-                      top: `calc(${100 - results.nolan.personalPercent}% - 10px)`,
-                      left: `calc(${results.nolan.econPercent}% - 10px)`,
-                    }}
-                  />
-                </div>
+              <div className="relative w-full max-w-[320px] mx-auto aspect-square flex items-center justify-center">
+                {/* Diagrama de Nolan — diamante científico conforme David Nolan (1971) */}
+                <svg viewBox="0 0 240 240" className="w-full h-full border-4 border-black bg-white">
+                  <defs>
+                    <marker id="arrowhead" markerWidth="6" markerHeight="4" refX="0" refY="2" orient="auto">
+                      <polygon points="0 0, 6 2, 0 4" fill="#000" />
+                    </marker>
+                  </defs>
 
-                <span className="absolute top-0 left-1/2 -translate-x-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">
-                  Libertário
-                </span>
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">
-                  Estatista
-                </span>
-                <span className="absolute left-0 top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">
-                  Esquerda
-                </span>
-                <span className="absolute right-0 top-1/2 -translate-y-1/2 font-headline font-black uppercase text-[10px] sm:text-xs bg-white border-2 border-black px-2 py-1 z-30 pointer-events-none">
-                  Direita
-                </span>
+                  {/* Centro e escala */}
+                  {(() => {
+                    const cx = 120;
+                    const cy = 120;
+                    const scale = 85;
+                    const u = results.nolan.econPercent / 100;
+                    const v = results.nolan.personalPercent / 100;
+                    const up = u - 0.5;
+                    const vp = v - 0.5;
+                    const px = cx + (up - vp) * scale;
+                    const py = cy - (up + vp) * scale;
+
+                    // Vértices do diamante
+                    const top = { x: cx, y: 25 };
+                    const right = { x: 215, y: cy };
+                    const bottom = { x: cx, y: 215 };
+                    const left = { x: 25, y: cy };
+
+                    return (
+                      <g>
+                        {/* 4 triângulos coloridos do diamante */}
+                        <polygon points={`${top.x},${top.y} ${cx},${cy} ${left.x},${left.y}`} fill="#bfdbfe" stroke="none" />
+                        <polygon points={`${top.x},${top.y} ${right.x},${right.y} ${cx},${cy}`} fill="#fecaca" stroke="none" />
+                        <polygon points={`${left.x},${left.y} ${cx},${cy} ${bottom.x},${bottom.y}`} fill="#e9d5ff" stroke="none" />
+                        <polygon points={`${cx},${cy} ${right.x},${right.y} ${bottom.x},${bottom.y}`} fill="#fde68a" stroke="none" />
+
+                        {/* Borda do diamante */}
+                        <polygon
+                          points={`${top.x},${top.y} ${right.x},${right.y} ${bottom.x},${bottom.y} ${left.x},${left.y}`}
+                          fill="none"
+                          stroke="#000"
+                          strokeWidth="3"
+                        />
+
+                        {/* Eixos tracejados */}
+                        <line x1={left.x} y1={left.y} x2={right.x} y2={right.y} stroke="#000" strokeWidth="1.5" strokeDasharray="4 4" />
+                        <line x1={top.x} y1={top.y} x2={bottom.x} y2={bottom.y} stroke="#000" strokeWidth="1.5" strokeDasharray="4 4" />
+
+                        {/* Labels internos dos quadrantes */}
+                        <text x={cx - 28} y={cy - 28} textAnchor="middle" className="text-[9px] sm:text-[10px] font-bold uppercase opacity-60" style={{ fontSize: 9, fontWeight: 700 }}>Libertário</text>
+                        <text x={cx + 28} y={cy - 28} textAnchor="middle" className="text-[9px] sm:text-[10px] font-bold uppercase opacity-60" style={{ fontSize: 9, fontWeight: 700 }}>Conservador</text>
+                        <text x={cx - 28} y={cy + 32} textAnchor="middle" className="text-[9px] sm:text-[10px] font-bold uppercase opacity-60" style={{ fontSize: 9, fontWeight: 700 }}>Liberal</text>
+                        <text x={cx + 28} y={cy + 32} textAnchor="middle" className="text-[9px] sm:text-[10px] font-bold uppercase opacity-60" style={{ fontSize: 9, fontWeight: 700 }}>Estatista</text>
+
+                        {/* Labels das pontas (fora do diamante) */}
+                        <rect x={top.x - 36} y={top.y - 18} width="72" height="16" fill="#fff" stroke="#000" strokeWidth="1.5" />
+                        <text x={top.x} y={top.y - 6} textAnchor="middle" style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase' }}>Libertário</text>
+
+                        <rect x={right.x + 4} y={right.y - 8} width="72" height="16" fill="#fff" stroke="#000" strokeWidth="1.5" />
+                        <text x={right.x + 40} y={right.y + 2} textAnchor="middle" style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase' }}>Conservador</text>
+
+                        <rect x={left.x - 76} y={left.y - 8} width="72" height="16" fill="#fff" stroke="#000" strokeWidth="1.5" />
+                        <text x={left.x - 40} y={left.y + 2} textAnchor="middle" style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase' }}>Liberal</text>
+
+                        <rect x={bottom.x - 34} y={bottom.y + 4} width="68" height="16" fill="#fff" stroke="#000" strokeWidth="1.5" />
+                        <text x={bottom.x} y={bottom.y + 16} textAnchor="middle" style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase' }}>Estatista</text>
+
+                        {/* Títulos dos eixos */}
+                        <text x={right.x + 18} y={right.y + 22} textAnchor="middle" style={{ fontSize: 8, fontWeight: 700 }}>Liberdade Econômica →</text>
+                        <text x={left.x - 10} y={left.y - 18} textAnchor="middle" style={{ fontSize: 8, fontWeight: 700 }}>← Livre Mercado</text>
+                        <text x={top.x + 44} y={top.y + 12} textAnchor="start" style={{ fontSize: 8, fontWeight: 700 }}>↑ Liberdade Pessoal</text>
+                        <text x={bottom.x + 44} y={bottom.y - 8} textAnchor="start" style={{ fontSize: 8, fontWeight: 700 }}>↓ Autoritarismo</text>
+
+                        {/* Bolinha do usuário */}
+                        <circle cx={px} cy={py} r="7" fill="#000" stroke="#fff" strokeWidth="3" />
+                        <circle cx={px} cy={py} r="4" fill="#fff" />
+                      </g>
+                    );
+                  })()}
+                </svg>
               </div>
             </div>
           )}
