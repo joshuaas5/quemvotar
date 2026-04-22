@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { getCasaBadge, getHighlights, getPerfilHref } from '@/lib/api';
 
@@ -50,11 +51,13 @@ export default async function Highlights() {
                   </div>
 
                   <div className="aspect-square bg-gray-100 grayscale hover:grayscale-0 transition-all border-b-4 border-black overflow-hidden relative">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={candidato.foto_url}
+                    <Image
+                      src={candidato.foto_url || 'https://fakeimg.pl/640x640?text=Sem+Foto'}
                       alt={candidato.nome_urna}
-                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                      className="object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                      unoptimized={candidato.foto_url?.startsWith('http') ? false : true}
                     />
                   </div>
 

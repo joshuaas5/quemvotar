@@ -28,12 +28,23 @@ CREATE TABLE public.votacoes (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+CREATE TABLE public.cache_api (
+    key TEXT PRIMARY KEY,
+    value JSONB NOT NULL,
+    expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_cache_api_expires ON public.cache_api(expires_at);
+
 CREATE INDEX idx_candidatos_partido ON public.candidatos(partido);
 CREATE INDEX idx_candidatos_uf ON public.candidatos(uf);
 CREATE INDEX idx_votacoes_candidato ON public.votacoes(candidato_id);
 
 ALTER TABLE public.candidatos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.votacoes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.cache_api ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Leitura publica de candidatos habilitada" ON public.candidatos FOR SELECT USING (true);
 CREATE POLICY "Leitura publica de votacoes habilitada" ON public.votacoes FOR SELECT USING (true);
+CREATE POLICY "Leitura publica de cache habilitada" ON public.cache_api FOR SELECT USING (true);

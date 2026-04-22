@@ -223,6 +223,7 @@ export async function getCnjProcessoByNumero(
   return searchCnjProcessByNumber(tribunalSlug, numeroProcesso);
 }
 
+export { searchCnjByPoliticianName } from './cnj';
 export { fetchCamaraDespesas, fetchCamaraAutorias };
 
 

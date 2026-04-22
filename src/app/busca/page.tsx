@@ -1,4 +1,6 @@
-﻿import Link from 'next/link';
+import type { Metadata } from "next";
+import Image from 'next/image';
+import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import {
@@ -8,6 +10,13 @@ import {
   searchCandidatos,
 } from '@/lib/api';
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
+
+export const metadata: Metadata = {
+  title: "Busca de Parlamentares",
+  description:
+    "Pesquise deputados e senadores por nome, partido ou UF com dados oficiais da Câmara e do Senado.",
+  alternates: { canonical: "https://quemvotar.com.br/busca" },
+};
 
 export const revalidate = 1800;
 
@@ -64,13 +73,14 @@ export default async function BuscaPage({
                     href={getPerfilHref(perfil)}
                     className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all"
                   >
-                    <div className="w-24 md:w-32 h-auto border-r-4 border-black bg-gray-200 shrink-0">
+                    <div className="w-24 md:w-32 h-auto border-r-4 border-black bg-gray-200 shrink-0 relative">
                       {perfil.foto_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={perfil.foto_url}
                           alt={perfil.nome_urna}
-                          className="w-full h-full object-cover"
+                          fill
+                          sizes="128px"
+                          className="object-cover"
                         />
                       ) : (
                         <div className="w-full h-full min-h-28 md:min-h-32 flex items-center justify-center font-headline font-black text-3xl">
@@ -87,8 +97,7 @@ export default async function BuscaPage({
                       </h3>
                       <div className="flex items-center gap-2 mb-2">
                         {logo ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={logo} alt={`Logo ${perfil.partido}`} className="w-7 h-7 object-contain rounded-full bg-white border-2 border-black p-1" />
+                          <Image src={logo} alt={`Logo ${perfil.partido}`} width={28} height={28} className="object-contain rounded-full bg-white border-2 border-black p-1" />
                         ) : null}
                         <span className="font-label font-bold text-xs uppercase opacity-90">
                           {visual} {perfil.partido}

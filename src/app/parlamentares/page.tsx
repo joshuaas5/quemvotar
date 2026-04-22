@@ -1,8 +1,18 @@
-﻿import Link from 'next/link';
+import type { Metadata } from "next";
+import Image from 'next/image';
+import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import Breadcrumbs from '@/components/Breadcrumbs';
 import { getCasaBadge, getParlamentares, getPartidos, getPerfilHref } from '@/lib/api';
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
+
+export const metadata: Metadata = {
+  title: "Parlamentares em Exercício",
+  description:
+    "Busque deputados federais e senadores por nome, partido, UF ou casa legislativa. Dados oficiais atualizados.",
+  alternates: { canonical: "https://quemvotar.com.br/parlamentares" },
+};
 
 export const revalidate = 1800;
 
@@ -52,6 +62,7 @@ export default async function ParlamentaresPage({
 
       <main className="flex-grow bg-surface-container py-10 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto space-y-8 md:space-y-10">
+          <Breadcrumbs items={[{ label: 'Parlamentares' }]} />
           <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <h1 className="font-headline font-black text-3xl md:text-5xl uppercase mb-3 md:mb-4">Parlamentares em Exercicio</h1>
             <p className="font-body font-bold text-sm md:text-lg uppercase opacity-80">
@@ -138,13 +149,14 @@ export default async function ParlamentaresPage({
                   className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:shadow-[0_10px_20px_rgba(0,0,0,0.14)] transition-shadow duration-200"
                 >
                   
-                  <div className="aspect-square border-b-4 border-black bg-surface-container-high overflow-hidden">
+                  <div className="aspect-square border-b-4 border-black bg-surface-container-high overflow-hidden relative">
                     {perfil.foto_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={perfil.foto_url}
                         alt={perfil.nome_urna}
-                        className="w-full h-full object-cover object-top"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                        className="object-cover object-top"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center font-headline font-black text-5xl">
@@ -161,8 +173,7 @@ export default async function ParlamentaresPage({
                     </h2>
                     <div className="flex items-center gap-2">
                       {logo ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={logo} alt={`Logo ${perfil.partido}`} className="w-8 h-8 object-contain rounded-full bg-white border-2 border-black p-1" />
+                        <Image src={logo} alt={`Logo ${perfil.partido}`} width={32} height={32} className="object-contain rounded-full bg-white border-2 border-black p-1" />
                       ) : null}
                       <p className="font-body font-bold uppercase text-sm text-on-surface/90">
                         {visual} {perfil.partido} {perfil.uf ? `• ${perfil.uf}` : ''} • {perfil.cargo}

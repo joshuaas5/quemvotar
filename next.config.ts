@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "legis.senado.leg.br", pathname: "/**" },
       { protocol: "https", hostname: "www.politicos.org.br", pathname: "/**" },
       { protocol: "https", hostname: "ranking.org.br", pathname: "/**" },
+      { protocol: "https", hostname: "fakeimg.pl", pathname: "/**" },
+      { protocol: "https", hostname: "lh3.googleusercontent.com", pathname: "/**" },
     ],
   },
 };

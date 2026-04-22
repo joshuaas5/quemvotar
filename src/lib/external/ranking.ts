@@ -1,7 +1,8 @@
-﻿import { cache } from 'react';
+import { cache } from 'react';
 import type { PerfilPublico } from '@/lib/official';
 import type { RankingListaItem, RankingReferencia } from '@/lib/official/types';
 import { normalizeRemoteImageUrl } from '@/lib/utils/profile-image';
+import { getCache, setCache } from '@/lib/supabase-cache';
 
 const RANKING_API_ROOT = 'https://www.politicos.org.br/api';
 const RANKING_SITE_ROOT = 'https://ranking.org.br';
@@ -122,17 +123,27 @@ function findBestRankingMatch(items: RankingItemApi[], perfil: PerfilPublico) {
 }
 
 export const fetchRankingForPerfil = cache(async (perfil: PerfilPublico): Promise<RankingReferencia | null> => {
+  const cacheKey = `ranking:perfil:${perfil.fonte}:${perfil.idOrigem}`;
+  const cached = await getCache<RankingReferencia | null>(cacheKey);
+  if (cached !== null) return cached;
+
   const query = encodeURIComponent(perfil.nome_urna);
   const payload = await fetchRanking<RankingApiResponse>(
     `/filter-items-ranking?page=1&per_page=10&current_tab=0&nome=${query}&ordenar_por=pontuacao&ordem=desc`,
   );
 
   const match = findBestRankingMatch(payload.items ?? [], perfil);
-  return match ? buildRankingReferencia(match, payload.lastSync) : null;
+  const result = match ? buildRankingReferencia(match, payload.lastSync) : null;
+  await setCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
+  return result;
 });
 
 export const fetchRankingTop = cache(
   async (limit = 24, fonte?: PerfilPublico['fonte']): Promise<RankingListaItem[]> => {
+    const cacheKey = `ranking:top:${limit}:${fonte ?? 'all'}`;
+    const cached = await getCache<RankingListaItem[]>(cacheKey);
+    if (cached !== null && cached.length > 0) return cached;
+
     const items: RankingListaItem[] = [];
     const perPage = 100;
     let page = 1;
@@ -172,7 +183,9 @@ export const fetchRankingTop = cache(
       page += 1;
     }
 
-    return items.slice(0, limit);
+    const result = items.slice(0, limit);
+    await setCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
+    return result;
   },
 );
 

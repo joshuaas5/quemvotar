@@ -1,10 +1,14 @@
+import Image from 'next/image';
 import { Suspense } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import Breadcrumbs from '@/components/Breadcrumbs';
+import ShareButtons from '@/components/ShareButtons';
 import { CardSkeleton, SectionSkeleton, ThemeSkeleton } from '@/components/ProfileSkeleton';
 import { getPerfilBasico, getPerfilEnriquecido, getThemeVisual, type PerfilEnriquecido } from '@/lib/api';
+import { searchCnjByPoliticianName } from '@/lib/official';
 import type { PartidoResumo, PerfilDetalhadoPublico, PerfilItemLista } from '@/lib/official';
 
 export const revalidate = 1800;
@@ -409,6 +413,160 @@ function renderCampoPoliticoSection(perfil: PerfilDetalhadoPublico, partido: Par
   );
 }
 
+/* ── section: timeline mandatos ─────────────────────────────────── */
+
+function renderMandatoTimeline(mandatos: PerfilItemLista[]) {
+  if (!mandatos.length) return null;
+
+  const sorted = [...mandatos].sort((a, b) => {
+    const yearA = a.data ? parseInt(a.data.slice(0, 4), 10) : 0;
+    const yearB = b.data ? parseInt(b.data.slice(0, 4), 10) : 0;
+    return yearB - yearA;
+  });
+
+  return (
+    <section className="space-y-6">
+      <div>
+        <h2 className="font-headline font-black text-2xl sm:text-4xl uppercase">📅 Linha do tempo de mandatos</h2>
+        <p className="font-body font-bold uppercase text-xs sm:text-sm opacity-70 mt-2">
+          Histórico de mandatos e cargos públicos retornados pelas fontes oficiais.
+        </p>
+      </div>
+
+      <div className="relative border-l-4 border-black ml-3 sm:ml-4 space-y-6">
+        {sorted.map((item, index) => (
+          <div key={`${item.titulo}-${index}`} className="pl-6 sm:pl-8 relative">
+            <div className="absolute -left-[10px] sm:-left-[12px] top-1 w-4 h-4 sm:w-5 sm:h-5 bg-black border-4 border-white rounded-full" />
+            {item.data ? (
+              <p className="font-label font-bold uppercase text-xs opacity-70 mb-1">
+                {formatDate(item.data)}
+              </p>
+            ) : null}
+            <h3 className="font-headline font-black text-lg sm:text-xl uppercase leading-tight">
+              {item.titulo}
+            </h3>
+            {item.destaque ? (
+              <span className="inline-block mt-1 bg-amber-100 text-amber-800 border-2 border-amber-300 px-2 py-0.5 font-label font-bold uppercase text-xs">
+                {item.destaque}
+              </span>
+            ) : null}
+            {item.descricao ? (
+              <p className="font-body font-medium text-sm mt-2">{item.descricao}</p>
+            ) : null}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ── section: painel de gastos ──────────────────────────────────── */
+
+function parseExpenseValue(destaque?: string): number {
+  if (!destaque) return 0;
+  const clean = destaque.replace(/[^\d,.-]/g, '').replace('.', '').replace(',', '.');
+  return parseFloat(clean) || 0;
+}
+
+function renderGastosPanel(despesas: PerfilItemLista[]) {
+  if (!despesas.length) return null;
+
+  const sorted = [...despesas]
+    .sort((a, b) => parseExpenseValue(b.destaque) - parseExpenseValue(a.destaque))
+    .slice(0, 8);
+
+  const max = parseExpenseValue(sorted[0]?.destaque) || 1;
+
+  return (
+    <section className="space-y-6">
+      <div>
+        <h2 className="font-headline font-black text-2xl sm:text-4xl uppercase">💸 Painel de gastos</h2>
+        <p className="font-body font-bold uppercase text-xs sm:text-sm opacity-70 mt-2">
+          Maiores despesas da cota parlamentar retornadas pela fonte oficial.
+        </p>
+      </div>
+
+      <div className="bg-white border-4 border-black p-4 sm:p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-4">
+        {sorted.map((item, index) => {
+          const value = parseExpenseValue(item.destaque);
+          const percent = (value / max) * 100;
+
+          return (
+            <div key={`${item.titulo}-${index}`}>
+              <div className="flex justify-between items-center mb-1">
+                <p className="font-label font-bold uppercase text-xs opacity-80 truncate max-w-[70%]">
+                  {item.titulo}
+                </p>
+                <p className="font-headline font-black text-sm">{item.destaque}</p>
+              </div>
+              <div className="h-4 bg-surface-container-high border-2 border-black relative overflow-hidden">
+                <div
+                  className="absolute left-0 top-0 bottom-0 bg-rose-400 border-r-2 border-black transition-all duration-700"
+                  style={{ width: `${percent}%` }}
+                />
+              </div>
+              {item.data ? (
+                <p className="font-label font-bold uppercase text-[10px] opacity-60 mt-1">
+                  {formatDate(item.data)}
+                </p>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+/* ── section: processos judiciais (CNJ por nome) ────────────────── */
+
+async function ProcessosSection({ nome }: { nome: string }) {
+  const processos = await searchCnjByPoliticianName(nome).catch(() => []);
+
+  if (processos.length === 0) return null;
+
+  return (
+    <section className="bg-white border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+      <h2 className="font-headline font-black text-2xl sm:text-3xl uppercase mb-4">⚖️ Processos Judiciais</h2>
+      <p className="font-body font-medium text-sm sm:text-base mb-6">
+        Processos localizados nos tribunais brasileiros em que o nome do parlamentar aparece como parte.
+      </p>
+      <div className="space-y-4">
+        {processos.map((proc) => (
+          <article key={proc.numeroProcesso} className="border-4 border-black p-4 sm:p-5 bg-red-50">
+            <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
+              <p className="font-headline font-black text-base sm:text-lg uppercase">
+                {proc.classe}
+              </p>
+              <span className="bg-red-100 text-red-800 border-2 border-red-300 px-2 py-0.5 font-label font-bold uppercase text-xs">
+                {proc.tribunal}
+              </span>
+            </div>
+            <p className="font-label font-bold uppercase text-xs opacity-70 mb-1">
+              Nº {proc.numeroProcesso}
+            </p>
+            {proc.assuntoPrincipal ? (
+              <p className="font-body font-medium text-sm mb-2">{proc.assuntoPrincipal}</p>
+            ) : null}
+            {proc.orgaoJulgador ? (
+              <p className="font-label font-bold uppercase text-xs opacity-60 mb-2">
+                Órgão: {proc.orgaoJulgador}
+              </p>
+            ) : null}
+            <div className="flex flex-wrap gap-3 mt-3">
+              {proc.dataAjuizamento ? (
+                <span className="font-label font-bold uppercase text-[11px] opacity-70">
+                  Ajuizamento: {formatDate(proc.dataAjuizamento)}
+                </span>
+              ) : null}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 /* ── Async: enriched data (loads via Suspense) ───────────────────── */
 
 async function EnrichedProfile({
@@ -464,12 +622,7 @@ async function EnrichedProfile({
         'A fonte não retornou votações recentes para este perfil nesta consulta.',
       )}
 
-      {renderListSection(
-        'Mandato',
-        'Mandato atual e histórico retornados pelas fontes oficiais.',
-        perfil.mandatos,
-        'A fonte não retornou mais registros de mandato para este perfil nesta consulta.',
-      )}
+      {renderMandatoTimeline(perfil.mandatos)}
 
       {renderListSection(
         'Comissões',
@@ -485,15 +638,11 @@ async function EnrichedProfile({
         'A fonte não retornou cargos ativos para este perfil nesta consulta.',
       )}
 
-      {renderListSection(
-        perfil.fonte === 'camara' ? 'Despesas recentes' : 'Histórico partidário',
-        perfil.fonte === 'camara'
-          ? 'Despesas recentes da cota parlamentar retornadas pela Câmara dos Deputados.'
-          : 'Filiações partidárias históricas retornadas pelo Senado Federal.',
-        perfil.fonte === 'camara' ? enriched.despesas : perfil.filiacoes,
-        perfil.fonte === 'camara'
-          ? 'A Câmara não retornou despesas recentes para este perfil nesta consulta.'
-          : 'O Senado não retornou histórico partidário para este perfil nesta consulta.',
+      {perfil.fonte === 'camara' ? renderGastosPanel(enriched.despesas) : renderListSection(
+        'Histórico partidário',
+        'Filiações partidárias históricas retornadas pelo Senado Federal.',
+        perfil.filiacoes,
+        'O Senado não retornou histórico partidário para este perfil nesta consulta.',
       )}
     </>
   );
@@ -576,12 +725,19 @@ export default async function PerfilPage({
 
       <main className="flex-grow bg-surface-container py-6 sm:py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto space-y-6 sm:space-y-10">
-          <Link
-            href="/parlamentares"
-            className="inline-block font-headline font-black uppercase text-sm sm:text-lg border-b-4 border-black"
-          >
-            ← Voltar para parlamentares
-          </Link>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <Breadcrumbs
+              items={[
+                { label: 'Parlamentares', href: '/parlamentares' },
+                { label: perfil.nome_urna },
+              ]}
+            />
+            <ShareButtons
+              title={`${perfil.nome_urna} (${perfil.partido}-${perfil.uf}) | QuemVotar`}
+              description={`Acompanhe o mandato de ${perfil.nome_urna}: nota, presença, gastos e votações.`}
+              path={`/perfil/${fonte}/${id}`}
+            />
+          </div>
 
           {/* HERO — renders immediately with basic data */}
           <section
@@ -591,12 +747,14 @@ export default async function PerfilPage({
             }}
           >
             <div className="grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)]">
-              <div className="bg-white/20 border-b-4 lg:border-b-0 lg:border-r-4 border-black">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+              <div className="bg-white/20 border-b-4 lg:border-b-0 lg:border-r-4 border-black relative">
+                <Image
                   src={perfil.foto_url || 'https://fakeimg.pl/640x640?text=Sem+Foto'}
                   alt={perfil.nome_urna}
-                  className="w-full h-full object-cover object-top max-h-[300px] lg:max-h-none"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 280px"
+                  className="object-cover object-top max-h-[300px] lg:max-h-none"
+                  priority
                 />
               </div>
 
@@ -674,6 +832,8 @@ export default async function PerfilPage({
           </Suspense>
 
           {renderSobreSection(perfil)}
+
+          <ProcessosSection nome={perfil.nomeCompleto || perfil.nome_urna} />
 
           <section className="bg-white border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             <h2 className="font-headline font-black text-2xl sm:text-3xl uppercase mb-4">📂 Fontes desta página</h2>

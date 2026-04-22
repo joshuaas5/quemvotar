@@ -1,7 +1,10 @@
-﻿import Link from 'next/link';
+import Image from 'next/image';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import Breadcrumbs from '@/components/Breadcrumbs';
+import ShareButtons from '@/components/ShareButtons';
 import { getPartidoPorSigla } from '@/lib/api';
 import { getPartyVisualEmoji } from '@/lib/party-logos';
 
@@ -28,9 +31,19 @@ export default async function PartidoDetailPage({
 
       <main className="flex-grow bg-surface-container py-10 md:py-12 px-4 md:px-6">
         <div className="max-w-7xl mx-auto space-y-8 md:space-y-10">
-          <Link href="/partidos" className="inline-block font-headline font-black uppercase text-base md:text-lg border-b-4 border-black">
-            Voltar para partidos
-          </Link>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <Breadcrumbs
+              items={[
+                { label: 'Partidos', href: '/partidos' },
+                { label: partido.sigla },
+              ]}
+            />
+            <ShareButtons
+              title={`${partido.nome} (${partido.sigla}) | QuemVotar`}
+              description={`Conheça o partido ${partido.nome}: bancada, lideranças e posicionamento político.`}
+              path={`/partidos/${partido.sigla}`}
+            />
+          </div>
 
           <section
             className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
@@ -38,10 +51,11 @@ export default async function PartidoDetailPage({
           >
             <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)]">
               <div className="bg-white/15 border-b-4 lg:border-b-0 lg:border-r-4 border-black flex items-center justify-center p-6">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src={partido.logoUrl ?? 'https://fakeimg.pl/320x320?text=Partido'}
                   alt={partido.sigla}
+                  width={160}
+                  height={160}
                   className="w-32 h-32 md:w-40 md:h-40 object-contain border-4 border-black bg-white p-1"
                 />
               </div>

@@ -1,8 +1,18 @@
+import type { Metadata } from "next";
+import Image from 'next/image';
 import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import Breadcrumbs from '@/components/Breadcrumbs';
 import { getParlamentares, getPerfilHref, getRankingParlamentares, type PerfilPublico } from '@/lib/api';
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
+
+export const metadata: Metadata = {
+  title: "Ranking dos Parlamentares",
+  description:
+    "Veja a nota pública de desempenho legislativo dos deputados e senadores com base no Ranking dos Políticos. Filtre por casa, UF e nome.",
+  alternates: { canonical: "https://quemvotar.com.br/ranking" },
+};
 
 export const revalidate = 1800;
 
@@ -88,6 +98,7 @@ export default async function RankingPage({
 
       <main className="flex-grow bg-surface-container py-10 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto space-y-8 md:space-y-10">
+          <Breadcrumbs items={[{ label: 'Ranking' }]} />
           <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <h1 className="font-headline font-black text-3xl md:text-5xl uppercase mb-3 md:mb-4">Ranking dos Parlamentares 🏆</h1>
             <p className="font-body font-bold text-sm md:text-lg uppercase opacity-80">
@@ -145,13 +156,14 @@ export default async function RankingPage({
                   className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
                 >
                   <div className="grid grid-cols-[96px_minmax(0,1fr)] md:grid-cols-[120px_minmax(0,1fr)] border-b-4 border-black">
-                    <div className="bg-surface-container-high min-h-[96px] md:min-h-[120px]">
+                    <div className="bg-surface-container-high min-h-[96px] md:min-h-[120px] relative">
                       {item.fotoUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={item.fotoUrl}
                           alt={item.nome}
-                          className="w-full h-full object-cover object-top"
+                          fill
+                          sizes="120px"
+                          className="object-cover object-top"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center font-headline font-black text-3xl md:text-4xl">
@@ -169,8 +181,7 @@ export default async function RankingPage({
                       </h2>
                       <div className="flex items-center gap-2">
                         {logo ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={logo} alt={`Logo ${item.partido}`} className="w-7 h-7 object-contain rounded-full bg-white border-2 border-black p-1" />
+                          <Image src={logo} alt={`Logo ${item.partido}`} width={28} height={28} className="object-contain rounded-full bg-white border-2 border-black p-1" />
                         ) : null}
                         <p className="font-body font-bold">{visual} {item.partido}</p>
                       </div>

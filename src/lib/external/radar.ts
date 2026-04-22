@@ -2,6 +2,7 @@ import { cache } from 'react';
 import type { PerfilItemLista, PerfilPublico } from '@/lib/official';
 import type { GovernismoReferencia, PresencaReferencia } from '@/lib/official/types';
 import { buildVoteThemeCards } from '@/lib/political-themes';
+import { getCache, setCache } from '@/lib/supabase-cache';
 
 const RADAR_API_ROOT = 'https://radar.congressoemfoco.com.br/api';
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
@@ -296,6 +297,10 @@ const fetchCamaraVoteItems = cache(async (perfil: PerfilPublico): Promise<Camara
 
 export const fetchGovernismoForPerfil = cache(
   async (perfil: PerfilPublico): Promise<GovernismoReferencia | null> => {
+    const cacheKey = `radar:governismo:${perfil.fonte}:${perfil.idOrigem}`;
+    const cached = await getCache<GovernismoReferencia | null>(cacheKey);
+    if (cached !== null) return cached;
+
     const match = await findRadarPerfil(perfil);
     if (!match?.idParlamentarVoz) return null;
 
@@ -310,7 +315,7 @@ export const fetchGovernismoForPerfil = cache(
       return null;
     }
 
-    return {
+    const result: GovernismoReferencia = {
       fonte: 'radar_do_congresso',
       percentualFavoravel: governismo.total,
       votosFavoraveis: governismo.afavor,
@@ -318,11 +323,17 @@ export const fetchGovernismoForPerfil = cache(
       votacoesMonitoradas: governismo.nvotacoes,
       fonteUrl: getRadarPerfilUrl(match.idParlamentarVoz),
     };
+    await setCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
+    return result;
   },
 );
 
 export const fetchAssiduidadeForPerfil = cache(
   async (perfil: PerfilPublico): Promise<PresencaReferencia | null> => {
+    const cacheKey = `radar:assiduidade:${perfil.fonte}:${perfil.idOrigem}`;
+    const cached = await getCache<PresencaReferencia | null>(cacheKey);
+    if (cached !== null) return cached;
+
     const match = await findRadarPerfil(perfil);
     if (!match?.idParlamentarVoz) return null;
 
@@ -334,7 +345,7 @@ export const fetchAssiduidadeForPerfil = cache(
 
     if (!maisRecente || !maisRecente.totalSessoesDeliberativas) return null;
 
-    return {
+    const result: PresencaReferencia = {
       fonte: 'radar_do_congresso',
       ano: maisRecente.ano,
       percentual: (maisRecente.totalPresenca / maisRecente.totalSessoesDeliberativas) * 100,
@@ -344,14 +355,20 @@ export const fetchAssiduidadeForPerfil = cache(
       ausenciasNaoJustificadas: maisRecente.totalAusenciasNaoJustificadas,
       fonteUrl: getRadarPerfilUrl(match.idParlamentarVoz),
     };
+    await setCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
+    return result;
   },
 );
 
 export const fetchCamaraVotesForPerfil = cache(async (perfil: PerfilPublico): Promise<PerfilItemLista[]> => {
+  const cacheKey = `radar:votos:${perfil.fonte}:${perfil.idOrigem}`;
+  const cached = await getCache<PerfilItemLista[]>(cacheKey);
+  if (cached !== null && cached.length > 0) return cached;
+
   const detalhes = await fetchCamaraVoteItems(perfil);
   const groups = buildVoteGroups(detalhes);
 
-  return groups.slice(0, 6).map((group) => {
+  const result = groups.slice(0, 6).map((group) => {
     const etapaLabel = group.total > 1 ? `${group.total} etapas desta matéria` : '1 etapa desta matéria';
     const resumoContagem = compact([
       group.sim > 0 ? `${group.sim} sim` : null,
@@ -373,14 +390,21 @@ export const fetchCamaraVotesForPerfil = cache(async (perfil: PerfilPublico): Pr
       href: group.href,
     } satisfies PerfilItemLista;
   });
+
+  await setCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
+  return result;
 });
 
 export const fetchCamaraVoteThemesForPerfil = cache(
   async (perfil: PerfilPublico): Promise<PerfilItemLista[]> => {
+    const cacheKey = `radar:temas:${perfil.fonte}:${perfil.idOrigem}`;
+    const cached = await getCache<PerfilItemLista[]>(cacheKey);
+    if (cached !== null && cached.length > 0) return cached;
+
     const detalhes = await fetchCamaraVoteItems(perfil);
     const groups = buildVoteGroups(detalhes);
 
-    return buildVoteThemeCards(
+    const result = buildVoteThemeCards(
       groups.map((group) => {
         const temaVoteLabel =
           group.sim > group.nao
@@ -398,5 +422,8 @@ export const fetchCamaraVoteThemesForPerfil = cache(
         };
       }),
     );
+
+    await setCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
+    return result;
   },
 );
