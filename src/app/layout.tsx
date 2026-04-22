@@ -85,7 +85,7 @@ export const metadata: Metadata = {
 
 const gaId = process.env.NEXT_PUBLIC_GA_ID;
 const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
-const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
+const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? 'ca-pub-4642158915962893';
 
 export default function RootLayout({
   children,
