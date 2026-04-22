@@ -269,20 +269,14 @@ export function MatchClient({
                 </ul>
               </div>
 
-              <div className="relative w-full max-w-[320px] mx-auto aspect-square flex items-center justify-center">
+              <div className="relative w-full max-w-[340px] sm:max-w-[400px] mx-auto aspect-square flex items-center justify-center">
                 {/* Diagrama de Nolan — diamante científico conforme David Nolan (1971) */}
-                <svg viewBox="0 0 240 240" className="w-full h-full border-4 border-black bg-white">
-                  <defs>
-                    <marker id="arrowhead" markerWidth="6" markerHeight="4" refX="0" refY="2" orient="auto">
-                      <polygon points="0 0, 6 2, 0 4" fill="#000" />
-                    </marker>
-                  </defs>
-
+                <svg viewBox="0 0 360 360" className="w-full h-full border-4 border-black bg-white" preserveAspectRatio="xMidYMid meet">
                   {/* Centro e escala */}
                   {(() => {
-                    const cx = 120;
-                    const cy = 120;
-                    const scale = 85;
+                    const cx = 180;
+                    const cy = 180;
+                    const scale = 100;
                     const u = results.nolan.econPercent / 100;
                     const v = results.nolan.personalPercent / 100;
                     const up = u - 0.5;
@@ -291,10 +285,10 @@ export function MatchClient({
                     const py = cy - (up + vp) * scale;
 
                     // Vértices do diamante
-                    const top = { x: cx, y: 25 };
-                    const right = { x: 215, y: cy };
-                    const bottom = { x: cx, y: 215 };
-                    const left = { x: 25, y: cy };
+                    const top = { x: cx, y: 80 };
+                    const right = { x: 280, y: cy };
+                    const bottom = { x: cx, y: 280 };
+                    const left = { x: 80, y: cy };
 
                     return (
                       <g>
@@ -317,32 +311,32 @@ export function MatchClient({
                         <line x1={top.x} y1={top.y} x2={bottom.x} y2={bottom.y} stroke="#000" strokeWidth="1.5" strokeDasharray="4 4" />
 
                         {/* Labels internos dos quadrantes */}
-                        <text x={cx - 28} y={cy - 28} textAnchor="middle" className="text-[9px] sm:text-[10px] font-bold uppercase opacity-60" style={{ fontSize: 9, fontWeight: 700 }}>Libertário</text>
-                        <text x={cx + 28} y={cy - 28} textAnchor="middle" className="text-[9px] sm:text-[10px] font-bold uppercase opacity-60" style={{ fontSize: 9, fontWeight: 700 }}>Conservador</text>
-                        <text x={cx - 28} y={cy + 32} textAnchor="middle" className="text-[9px] sm:text-[10px] font-bold uppercase opacity-60" style={{ fontSize: 9, fontWeight: 700 }}>Liberal</text>
-                        <text x={cx + 28} y={cy + 32} textAnchor="middle" className="text-[9px] sm:text-[10px] font-bold uppercase opacity-60" style={{ fontSize: 9, fontWeight: 700 }}>Estatista</text>
+                        <text x={cx - 34} y={cy - 34} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Libertário</text>
+                        <text x={cx + 34} y={cy - 34} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Conservador</text>
+                        <text x={cx - 34} y={cy + 40} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Liberal</text>
+                        <text x={cx + 34} y={cy + 40} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Estatista</text>
 
                         {/* Labels das pontas (fora do diamante) */}
-                        <rect x={top.x - 36} y={top.y - 18} width="72" height="16" fill="#fff" stroke="#000" strokeWidth="1.5" />
-                        <text x={top.x} y={top.y - 6} textAnchor="middle" style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase' }}>Libertário</text>
+                        <rect x={top.x - 38} y={top.y - 22} width="76" height="18" fill="#fff" stroke="#000" strokeWidth="1.5" />
+                        <text x={top.x} y={top.y - 8} textAnchor="middle" style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase' }}>Libertário</text>
 
-                        <rect x={right.x + 4} y={right.y - 8} width="72" height="16" fill="#fff" stroke="#000" strokeWidth="1.5" />
-                        <text x={right.x + 40} y={right.y + 2} textAnchor="middle" style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase' }}>Conservador</text>
+                        <rect x={right.x + 6} y={right.y - 10} width="76" height="18" fill="#fff" stroke="#000" strokeWidth="1.5" />
+                        <text x={right.x + 44} y={right.y + 2} textAnchor="middle" style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase' }}>Conservador</text>
 
-                        <rect x={left.x - 76} y={left.y - 8} width="72" height="16" fill="#fff" stroke="#000" strokeWidth="1.5" />
-                        <text x={left.x - 40} y={left.y + 2} textAnchor="middle" style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase' }}>Liberal</text>
+                        <rect x={left.x - 82} y={left.y - 10} width="76" height="18" fill="#fff" stroke="#000" strokeWidth="1.5" />
+                        <text x={left.x - 44} y={left.y + 2} textAnchor="middle" style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase' }}>Liberal</text>
 
-                        <rect x={bottom.x - 34} y={bottom.y + 4} width="68" height="16" fill="#fff" stroke="#000" strokeWidth="1.5" />
-                        <text x={bottom.x} y={bottom.y + 16} textAnchor="middle" style={{ fontSize: 9, fontWeight: 800, textTransform: 'uppercase' }}>Estatista</text>
+                        <rect x={bottom.x - 38} y={bottom.y + 6} width="76" height="18" fill="#fff" stroke="#000" strokeWidth="1.5" />
+                        <text x={bottom.x} y={bottom.y + 20} textAnchor="middle" style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase' }}>Estatista</text>
 
                         {/* Títulos dos eixos */}
-                        <text x={right.x + 18} y={right.y + 22} textAnchor="middle" style={{ fontSize: 8, fontWeight: 700 }}>Liberdade Econômica →</text>
-                        <text x={left.x - 10} y={left.y - 18} textAnchor="middle" style={{ fontSize: 8, fontWeight: 700 }}>← Livre Mercado</text>
-                        <text x={top.x + 44} y={top.y + 12} textAnchor="start" style={{ fontSize: 8, fontWeight: 700 }}>↑ Liberdade Pessoal</text>
-                        <text x={bottom.x + 44} y={bottom.y - 8} textAnchor="start" style={{ fontSize: 8, fontWeight: 700 }}>↓ Autoritarismo</text>
+                        <text x={right.x + 22} y={right.y + 28} textAnchor="middle" style={{ fontSize: 9, fontWeight: 700 }}>Liberdade Econômica →</text>
+                        <text x={left.x - 14} y={left.y - 24} textAnchor="middle" style={{ fontSize: 9, fontWeight: 700 }}>← Livre Mercado</text>
+                        <text x={top.x + 52} y={top.y + 14} textAnchor="start" style={{ fontSize: 9, fontWeight: 700 }}>↑ Liberdade Pessoal</text>
+                        <text x={bottom.x + 52} y={bottom.y - 10} textAnchor="start" style={{ fontSize: 9, fontWeight: 700 }}>↓ Autoritarismo</text>
 
                         {/* Bolinha do usuário */}
-                        <circle cx={px} cy={py} r="7" fill="#000" stroke="#fff" strokeWidth="3" />
+                        <circle cx={px} cy={py} r="8" fill="#000" stroke="#fff" strokeWidth="3" />
                         <circle cx={px} cy={py} r="4" fill="#fff" />
                       </g>
                     );
