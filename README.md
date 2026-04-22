@@ -85,13 +85,9 @@ Deploy on Vercel for optimal Next.js performance:
 vercel --prod
 ```
 
-## Contributing
+## Live Demo
 
-This project aims to promote civic engagement through technology. Contributions that improve data accuracy, accessibility, or user experience are welcome.
-
-## License
-
-MIT
+[https://quemvotar.com.br](https://quemvotar.com.br)
 
 ---
 
