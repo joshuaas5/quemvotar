@@ -2,10 +2,11 @@ import { cache } from 'react';
 import type { PerfilDetalhadoPublico, PerfilItemLista, PerfilPublico } from './types';
 import { buildVoteThemeCards } from '@/lib/political-themes';
 import { improveProfilePhotoUrl } from '@/lib/utils/profile-image';
+import { decodeMojibake } from '@/lib/utils/string';
 
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
 const AUTORIAS_AMOSTRA_ANALISADA = 8;
-const SENADO_TIMEOUT_MS = 2500;
+const SENADO_TIMEOUT_MS = 8000;
 
 interface SenadoTelefone {
   NumeroTelefone?: string;
@@ -201,8 +202,8 @@ function normalizeSenador(parlamentar: SenadoParlamentarLista): PerfilPublico {
   return {
     id: `senado-${info.CodigoParlamentar ?? info.CodigoPublicoNaLegAtual ?? ''}`,
     idOrigem: String(info.CodigoParlamentar ?? info.CodigoPublicoNaLegAtual ?? ''),
-    nome_urna: info.NomeParlamentar ?? 'Sem nome',
-    partido: info.SiglaPartidoParlamentar ?? '--',
+    nome_urna: decodeMojibake(info.NomeParlamentar) || 'Sem nome',
+    partido: decodeMojibake(info.SiglaPartidoParlamentar) || '--',
     uf: info.UfParlamentar ?? '',
     cargo: 'Senador',
     foto_url: improveProfilePhotoUrl('senado', String(info.CodigoParlamentar ?? info.CodigoPublicoNaLegAtual ?? ''), info.UrlFotoParlamentar),

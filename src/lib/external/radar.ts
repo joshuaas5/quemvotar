@@ -7,7 +7,7 @@ import { getCache, setCache } from '@/lib/supabase-cache';
 const RADAR_API_ROOT = 'https://radar.congressoemfoco.com.br/api';
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
 const REMOTE_REVALIDATE_SECONDS = 86400;
-const REMOTE_TIMEOUT_MS = 5000;
+const REMOTE_TIMEOUT_MS = 10000;
 const CAMARA_VOTE_SAMPLE_SIZE = 12;
 
 interface RadarBuscaItem {

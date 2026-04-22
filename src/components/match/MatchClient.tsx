@@ -269,30 +269,18 @@ export function MatchClient({
                 </ul>
               </div>
 
-              {/*
-                Diagrama de Nolan — formato diamante:
-                O eixo X = Liberdade Econômica (0% = extremo esquerdo, 100% = extremo direito)
-                O eixo Y = Liberdade Pessoal (0% = extremo inferior, 100% = extremo superior)
-                Para posicionar no quadrado rotacionado 45°:
-                  - translação para centro do quadrado
-                  - rotação 45° (aqui feito com transform manual para manter responsivo)
-                  - translação de volta
-              */}
-              <div className="relative w-full max-w-[320px] mx-auto aspect-square flex items-center justify-center">
-                <div
-                  className="relative w-full h-full"
-                  style={{ transform: 'rotate(45deg)' }}
-                >
-                  <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 border-4 border-black overflow-hidden">
-                    <div className="bg-[#b3d4ff]" />
-                    <div className="bg-[#ffb3b3]" />
-                    <div className="bg-[#ffe6b3]" />
-                    <div className="bg-[#e6ccff]" />
+              <div className="relative w-full max-w-[300px] mx-auto aspect-square flex items-center justify-center">
+                <div className="relative w-full h-full border-4 border-black overflow-hidden">
+                  <div className="absolute inset-0 grid grid-cols-2 grid-rows-2">
+                    <div className="bg-[#b3d4ff] flex items-center justify-center"><span className="text-[10px] sm:text-xs font-bold uppercase opacity-50 text-center leading-tight px-1">Esquerda<br/>Progressista</span></div>
+                    <div className="bg-[#ffb3b3] flex items-center justify-center"><span className="text-[10px] sm:text-xs font-bold uppercase opacity-50 text-center leading-tight px-1">Libertário<br/>Liberal</span></div>
+                    <div className="bg-[#e6ccff] flex items-center justify-center"><span className="text-[10px] sm:text-xs font-bold uppercase opacity-50 text-center leading-tight px-1">Estatista<br/>Autoritário</span></div>
+                    <div className="bg-[#ffe6b3] flex items-center justify-center"><span className="text-[10px] sm:text-xs font-bold uppercase opacity-50 text-center leading-tight px-1">Conservador<br/>Tradicional</span></div>
                   </div>
                   <div
-                    className="absolute w-5 h-5 bg-black rounded-full shadow-[0_0_0_4px_white] z-20 transition-all duration-1000"
+                    className="absolute w-5 h-5 bg-black rounded-full shadow-[0_0_0_4px_white] z-20 transition-all duration-700"
                     style={{
-                      top: `calc(${results.nolan.personalPercent}% - 10px)`,
+                      top: `calc(${100 - results.nolan.personalPercent}% - 10px)`,
                       left: `calc(${results.nolan.econPercent}% - 10px)`,
                     }}
                   />

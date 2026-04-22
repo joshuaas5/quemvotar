@@ -153,8 +153,10 @@ export default async function RankingPage({
               return (
                 <Link
                   key={item.id}
-                  href={perfilLocal ? getPerfilHref(perfilLocal) : '#'}
-                  className={`bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden ${perfilLocal ? 'hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-shadow cursor-pointer' : ''}`}
+                  href={perfilLocal ? getPerfilHref(perfilLocal) : item.fonteUrl}
+                  target={perfilLocal ? '_self' : '_blank'}
+                  rel={perfilLocal ? undefined : 'noreferrer'}
+                  className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-shadow cursor-pointer"
                 >
                   <div className="grid grid-cols-[96px_minmax(0,1fr)] md:grid-cols-[120px_minmax(0,1fr)] border-b-4 border-black">
                     <div className="bg-surface-container-high min-h-[96px] md:min-h-[120px] relative">
@@ -180,12 +182,7 @@ export default async function RankingPage({
                       <h2 className="font-headline font-black text-2xl md:text-3xl uppercase leading-none">
                         {item.nome}
                       </h2>
-                      <div className="flex items-center gap-2">
-                        {logo ? (
-                          <Image src={logo} alt={`Logo ${item.partido}`} width={28} height={28} className="object-contain rounded-full bg-white border-2 border-black p-1" />
-                        ) : null}
-                        <p className="font-body font-bold">{visual} {item.partido}</p>
-                      </div>
+                      <p className="font-body font-bold">{visual} {item.partido}</p>
                     </div>
                   </div>
 

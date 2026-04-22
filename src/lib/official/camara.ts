@@ -1,10 +1,11 @@
 import { cache } from 'react';
 import type { PerfilDetalhadoPublico, PerfilItemLista, PerfilPublico } from './types';
 import { improveProfilePhotoUrl } from '@/lib/utils/profile-image';
+import { decodeMojibake } from '@/lib/utils/string';
 
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
 const AUTORIAS_AMOSTRA_ANALISADA = 8;
-const CAMARA_TIMEOUT_MS = 2500;
+const CAMARA_TIMEOUT_MS = 8000;
 
 interface CamaraLink {
   rel?: string;
@@ -126,10 +127,10 @@ function formatGabinete(gabinete?: CamaraGabinete): string | null {
   }
 
   const partes = compact([
-    gabinete.predio ? `Prédio ${gabinete.predio}` : null,
-    gabinete.andar ? `${gabinete.andar}º andar` : null,
-    gabinete.sala ? `Sala ${gabinete.sala}` : null,
-    gabinete.nome ? `Gabinete ${gabinete.nome}` : null,
+    gabinete.predio ? `Prédio ${decodeMojibake(gabinete.predio)}` : null,
+    gabinete.andar ? `${decodeMojibake(gabinete.andar)}º andar` : null,
+    gabinete.sala ? `Sala ${decodeMojibake(gabinete.sala)}` : null,
+    gabinete.nome ? `Gabinete ${decodeMojibake(gabinete.nome)}` : null,
   ]);
 
   return partes.length > 0 ? partes.join(' • ') : null;
