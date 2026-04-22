@@ -85,6 +85,7 @@ export const metadata: Metadata = {
 
 const gaId = process.env.NEXT_PUBLIC_GA_ID;
 const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
+const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
 export default function RootLayout({
   children,
@@ -101,6 +102,9 @@ export default function RootLayout({
           rel="stylesheet"
         />
         <style>{`.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }`}</style>
+        {adsenseClient && (
+          <meta name="google-adsense-account" content={adsenseClient} />
+        )}
       </head>
       <body className="min-h-screen flex flex-col bg-background text-on-background font-body">
         <AdSenseAutoAds />
