@@ -1,66 +1,98 @@
-# QuemVotar - Consulta Pública de Parlamentares
+# QuemVotar
 
-Plataforma cívica para consulta de parlamentares em exercício com base em dados oficiais e rastreáveis.
+A civic technology platform designed to help Brazilian citizens make informed voting decisions by providing accessible information about political candidates, their platforms, and voting history.
 
-Proposta:
+## Overview
 
-- facilitar acesso do cidadão a dados legislativos
-- reduzir voto no escuro
-- concentrar fontes oficiais em uma experiência única
+QuemVotar bridges the information gap between voters and candidates, offering a centralized platform where users can research, compare, and evaluate political options based on transparent data and verified information.
 
-## Funcionalidades atuais
+## Features
 
-- Busca por parlamentar, partido e UF
-- Vitrine de parlamentares em exercício
-- Dashboard com panorama do Congresso
-- Página de ranking
-- Páginas de partidos e perfis individuais
-- Camada de APIs internas para consolidar fontes oficiais
+- **Candidate Database**: Comprehensive profiles with biographical information, platforms, and political history
+- **Voting Records**: Track legislative voting patterns and parliamentary activity
+- **Comparison Tool**: Side-by-side candidate comparison on key issues
+- **Issue-Based Search**: Find candidates aligned with specific policy positions
+- **Responsive Design**: Accessible on mobile, tablet, and desktop devices
+- **Data Visualization**: Charts and graphs for complex political data
 
-Rotas relevantes:
+## Tech Stack
 
-- src/app/page.tsx
-- src/app/parlamentares/page.tsx
-- src/app/ranking/page.tsx
-- src/app/partidos/page.tsx
-- src/app/perfil/[fonte]/[id]/page.tsx
-- src/app/api/fontes/*
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **Testing**: Vitest
 
-## Fontes de dados (integrações)
+## Architecture
 
-- Câmara dos Deputados
-- Senado Federal
-- TSE
-- CNJ
+```
+src/
+├── app/                # Next.js App Router pages
+├── components/         # React components
+├── lib/               # Utilities and API clients
+├── types/             # TypeScript definitions
+└── styles/            # Global styles
 
-## Stack
+supabase/
+├── schema.sql         # Database schema
+└── migrations/        # Schema migrations
+```
 
-- Next.js 16 (App Router)
-- React 19
-- TypeScript
-- Tailwind CSS v4
-- Supabase (camada opcional de suporte)
+## Getting Started
 
-## Como rodar localmente
+### Prerequisites
 
-~~~bash
+- Node.js 18+ and npm/yarn
+- Supabase account
+
+### Environment Variables
+
+Create a `.env.local` file:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/joshuaas5/quemvotar.git
+
+# Navigate to the project
+cd quemvotar
+
+# Install dependencies
 npm install
+
+# Start the development server
 npm run dev
-~~~
+```
 
-Build:
+The application will be available at `http://localhost:3000`
 
-~~~bash
+## Deployment
+
+```bash
 npm run build
-npm run start
-~~~
+```
 
-## Qualidade e segurança
+Deploy on Vercel for optimal Next.js performance:
 
-- README reescrito para documentação real do produto
-- dependência Next.js atualizada para correção de advisory de segurança
-- credenciais de Supabase tratadas como opcionais por ambiente
+```bash
+vercel --prod
+```
 
-## Status do produto
+## Contributing
 
-Projeto em evolução contínua, com foco em transparência pública e usabilidade para decisão eleitoral.
+This project aims to promote civic engagement through technology. Contributions that improve data accuracy, accessibility, or user experience are welcome.
+
+## License
+
+MIT
+
+---
+
+Empowering democratic participation through technology.
