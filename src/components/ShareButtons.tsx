@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function getShareUrl(path?: string) {
   if (typeof window === 'undefined') return '';
@@ -17,7 +17,12 @@ export default function ShareButtons({
   path?: string;
 }) {
   const [copied, setCopied] = useState(false);
-  const url = getShareUrl(path);
+  const [url, setUrl] = useState('');
+
+  useEffect(() => {
+    setUrl(getShareUrl(path));
+  }, [path]);
+
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
   const encodedDesc = encodeURIComponent(description || title);
@@ -31,6 +36,18 @@ export default function ShareButtons({
       // ignore
     }
   };
+
+  if (!url) {
+    return (
+      <div className="flex flex-wrap items-center gap-2 opacity-50">
+        <span className="font-label font-bold uppercase text-xs opacity-70 mr-1">Compartilhar:</span>
+        <div className="w-9 h-9 border-2 border-black bg-gray-200" />
+        <div className="w-9 h-9 border-2 border-black bg-gray-200" />
+        <div className="w-9 h-9 border-2 border-black bg-gray-200" />
+        <div className="w-9 h-9 border-2 border-black bg-gray-200" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-wrap items-center gap-2">

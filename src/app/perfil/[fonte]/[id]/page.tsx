@@ -541,10 +541,35 @@ function renderGastosPanel(despesas: PerfilItemLista[]) {
 
 /* ── section: processos judiciais (CNJ por nome) ────────────────── */
 
+function ProcessosSkeleton() {
+  return (
+    <section className="bg-white border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+      <h2 className="font-headline font-black text-2xl sm:text-3xl uppercase mb-4">⚖️ Processos Judiciais</h2>
+      <div className="animate-pulse space-y-4">
+        <div className="h-4 bg-gray-200 border-2 border-black w-3/4" />
+        <div className="h-24 bg-gray-100 border-4 border-black" />
+        <div className="h-24 bg-gray-100 border-4 border-black" />
+      </div>
+    </section>
+  );
+}
+
 async function ProcessosSection({ nome }: { nome: string }) {
   const processos = await searchCnjByPoliticianName(nome).catch(() => []);
 
-  if (processos.length === 0) return null;
+  if (processos.length === 0) {
+    return (
+      <section className="bg-white border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+        <h2 className="font-headline font-black text-2xl sm:text-3xl uppercase mb-4">⚖️ Processos Judiciais</h2>
+        <div className="bg-green-50 border-4 border-green-200 p-4 sm:p-6 text-center">
+          <span className="material-symbols-outlined text-4xl mb-2 block text-green-700">gavel</span>
+          <p className="font-body font-bold text-green-800">
+            Nenhum processo localizado nos tribunais consultados para este nome.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-white border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
@@ -866,7 +891,9 @@ export default async function PerfilPage({
 
           {renderSobreSection(perfil)}
 
-          <ProcessosSection nome={perfil.nomeCompleto || perfil.nome_urna} />
+          <Suspense fallback={<ProcessosSkeleton />}>
+            <ProcessosSection nome={perfil.nomeCompleto || perfil.nome_urna} />
+          </Suspense>
 
           <section className="bg-white border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             <h2 className="font-headline font-black text-2xl sm:text-3xl uppercase mb-4">📂 Fontes desta página</h2>

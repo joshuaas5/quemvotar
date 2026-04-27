@@ -129,6 +129,23 @@ export default function ParlamentaresClient({ parlamentares, partidos, ufs }: Pa
         </div>
       </section>
 
+      {resultados.length === 0 ? (
+        <div className="bg-white border-4 border-black p-8 md:p-12 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <span className="material-symbols-outlined text-6xl mb-4">search_off</span>
+          <h2 className="font-headline font-black text-2xl md:text-3xl uppercase">
+            Nenhum parlamentar encontrado
+          </h2>
+          <p className="font-body font-bold mt-2">
+            Tente ajustar os filtros ou limpar a busca.
+          </p>
+          <button
+            onClick={() => { setQ(''); setPartidoFilter(''); setUfFilter(''); setCasaFilter(''); }}
+            className="mt-6 bg-black text-white font-headline font-black px-6 py-3 uppercase border-4 border-black hover:bg-white hover:text-black transition-colors"
+          >
+            Limpar filtros
+          </button>
+        </div>
+      ) : (
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
         {resultados.map((perfil) => {
           const logo = getPartyLogoBySigla(perfil.partido);
@@ -179,6 +196,7 @@ export default function ParlamentaresClient({ parlamentares, partidos, ufs }: Pa
           );
         })}
       </section>
+      )}
     </div>
   );
 }
