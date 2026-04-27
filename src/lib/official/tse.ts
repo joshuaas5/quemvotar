@@ -1,5 +1,6 @@
 import { cache } from 'react';
 import type { TseDataset, TseResource } from './types';
+import { getMemoryCache, setMemoryCache } from '@/lib/utils/memory-cache';
 
 const TSE_CKAN_URL =
   'https://dadosabertos.tse.jus.br/api/3/action/package_search?q=candidatos';
@@ -31,8 +32,15 @@ function normalizeResource(resource: CkanResource): TseResource {
   };
 }
 
+const TSE_CACHE_KEY = 'tse:datasets:candidatos';
+const TSE_CACHE_TTL = 86400; // 24 horas
+
 export const fetchTseCandidateDatasets = cache(
   async (limit = 6): Promise<TseDataset[]> => {
+    const cacheKey = `${TSE_CACHE_KEY}:${limit}`;
+    const cached = getMemoryCache<TseDataset[]>(cacheKey);
+    if (cached !== null && cached.length > 0) return cached;
+
     try {
       const response = await fetch(TSE_CKAN_URL, {
         headers: { Accept: 'application/json' },
@@ -55,7 +63,7 @@ export const fetchTseCandidateDatasets = cache(
         .sort((a, b) => b.metadata_modified.localeCompare(a.metadata_modified))
         .slice(0, limit);
 
-      return packages.map((item) => ({
+      const result = packages.map((item) => ({
         id: item.id,
         slug: item.name,
         titulo: item.title,
@@ -63,6 +71,8 @@ export const fetchTseCandidateDatasets = cache(
         atualizadoEm: item.metadata_modified,
         recursos: (item.resources ?? []).slice(0, 5).map(normalizeResource),
       }));
+      setMemoryCache(cacheKey, result, TSE_CACHE_TTL);
+      return result;
     } catch (error) {
       console.error('[fetchTseCandidateDatasets] Falha ao carregar datasets do TSE:', error);
       return [];

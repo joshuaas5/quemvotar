@@ -3,6 +3,7 @@ import type { PerfilDetalhadoPublico, PerfilItemLista, PerfilPublico } from './t
 import { buildVoteThemeCards } from '@/lib/political-themes';
 import { improveProfilePhotoUrl } from '@/lib/utils/profile-image';
 import { decodeMojibake } from '@/lib/utils/string';
+import { getMemoryCache, setMemoryCache } from '@/lib/utils/memory-cache';
 
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
 const AUTORIAS_AMOSTRA_ANALISADA = 8;
@@ -361,10 +362,18 @@ async function fetchAutoriasResumo(autorias: SenadoAutoria[]) {
   };
 }
 
+const SENADORES_CACHE_KEY = 'senado:senadores:all';
+const SENADORES_CACHE_TTL = 1800; // 30 minutos
+
 export const fetchSenadores = cache(async (): Promise<PerfilPublico[]> => {
+  const cached = getMemoryCache<PerfilPublico[]>(SENADORES_CACHE_KEY);
+  if (cached !== null && cached.length > 0) return cached;
+
   try {
     const parlamentares = await fetchSenadoresListaAtual();
-    return parlamentares.map(normalizeSenador);
+    const result = parlamentares.map(normalizeSenador);
+    setMemoryCache(SENADORES_CACHE_KEY, result, SENADORES_CACHE_TTL);
+    return result;
   } catch (error) {
     console.error('[fetchSenadores] Falha ao carregar senadores:', error);
     return [];

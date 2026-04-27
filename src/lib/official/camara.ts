@@ -2,6 +2,7 @@ import { cache } from 'react';
 import type { PerfilDetalhadoPublico, PerfilItemLista, PerfilPublico } from './types';
 import { improveProfilePhotoUrl } from '@/lib/utils/profile-image';
 import { decodeMojibake } from '@/lib/utils/string';
+import { getMemoryCache, setMemoryCache } from '@/lib/utils/memory-cache';
 
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
 const AUTORIAS_AMOSTRA_ANALISADA = 8;
@@ -277,13 +278,21 @@ async function fetchAutoriasResumo(id: string) {
   };
 }
 
+const DEPUTADOS_CACHE_KEY = 'camara:deputados:all';
+const DEPUTADOS_CACHE_TTL = 1800; // 30 minutos
+
 export const fetchDeputados = cache(async (): Promise<PerfilPublico[]> => {
+  const cached = getMemoryCache<PerfilPublico[]>(DEPUTADOS_CACHE_KEY);
+  if (cached !== null && cached.length > 0) return cached;
+
   try {
     const payload = await fetchCamara<CamaraResponse<CamaraDeputado[]>>(
       '/deputados?ordem=ASC&ordenarPor=nome&itens=1000',
     );
 
-    return (payload.dados ?? []).map(normalizeDeputado);
+    const result = (payload.dados ?? []).map(normalizeDeputado);
+    setMemoryCache(DEPUTADOS_CACHE_KEY, result, DEPUTADOS_CACHE_TTL);
+    return result;
   } catch (error) {
     console.error('[fetchDeputados] Falha ao carregar deputados:', error);
     return [];

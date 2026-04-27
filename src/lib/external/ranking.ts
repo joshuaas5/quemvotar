@@ -2,7 +2,7 @@ import { cache } from 'react';
 import type { PerfilPublico } from '@/lib/official';
 import type { RankingListaItem, RankingReferencia } from '@/lib/official/types';
 import { normalizeRemoteImageUrl } from '@/lib/utils/profile-image';
-import { getCache, setCache } from '@/lib/supabase-cache';
+import { getMemoryCache, setMemoryCache } from '@/lib/utils/memory-cache';
 
 const RANKING_API_ROOT = 'https://www.politicos.org.br/api';
 const RANKING_SITE_ROOT = 'https://ranking.org.br';
@@ -122,7 +122,7 @@ function findBestRankingMatch(items: RankingItemApi[], perfil: PerfilPublico) {
 
 export const fetchRankingForPerfil = cache(async (perfil: PerfilPublico): Promise<RankingReferencia | null> => {
   const cacheKey = `ranking:perfil:${perfil.fonte}:${perfil.idOrigem}`;
-  const cached = await getCache<RankingReferencia | null>(cacheKey);
+  const cached = getMemoryCache<RankingReferencia | null>(cacheKey);
   if (cached !== null) return cached;
 
   const query = encodeURIComponent(perfil.nome_urna);
@@ -132,14 +132,14 @@ export const fetchRankingForPerfil = cache(async (perfil: PerfilPublico): Promis
 
   const match = findBestRankingMatch(payload.items ?? [], perfil);
   const result = match ? buildRankingReferencia(match, payload.lastSync) : null;
-  await setCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
+  setMemoryCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
   return result;
 });
 
 export const fetchRankingTop = cache(
   async (limit = 24, fonte?: PerfilPublico['fonte']): Promise<RankingListaItem[]> => {
     const cacheKey = `ranking:top:${limit}:${fonte ?? 'all'}`;
-    const cached = await getCache<RankingListaItem[]>(cacheKey);
+    const cached = getMemoryCache<RankingListaItem[]>(cacheKey);
     if (cached !== null && cached.length > 0) return cached;
 
     const items: RankingListaItem[] = [];
@@ -182,7 +182,7 @@ export const fetchRankingTop = cache(
     }
 
     const result = items.slice(0, limit);
-    await setCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
+    setMemoryCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
     return result;
   },
 );

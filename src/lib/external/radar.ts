@@ -2,7 +2,7 @@ import { cache } from 'react';
 import type { PerfilItemLista, PerfilPublico } from '@/lib/official';
 import type { GovernismoReferencia, PresencaReferencia } from '@/lib/official/types';
 import { buildVoteThemeCards } from '@/lib/political-themes';
-import { getCache, setCache } from '@/lib/supabase-cache';
+import { getMemoryCache, setMemoryCache } from '@/lib/utils/memory-cache';
 
 const RADAR_API_ROOT = 'https://radar.congressoemfoco.com.br/api';
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
@@ -296,7 +296,7 @@ const fetchCamaraVoteItems = cache(async (perfil: PerfilPublico): Promise<Camara
 export const fetchGovernismoForPerfil = cache(
   async (perfil: PerfilPublico): Promise<GovernismoReferencia | null> => {
     const cacheKey = `radar:governismo:${perfil.fonte}:${perfil.idOrigem}`;
-    const cached = await getCache<GovernismoReferencia | null>(cacheKey);
+    const cached = getMemoryCache<GovernismoReferencia | null>(cacheKey);
     if (cached !== null) return cached;
 
     const match = await findRadarPerfil(perfil);
@@ -321,7 +321,7 @@ export const fetchGovernismoForPerfil = cache(
       votacoesMonitoradas: governismo.nvotacoes,
       fonteUrl: getRadarPerfilUrl(match.idParlamentarVoz),
     };
-    await setCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
+    setMemoryCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
     return result;
   },
 );
@@ -329,7 +329,7 @@ export const fetchGovernismoForPerfil = cache(
 export const fetchAssiduidadeForPerfil = cache(
   async (perfil: PerfilPublico): Promise<PresencaReferencia | null> => {
     const cacheKey = `radar:assiduidade:${perfil.fonte}:${perfil.idOrigem}`;
-    const cached = await getCache<PresencaReferencia | null>(cacheKey);
+    const cached = getMemoryCache<PresencaReferencia | null>(cacheKey);
     if (cached !== null) return cached;
 
     const match = await findRadarPerfil(perfil);
@@ -353,14 +353,14 @@ export const fetchAssiduidadeForPerfil = cache(
       ausenciasNaoJustificadas: maisRecente.totalAusenciasNaoJustificadas,
       fonteUrl: getRadarPerfilUrl(match.idParlamentarVoz),
     };
-    await setCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
+    setMemoryCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
     return result;
   },
 );
 
 export const fetchCamaraVotesForPerfil = cache(async (perfil: PerfilPublico): Promise<PerfilItemLista[]> => {
   const cacheKey = `radar:votos:${perfil.fonte}:${perfil.idOrigem}`;
-  const cached = await getCache<PerfilItemLista[]>(cacheKey);
+  const cached = getMemoryCache<PerfilItemLista[]>(cacheKey);
   if (cached !== null && cached.length > 0) return cached;
 
   const detalhes = await fetchCamaraVoteItems(perfil);
@@ -389,14 +389,14 @@ export const fetchCamaraVotesForPerfil = cache(async (perfil: PerfilPublico): Pr
     } satisfies PerfilItemLista;
   });
 
-  await setCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
+  setMemoryCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
   return result;
 });
 
 export const fetchCamaraVoteThemesForPerfil = cache(
   async (perfil: PerfilPublico): Promise<PerfilItemLista[]> => {
     const cacheKey = `radar:temas:${perfil.fonte}:${perfil.idOrigem}`;
-    const cached = await getCache<PerfilItemLista[]>(cacheKey);
+    const cached = getMemoryCache<PerfilItemLista[]>(cacheKey);
     if (cached !== null && cached.length > 0) return cached;
 
     const detalhes = await fetchCamaraVoteItems(perfil);
@@ -421,7 +421,7 @@ export const fetchCamaraVoteThemesForPerfil = cache(
       }),
     );
 
-    await setCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
+    setMemoryCache(cacheKey, result, REMOTE_REVALIDATE_SECONDS);
     return result;
   },
 );

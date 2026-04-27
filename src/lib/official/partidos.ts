@@ -5,6 +5,7 @@ import { fetchSenadores } from './senado';
 import { buildPartyBadgeDataUrl, getPartyMeta, getSpectrumLabel } from '@/lib/party-meta';
 import { getPartyLogoBySigla } from '@/lib/party-logos';
 import { normalizeRemoteImageUrl, upgradeCamaraPhotoUrl } from '@/lib/utils/profile-image';
+import { getMemoryCache, setMemoryCache } from '@/lib/utils/memory-cache';
 
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
@@ -250,7 +251,13 @@ function getPartyLeader(liderancas: LiderancaRaw[], sigla: string, casa: 'CD' | 
   };
 }
 
+const PARTIDOS_CACHE_KEY = 'partidos:resumo:all';
+const PARTIDOS_CACHE_TTL = 21600; // 6 horas
+
 export const fetchPartidosResumo = cache(async (): Promise<PartidoResumo[]> => {
+  const cached = getMemoryCache<PartidoResumo[]>(PARTIDOS_CACHE_KEY);
+  if (cached !== null && cached.length > 0) return cached;
+
   const [deputados, senadores, partidosCamara, liderancas, senadoLista] = await Promise.all([
     fetchDeputados(),
     fetchSenadores(),
@@ -276,7 +283,7 @@ export const fetchPartidosResumo = cache(async (): Promise<PartidoResumo[]> => {
     }),
   );
 
-  return partidosOrdenados.map((totaisPartido) => {
+  const resultado = partidosOrdenados.map((totaisPartido) => {
     const detalheCamara = detalhesCamara.get(totaisPartido.sigla);
     const detalheTse = detalhesTse.get(totaisPartido.sigla);
     const meta = getPartyMeta(totaisPartido.sigla);
@@ -331,6 +338,9 @@ export const fetchPartidosResumo = cache(async (): Promise<PartidoResumo[]> => {
       blocosSenado,
     };
   });
+
+  setMemoryCache(PARTIDOS_CACHE_KEY, resultado, PARTIDOS_CACHE_TTL);
+  return resultado as PartidoResumo[];
 });
 
 function mapCategoria(descricao?: string): LiderancaCongresso['categoria'] | null {
@@ -344,7 +354,13 @@ function mapCategoria(descricao?: string): LiderancaCongresso['categoria'] | nul
   return null;
 }
 
+const LIDERANCAS_CACHE_KEY = 'congresso:liderancas:all';
+const LIDERANCAS_CACHE_TTL = 21600; // 6 horas
+
 export const fetchLiderancasCongresso = cache(async (): Promise<LiderancaCongresso[]> => {
+  const cached = getMemoryCache<LiderancaCongresso[]>(LIDERANCAS_CACHE_KEY);
+  if (cached !== null && cached.length > 0) return cached;
+
   const liderancas = await fetchComposicaoLiderancas();
   const resultado: LiderancaCongresso[] = [];
 
@@ -370,6 +386,7 @@ export const fetchLiderancasCongresso = cache(async (): Promise<LiderancaCongres
     });
   }
 
+  setMemoryCache(LIDERANCAS_CACHE_KEY, resultado, LIDERANCAS_CACHE_TTL);
   return resultado;
 });
 
