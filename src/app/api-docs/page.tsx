@@ -1,6 +1,14 @@
+import type { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { OFFICIAL_SOURCE_LINKS, getOfficialSourceStatus, getTseDatasets } from '@/lib/api';
+
+export const metadata: Metadata = {
+  title: 'APIs e Fontes Oficiais',
+  description: 'Documentação das APIs e fontes de dados oficiais integradas ao QuemVotar: Câmara, Senado, TSE, CNJ e mais.',
+  alternates: { canonical: 'https://quemvotar.com.br/api-docs' },
+  robots: { index: true, follow: true },
+};
 
 export const revalidate = 86400;
 

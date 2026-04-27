@@ -5,6 +5,7 @@ import Highlights from "@/components/Highlights";
 import QuizBand from "@/components/QuizBand";
 import StatsDashboard from "@/components/StatsDashboard";
 import Footer from "@/components/Footer";
+import { buildWebSiteSchema } from "@/lib/jsonld";
 
 export const metadata: Metadata = {
   title: "QuemVotar - Descubra quem é quem na política",
@@ -16,8 +17,19 @@ export const metadata: Metadata = {
 export const revalidate = 1800;
 
 export default function Home() {
+  const websiteSchema = buildWebSiteSchema(
+    'https://quemvotar.com.br',
+    'QuemVotar',
+    'Consulte deputados, senadores, partidos e rankings com dados oficiais da Câmara, Senado e TSE.',
+    '/busca?q={q}'
+  );
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
       <Header />
 
       <main className="flex-grow">

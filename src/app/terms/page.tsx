@@ -1,5 +1,13 @@
+import type { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+
+export const metadata: Metadata = {
+  title: 'Termos de Uso',
+  description: 'Termos de uso e condições de acesso ao QuemVotar. Consulte dados oficiais sobre políticos brasileiros.',
+  alternates: { canonical: 'https://quemvotar.com.br/terms' },
+  robots: { index: true, follow: true },
+};
 
 export default function TermsPage() {
   return (

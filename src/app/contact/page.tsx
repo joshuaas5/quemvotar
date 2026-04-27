@@ -1,5 +1,13 @@
+import type { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+
+export const metadata: Metadata = {
+  title: 'Contato',
+  description: 'Entre em contato com a equipe do QuemVotar. Dúvidas, sugestões e parcerias.',
+  alternates: { canonical: 'https://quemvotar.com.br/contact' },
+  robots: { index: true, follow: true },
+};
 
 export default function ContactPage() {
   return (

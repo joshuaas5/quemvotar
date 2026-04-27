@@ -8,6 +8,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import ShareButtons from '@/components/ShareButtons';
 import { getPartidoPorSigla } from '@/lib/api';
 import { getPartyVisualEmoji } from '@/lib/party-logos';
+import { buildOrganizationSchema, buildBreadcrumbSchema } from '@/lib/jsonld';
 
 export const revalidate = 3600;
 
@@ -56,9 +57,28 @@ export default async function PartidoDetailPage({
 
   const cores = partido.cores ?? ['#111827', '#9ca3af'];
   const visual = getPartyVisualEmoji(partido.sigla);
+  const canonicalUrl = `https://quemvotar.com.br/partidos/${partido.sigla}`;
+
+  const orgSchema = buildOrganizationSchema(
+    partido.nome,
+    canonicalUrl,
+    partido.definicaoCurta || `Partido ${partido.nome} com ${partido.totalParlamentares} parlamentares no Congresso Nacional.`,
+    partido.logoUrl ?? undefined,
+    partido.siteOficial ? [partido.siteOficial] : undefined
+  );
+
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: 'Início', url: 'https://quemvotar.com.br/' },
+    { name: 'Partidos', url: 'https://quemvotar.com.br/partidos' },
+    { name: partido.sigla },
+  ]);
 
   return (
     <div className="min-h-screen flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([orgSchema, breadcrumbSchema]) }}
+      />
       <Header />
 
       <main className="flex-grow bg-surface-container py-10 md:py-12 px-4 md:px-6">

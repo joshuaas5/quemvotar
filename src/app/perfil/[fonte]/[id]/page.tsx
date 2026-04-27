@@ -10,6 +10,7 @@ import { CardSkeleton, SectionSkeleton, ThemeSkeleton } from '@/components/Profi
 import { getPerfilBasico, getPerfilEnriquecido, getThemeVisual, type PerfilEnriquecido } from '@/lib/api';
 import { searchCnjByPoliticianName } from '@/lib/official';
 import type { PartidoResumo, PerfilDetalhadoPublico, PerfilItemLista } from '@/lib/official';
+import { buildBreadcrumbSchema } from '@/lib/jsonld';
 
 export const revalidate = 1800;
 
@@ -768,12 +769,18 @@ export default async function PerfilPage({
     image: perfil.foto_url,
   };
 
+  const breadcrumbSchema = buildBreadcrumbSchema([
+    { name: 'Início', url: 'https://quemvotar.com.br/' },
+    { name: 'Parlamentares', url: 'https://quemvotar.com.br/parlamentares' },
+    { name: perfil.nome_urna },
+  ]);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([jsonLd, breadcrumbSchema]) }}
       />
 
       <main className="flex-grow bg-surface-container py-6 sm:py-12 px-4 sm:px-6">
