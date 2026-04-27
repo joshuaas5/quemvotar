@@ -311,27 +311,27 @@ export function MatchClient({
                         <line x1={top.x} y1={top.y} x2={bottom.x} y2={bottom.y} stroke="#000" strokeWidth="1.5" strokeDasharray="4 4" />
 
                         {/* Labels internos dos quadrantes */}
-                        <text x={cx - 34} y={cy - 34} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Libertário</text>
-                        <text x={cx + 34} y={cy - 34} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Conservador</text>
-                        <text x={cx - 34} y={cy + 40} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Liberal</text>
-                        <text x={cx + 34} y={cy + 40} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Estatista</text>
+                        <text x={cx - 34} y={cy - 34} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Progressista</text>
+                        <text x={cx + 34} y={cy - 34} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Liberalismo</text>
+                        <text x={cx - 34} y={cy + 40} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Estatista</text>
+                        <text x={cx + 34} y={cy + 40} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Conservador</text>
 
                         {/* Labels das pontas (fora do diamante) */}
                         <rect x={top.x - 38} y={top.y - 22} width="76" height="18" fill="#fff" stroke="#000" strokeWidth="1.5" />
                         <text x={top.x} y={top.y - 8} textAnchor="middle" style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase' }}>Libertário</text>
 
                         <rect x={right.x + 6} y={right.y - 10} width="76" height="18" fill="#fff" stroke="#000" strokeWidth="1.5" />
-                        <text x={right.x + 44} y={right.y + 2} textAnchor="middle" style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase' }}>Conservador</text>
+                        <text x={right.x + 44} y={right.y + 2} textAnchor="middle" style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase' }}>Direita</text>
 
                         <rect x={left.x - 82} y={left.y - 10} width="76" height="18" fill="#fff" stroke="#000" strokeWidth="1.5" />
-                        <text x={left.x - 44} y={left.y + 2} textAnchor="middle" style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase' }}>Liberal</text>
+                        <text x={left.x - 44} y={left.y + 2} textAnchor="middle" style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase' }}>Esquerda</text>
 
                         <rect x={bottom.x - 38} y={bottom.y + 6} width="76" height="18" fill="#fff" stroke="#000" strokeWidth="1.5" />
-                        <text x={bottom.x} y={bottom.y + 20} textAnchor="middle" style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase' }}>Estatista</text>
+                        <text x={bottom.x} y={bottom.y + 20} textAnchor="middle" style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase' }}>Autoritário</text>
 
                         {/* Títulos dos eixos */}
                         <text x={right.x + 22} y={right.y + 28} textAnchor="middle" style={{ fontSize: 9, fontWeight: 700 }}>Liberdade Econômica →</text>
-                        <text x={left.x - 14} y={left.y - 24} textAnchor="middle" style={{ fontSize: 9, fontWeight: 700 }}>← Livre Mercado</text>
+                        <text x={left.x - 14} y={left.y - 24} textAnchor="middle" style={{ fontSize: 9, fontWeight: 700 }}>← Intervencionismo</text>
                         <text x={top.x + 52} y={top.y + 14} textAnchor="start" style={{ fontSize: 9, fontWeight: 700 }}>↑ Liberdade Pessoal</text>
                         <text x={bottom.x + 52} y={bottom.y - 10} textAnchor="start" style={{ fontSize: 9, fontWeight: 700 }}>↓ Autoritarismo</text>
 

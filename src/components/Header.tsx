@@ -1,7 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 
 const NAV_LINKS = [
@@ -19,8 +20,19 @@ export default function Header() {
   return (
     <>
       <nav className="flex justify-between items-center w-full px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-50 bg-[#f5f6f7] border-b-4 border-black neo-brutalist-shadow">
-        <Link href="/" className="text-2xl sm:text-3xl font-black text-black tracking-tighter font-headline uppercase">
-          QUEM VOTAR.
+        <Link href="/" className="flex items-center gap-2 active:scale-95 transition-transform">
+          <Image
+            src="/logo-header.png"
+            alt="QuemVotar"
+            width={48}
+            height={48}
+            className="w-10 h-10 sm:w-12 sm:h-12"
+            priority
+            unoptimized
+          />
+          <span className="text-2xl sm:text-3xl font-black text-black tracking-tighter font-headline uppercase">
+            QUEM VOTAR.
+          </span>
         </Link>
 
         <div className="hidden md:flex gap-8 items-center font-headline font-black uppercase tracking-tighter">
