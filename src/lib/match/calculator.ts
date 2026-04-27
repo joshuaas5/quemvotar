@@ -119,6 +119,7 @@ export function calculateMatchScoreDetailed(
 }
 
 export function calculateNolanChart(userAnswers: UserAnswersMap) {
+  const hasAnswers = Object.keys(userAnswers).length > 0;
   const safeScore = (key: string) => userAnswers[key]?.score ?? 3;
 
   const econ =
@@ -129,6 +130,17 @@ export function calculateNolanChart(userAnswers: UserAnswersMap) {
 
   const econPercent = ((econ - 1) / 4) * 100;
   const personalPercent = ((personal - 1) / 4) * 100;
+
+  // Sem respostas = Centro (não podemos classificar)
+  if (!hasAnswers) {
+    return {
+      econPercent: 50,
+      personalPercent: 50,
+      label: 'Centro',
+      description:
+        'Você busca o equilíbrio entre a liberdade individual e a ordem social. Prefere mudanças graduais e tende a avaliar caso a caso sem se prender rigidamente a dogmas de esquerda ou direita.',
+    };
+  }
 
   let label = 'Centro';
   let description =
