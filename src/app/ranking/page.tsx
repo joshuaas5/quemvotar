@@ -14,8 +14,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://quemvotar.com.br/ranking" },
 };
 
-export const revalidate = 1800;
-
 function normalizeText(value: string) {
   return value
     .normalize('NFD')

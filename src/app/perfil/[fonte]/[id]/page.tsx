@@ -689,12 +689,19 @@ export async function generateMetadata(
   const estado = perfil.uf ? `-${perfil.uf}` : '';
   const cargo = perfil.cargo;
 
+  const canonicalUrl = `https://quemvotar.com.br/perfil/${fonte}/${id}`;
+
   return {
     title: `${perfil.nome_urna} (${sigla}${estado}) - ${cargo} | QuemVotar`,
     description: `Acompanhe o mandato oficial de ${perfil.nomeCompleto || perfil.nome_urna}. Veja gastos, presença em plenário, alinhamento político e projetos com dados do ${perfil.casa}.`,
+    alternates: { canonical: canonicalUrl },
     openGraph: {
       title: `${perfil.nome_urna} - Ficha do ${cargo}`,
       description: `Acompanhe a ficha pública, gastos e histórico de votações de ${perfil.nome_urna}.`,
+      images: perfil.foto_url ? [perfil.foto_url] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
       images: perfil.foto_url ? [perfil.foto_url] : [],
     },
   };

@@ -18,8 +18,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://quemvotar.com.br/busca" },
 };
 
-export const revalidate = 1800;
-
 function getInitials(nome: string) {
   return nome
     .split(' ')

@@ -4,22 +4,34 @@ import { getHighlights, searchCandidatos } from '@/lib/api';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
-  const query = request.nextUrl.searchParams.get('q')?.trim() ?? '';
+  try {
+    const query = request.nextUrl.searchParams.get('q')?.trim() ?? '';
 
-  if (!query) {
-    const destaques = await getHighlights();
+    if (!query) {
+      const destaques = await getHighlights();
+      return NextResponse.json({
+        atualizadoEm: new Date().toISOString(),
+        origem: 'apis-oficiais',
+        dados: destaques,
+      });
+    }
+
+    const resultados = await searchCandidatos(query);
+
     return NextResponse.json({
       atualizadoEm: new Date().toISOString(),
       origem: 'apis-oficiais',
-      dados: destaques,
+      dados: resultados,
     });
+  } catch (error) {
+    console.error('[API /fontes/congresso] Error:', error);
+    return NextResponse.json(
+      {
+        error: 'Não foi possível consultar o Congresso no momento.',
+        atualizadoEm: new Date().toISOString(),
+        dados: [],
+      },
+      { status: 503 }
+    );
   }
-
-  const resultados = await searchCandidatos(query);
-
-  return NextResponse.json({
-    atualizadoEm: new Date().toISOString(),
-    origem: 'apis-oficiais',
-    dados: resultados,
-  });
 }

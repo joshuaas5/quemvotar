@@ -36,7 +36,7 @@ export default function Hero() {
         <div className="flex-grow flex items-center bg-white px-4 sm:px-6 py-3 sm:py-4">
           <span className="material-symbols-outlined text-2xl sm:text-4xl mr-3 sm:mr-4">search</span>
           <input
-            className="w-full border-none focus:outline-[0px] focus:ring-0 text-base sm:text-xl font-headline font-bold uppercase placeholder-black/30"
+            className="w-full border-none focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 text-base sm:text-xl font-headline font-bold uppercase placeholder-black/30"
             placeholder="Pesquise um parlamentar, partido ou UF..."
             type="text"
             value={query}

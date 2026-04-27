@@ -247,7 +247,7 @@ function mapMandato(mandato: SenadoMandato): PerfilItemLista {
       mandato.DescricaoParticipacao ?? null,
       mandato.UfParlamentar ? `Mandato pela UF ${mandato.UfParlamentar}` : null,
       suplentes ? `Suplência: ${suplentes}` : null,
-    ]).join(' â€¢ '),
+    ]).join(' • '),
     data: mandato.PrimeiraLegislaturaDoMandato?.DataInicio ?? undefined,
     destaque: mandato.DescricaoParticipacao ?? undefined,
   };
@@ -265,7 +265,7 @@ function mapComissao(comissao: SenadoComissao): PerfilItemLista {
     detalhe: compact([
       comissao.DescricaoParticipacao ?? null,
       comissao.IdentificacaoComissao?.SiglaCasaComissao ?? null,
-    ]).join(' â€¢ '),
+    ]).join(' • '),
     data: comissao.DataInicio ?? undefined,
   };
 }
@@ -280,7 +280,7 @@ function mapCargo(cargo: SenadoCargo): PerfilItemLista {
     detalhe: compact([
       cargo.IdentificacaoComissao?.SiglaComissao ?? null,
       cargo.IdentificacaoComissao?.SiglaCasaComissao ?? null,
-    ]).join(' â€¢ '),
+    ]).join(' • '),
     data: cargo.DataInicio ?? undefined,
   };
 }

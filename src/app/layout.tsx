@@ -42,9 +42,6 @@ export const metadata: Metadata = {
     "ranking dos políticos",
   ],
   metadataBase: new URL(siteUrl),
-  alternates: {
-    canonical: "/",
-  },
   openGraph: {
     type: "website",
     locale: "pt_BR",

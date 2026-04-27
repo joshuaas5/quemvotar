@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -9,6 +10,37 @@ import { getPartidoPorSigla } from '@/lib/api';
 import { getPartyVisualEmoji } from '@/lib/party-logos';
 
 export const revalidate = 3600;
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ sigla: string }> }
+): Promise<Metadata> {
+  const { sigla } = await params;
+  const partido = await getPartidoPorSigla(sigla);
+
+  if (!partido) {
+    return {
+      title: 'Partido não encontrado | QuemVotar',
+      description: 'Não foi possível localizar o partido na base de dados.',
+    };
+  }
+
+  const canonicalUrl = `https://quemvotar.com.br/partidos/${partido.sigla}`;
+
+  return {
+    title: `${partido.nome} (${partido.sigla}) | QuemVotar`,
+    description: `Conheça o partido ${partido.nome} (${partido.sigla}): ${partido.totalParlamentares} parlamentares, bancada, lideranças e posicionamento político.`,
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      title: `${partido.nome} (${partido.sigla})`,
+      description: `Bancada, lideranças e posicionamento político do ${partido.nome}.`,
+      images: partido.logoUrl ? [partido.logoUrl] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      images: partido.logoUrl ? [partido.logoUrl] : [],
+    },
+  };
+}
 
 export default async function PartidoDetailPage({
   params,

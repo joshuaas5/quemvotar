@@ -13,8 +13,6 @@ import {
 } from '@/lib/api';
 import { getPartyLogoBySigla } from '@/lib/party-logos';
 
-export const revalidate = 1800;
-
 export const metadata: Metadata = {
   title: 'Comparar Parlamentares',
   description:
