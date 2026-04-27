@@ -418,7 +418,7 @@ export function MatchClient({
                           <line x1={left.x} y1={left.y} x2={right.x} y2={right.y} stroke="#000" strokeWidth="1.5" strokeDasharray="4 4" />
                           <line x1={top.x} y1={top.y} x2={bottom.x} y2={bottom.y} stroke="#000" strokeWidth="1.5" strokeDasharray="4 4" />
 
-                          <text x={cx - 34} y={cy - 34} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Libertário</text>
+                          <text x={cx - 34} y={cy - 34} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Progressista</text>
                           <text x={cx + 34} y={cy - 34} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Liberalismo</text>
                           <text x={cx - 34} y={cy + 40} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Estatista</text>
                           <text x={cx + 34} y={cy + 40} textAnchor="middle" style={{ fontSize: 10, fontWeight: 700, opacity: 0.6, textTransform: 'uppercase' }}>Conservador</text>
