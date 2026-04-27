@@ -84,10 +84,15 @@ export async function getPerfilBasico(
   fonte: PerfilPublico['fonte'],
   idOrigem: string,
 ): Promise<{ perfil: PerfilDetalhadoPublico; partido: PartidoResumo | null } | null> {
-  const perfil = await getOfficialProfileDetail(fonte, idOrigem);
-  if (!perfil) return null;
-  const partido = await getPartido(perfil.partido).catch(() => null);
-  return { perfil, partido };
+  try {
+    const perfil = await getOfficialProfileDetail(fonte, idOrigem);
+    if (!perfil) return null;
+    const partido = await getPartido(perfil.partido).catch(() => null);
+    return { perfil, partido };
+  } catch (error) {
+    console.error(`[getPerfilBasico] Erro (${fonte}, ${idOrigem}):`, error);
+    return null;
+  }
 }
 
 /** Enrichment data fetched in parallel via Suspense streaming. */

@@ -6,7 +6,6 @@ import { decodeMojibake } from '@/lib/utils/string';
 
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
 const AUTORIAS_AMOSTRA_ANALISADA = 8;
-const SENADO_TIMEOUT_MS = 8000;
 
 interface SenadoTelefone {
   NumeroTelefone?: string;
@@ -162,7 +161,6 @@ function normalizeText(value: string) {
 
 async function fetchSenado<T>(path: string): Promise<T> {
   const response = await fetch(`${SENADO_API_ROOT}${path}`, {
-    signal: AbortSignal.timeout(SENADO_TIMEOUT_MS),
     headers: { Accept: 'application/json' },
     next: { revalidate: 86400 },
   });
@@ -364,8 +362,13 @@ async function fetchAutoriasResumo(autorias: SenadoAutoria[]) {
 }
 
 export const fetchSenadores = cache(async (): Promise<PerfilPublico[]> => {
-  const parlamentares = await fetchSenadoresListaAtual();
-  return parlamentares.map(normalizeSenador);
+  try {
+    const parlamentares = await fetchSenadoresListaAtual();
+    return parlamentares.map(normalizeSenador);
+  } catch (error) {
+    console.error('[fetchSenadores] Falha ao carregar senadores:', error);
+    return [];
+  }
 });
 
 export const fetchSenadorDetalhado = cache(

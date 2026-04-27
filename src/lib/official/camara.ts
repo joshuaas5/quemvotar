@@ -5,7 +5,6 @@ import { decodeMojibake } from '@/lib/utils/string';
 
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
 const AUTORIAS_AMOSTRA_ANALISADA = 8;
-const CAMARA_TIMEOUT_MS = 8000;
 
 interface CamaraLink {
   rel?: string;
@@ -94,7 +93,6 @@ interface CamaraProposicaoDetalhe {
 
 async function fetchCamara<T>(path: string): Promise<T> {
   const response = await fetch(`${CAMARA_API_ROOT}${path}`, {
-    signal: AbortSignal.timeout(CAMARA_TIMEOUT_MS),
     headers: { Accept: 'application/json' },
     next: { revalidate: 86400 },
   });
@@ -280,11 +278,16 @@ async function fetchAutoriasResumo(id: string) {
 }
 
 export const fetchDeputados = cache(async (): Promise<PerfilPublico[]> => {
-  const payload = await fetchCamara<CamaraResponse<CamaraDeputado[]>>(
-    '/deputados?ordem=ASC&ordenarPor=nome&itens=1000',
-  );
+  try {
+    const payload = await fetchCamara<CamaraResponse<CamaraDeputado[]>>(
+      '/deputados?ordem=ASC&ordenarPor=nome&itens=1000',
+    );
 
-  return (payload.dados ?? []).map(normalizeDeputado);
+    return (payload.dados ?? []).map(normalizeDeputado);
+  } catch (error) {
+    console.error('[fetchDeputados] Falha ao carregar deputados:', error);
+    return [];
+  }
 });
 
 export const fetchDeputadoDetalhado = cache(

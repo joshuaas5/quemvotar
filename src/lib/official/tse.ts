@@ -33,34 +33,39 @@ function normalizeResource(resource: CkanResource): TseResource {
 
 export const fetchTseCandidateDatasets = cache(
   async (limit = 6): Promise<TseDataset[]> => {
-    const response = await fetch(TSE_CKAN_URL, {
-      headers: { Accept: 'application/json' },
-      next: { revalidate: 86400 },
-    });
+    try {
+      const response = await fetch(TSE_CKAN_URL, {
+        headers: { Accept: 'application/json' },
+        next: { revalidate: 86400 },
+      });
 
-    if (!response.ok) {
-      throw new Error(`Falha ao consultar o portal do TSE: ${response.status}`);
-    }
+      if (!response.ok) {
+        throw new Error(`Falha ao consultar o portal do TSE: ${response.status}`);
+      }
 
-    const payload = (await response.json()) as {
-      success?: boolean;
-      result?: {
-        results?: CkanPackage[];
+      const payload = (await response.json()) as {
+        success?: boolean;
+        result?: {
+          results?: CkanPackage[];
+        };
       };
-    };
 
-    const packages = (payload.result?.results ?? [])
-      .filter((item) => item.title.toLowerCase().includes('candidatos'))
-      .sort((a, b) => b.metadata_modified.localeCompare(a.metadata_modified))
-      .slice(0, limit);
+      const packages = (payload.result?.results ?? [])
+        .filter((item) => item.title.toLowerCase().includes('candidatos'))
+        .sort((a, b) => b.metadata_modified.localeCompare(a.metadata_modified))
+        .slice(0, limit);
 
-    return packages.map((item) => ({
-      id: item.id,
-      slug: item.name,
-      titulo: item.title,
-      descricao: item.notes ?? '',
-      atualizadoEm: item.metadata_modified,
-      recursos: (item.resources ?? []).slice(0, 5).map(normalizeResource),
-    }));
+      return packages.map((item) => ({
+        id: item.id,
+        slug: item.name,
+        titulo: item.title,
+        descricao: item.notes ?? '',
+        atualizadoEm: item.metadata_modified,
+        recursos: (item.resources ?? []).slice(0, 5).map(normalizeResource),
+      }));
+    } catch (error) {
+      console.error('[fetchTseCandidateDatasets] Falha ao carregar datasets do TSE:', error);
+      return [];
+    }
   },
 );

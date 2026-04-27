@@ -9,7 +9,6 @@ import { normalizeRemoteImageUrl, upgradeCamaraPhotoUrl } from '@/lib/utils/prof
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
 const TSE_PARTIDOS_URL = 'https://www.tse.jus.br/partidos/partidos-registrados-no-tse';
-const OFFICIAL_FETCH_TIMEOUT_MS = 4000;
 const OFFICIAL_FETCH_MAX_ATTEMPTS = 2;
 
 interface CamaraPartido {
@@ -70,7 +69,6 @@ interface TsePartyDetail {
 async function fetchOfficial(url: string, accept: string, attempt = 1): Promise<Response> {
   try {
     const response = await fetch(url, {
-      signal: AbortSignal.timeout(OFFICIAL_FETCH_TIMEOUT_MS),
       headers: { Accept: accept },
       next: { revalidate: 86400 },
     });

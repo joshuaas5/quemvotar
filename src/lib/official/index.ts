@@ -79,12 +79,16 @@ export async function getOfficialProfileDetail(
   fonte: PerfilPublico['fonte'],
   idOrigem: string,
 ): Promise<PerfilDetalhadoPublico | null> {
-  if (fonte === 'camara') {
-    return fetchDeputadoDetalhado(idOrigem);
-  }
+  try {
+    if (fonte === 'camara') {
+      return await fetchDeputadoDetalhado(idOrigem);
+    }
 
-  if (fonte === 'senado') {
-    return fetchSenadorDetalhado(idOrigem);
+    if (fonte === 'senado') {
+      return await fetchSenadorDetalhado(idOrigem);
+    }
+  } catch (error) {
+    console.error(`[getOfficialProfileDetail] Erro ao carregar perfil (${fonte}/${idOrigem}):`, error);
   }
 
   return null;

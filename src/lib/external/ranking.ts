@@ -7,7 +7,6 @@ import { getCache, setCache } from '@/lib/supabase-cache';
 const RANKING_API_ROOT = 'https://www.politicos.org.br/api';
 const RANKING_SITE_ROOT = 'https://ranking.org.br';
 const REMOTE_REVALIDATE_SECONDS = 86400;
-const RANKING_TIMEOUT_MS = 15000;
 
 interface RankingAnoApi {
   ano?: number;
@@ -82,7 +81,6 @@ function buildRankingReferencia(item: RankingItemApi, lastSync?: string): Rankin
 
 async function fetchRanking<T>(path: string): Promise<T> {
   const response = await fetch(`${RANKING_API_ROOT}${path}`, {
-    signal: AbortSignal.timeout(RANKING_TIMEOUT_MS),
     headers: { Accept: 'application/json' },
     next: { revalidate: REMOTE_REVALIDATE_SECONDS },
   });
