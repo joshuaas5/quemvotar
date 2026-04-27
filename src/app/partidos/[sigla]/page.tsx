@@ -51,13 +51,20 @@ export default async function PartidoDetailPage({
           >
             <div className="grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)]">
               <div className="bg-white/15 border-b-4 lg:border-b-0 lg:border-r-4 border-black flex items-center justify-center p-6">
-                <Image
-                  src={partido.logoUrl ?? 'https://fakeimg.pl/320x320?text=Partido'}
-                  alt={partido.sigla}
-                  width={160}
-                  height={160}
-                  className="w-32 h-32 md:w-40 md:h-40 object-contain border-4 border-black bg-white p-1"
-                />
+                {partido.logoUrl ? (
+                  <Image
+                    src={partido.logoUrl}
+                    alt={partido.sigla}
+                    width={160}
+                    height={160}
+                    className="w-32 h-32 md:w-40 md:h-40 object-contain border-4 border-black bg-white p-1"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="w-32 h-32 md:w-40 md:h-40 border-4 border-black bg-gray-200 flex items-center justify-center font-headline font-black text-3xl">
+                    {partido.sigla.slice(0, 2)}
+                  </div>
+                )}
               </div>
 
               <div className="p-6 md:p-8 lg:p-10 text-white space-y-5">

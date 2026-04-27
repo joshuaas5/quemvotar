@@ -768,15 +768,20 @@ export default async function PerfilPage({
             }}
           >
             <div className="grid grid-cols-1 lg:grid-cols-[280px_minmax(0,1fr)]">
-              <div className="bg-white/20 border-b-4 lg:border-b-0 lg:border-r-4 border-black relative">
-                <Image
-                  src={perfil.foto_url || 'https://fakeimg.pl/640x640?text=Sem+Foto'}
-                  alt={perfil.nome_urna}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 280px"
-                  className="object-cover object-top max-h-[300px] lg:max-h-none"
-                  priority
-                />
+              <div className="bg-white/20 border-b-4 lg:border-b-0 lg:border-r-4 border-black relative flex items-center justify-center min-h-[300px]">
+                {perfil.foto_url ? (
+                  <Image
+                    src={perfil.foto_url}
+                    alt={perfil.nome_urna}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 280px"
+                    className="object-cover object-top max-h-[300px] lg:max-h-none"
+                    priority
+                    unoptimized
+                  />
+                ) : (
+                  <span className="font-headline font-black text-6xl text-white/50">{perfil.nome_urna.split(' ').map(n => n[0]).join('').slice(0,2)}</span>
+                )}
               </div>
 
               <div className="p-5 sm:p-8 lg:p-10 space-y-4 sm:space-y-6 text-white">

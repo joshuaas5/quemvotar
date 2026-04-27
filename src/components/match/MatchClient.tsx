@@ -364,17 +364,11 @@ export function MatchClient({
                     </div>
                   )}
 
-                  <div className="w-32 h-32 border-4 border-black bg-gray-200 rounded-full mb-4 overflow-hidden relative">
+                  <div className="w-32 h-32 border-4 border-black bg-gray-200 rounded-full mb-4 overflow-hidden relative flex items-center justify-center">
                     {pol.foto_url ? (
-                      <Image src={pol.foto_url} alt={pol.nome_urna} fill sizes="128px" className="object-cover object-top" />
+                      <Image src={pol.foto_url} alt={pol.nome_urna} fill sizes="128px" className="object-cover object-top" unoptimized />
                     ) : (
-                      <Image
-                        src="https://fakeimg.pl/640x640?text=Sem+Foto"
-                        alt="Sem Foto"
-                        fill
-                        sizes="128px"
-                        className="object-cover object-top"
-                      />
+                      <span className="font-headline font-black text-2xl text-gray-400">{pol.nome_urna.split(' ').map(n => n[0]).join('').slice(0,2)}</span>
                     )}
                   </div>
                   <h3 className="font-headline font-black text-2xl uppercase leading-tight mb-2 break-words w-full">

@@ -81,6 +81,7 @@ export default async function BuscaPage({
                           fill
                           sizes="128px"
                           className="object-cover"
+                          unoptimized
                         />
                       ) : (
                         <div className="w-full h-full min-h-28 md:min-h-32 flex items-center justify-center font-headline font-black text-3xl">

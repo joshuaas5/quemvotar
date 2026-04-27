@@ -50,15 +50,19 @@ export default async function Highlights() {
                     <span className="material-symbols-outlined">verified</span>
                   </div>
 
-                  <div className="aspect-square bg-gray-100 grayscale hover:grayscale-0 transition-all border-b-4 border-black overflow-hidden relative">
-                    <Image
-                      src={candidato.foto_url || 'https://fakeimg.pl/640x640?text=Sem+Foto'}
-                      alt={candidato.nome_urna}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-                      className="object-cover object-top group-hover:scale-105 transition-transform duration-300"
-                      unoptimized={candidato.foto_url?.startsWith('http') ? false : true}
-                    />
+                  <div className="aspect-square bg-gray-100 grayscale hover:grayscale-0 transition-all border-b-4 border-black overflow-hidden relative flex items-center justify-center">
+                    {candidato.foto_url ? (
+                      <Image
+                        src={candidato.foto_url}
+                        alt={candidato.nome_urna}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                        className="object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                        unoptimized
+                      />
+                    ) : (
+                      <span className="font-headline font-black text-5xl text-gray-300">{candidato.nome_urna.split(' ').map(n => n[0]).join('').slice(0,2)}</span>
+                    )}
                   </div>
 
                   <div className="p-8 flex flex-col flex-grow">

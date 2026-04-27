@@ -142,13 +142,14 @@ export default function ParlamentaresClient({ parlamentares, partidos, ufs }: Pa
             >
               <div className="aspect-square border-b-4 border-black bg-surface-container-high overflow-hidden relative">
                 {perfil.foto_url ? (
-                  <Image
-                    src={perfil.foto_url}
-                    alt={perfil.nome_urna}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                    className="object-cover object-top"
-                  />
+                      <Image
+                        src={perfil.foto_url}
+                        alt={perfil.nome_urna}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                        className="object-cover object-top"
+                        unoptimized
+                      />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center font-headline font-black text-5xl">
                     {getInitials(perfil.nome_urna)}

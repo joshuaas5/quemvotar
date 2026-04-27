@@ -75,13 +75,20 @@ export default async function PartidosPage() {
                 className="bg-white border-4 border-black p-5 md:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
               >
                 <div className="grid grid-cols-[74px_minmax(0,1fr)] md:grid-cols-[88px_minmax(0,1fr)] gap-4 md:gap-5">
-                  <Image
-                    src={partido.logoUrl ?? 'https://fakeimg.pl/320x320?text=Partido'}
-                    alt={partido.sigla}
-                    width={80}
-                    height={80}
-                    className="w-16 h-16 md:w-20 md:h-20 object-contain border-4 border-black bg-white p-1"
-                  />
+                  {partido.logoUrl ? (
+                    <Image
+                      src={partido.logoUrl}
+                      alt={partido.sigla}
+                      width={80}
+                      height={80}
+                      className="w-16 h-16 md:w-20 md:h-20 object-contain border-4 border-black bg-white p-1"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="w-16 h-16 md:w-20 md:h-20 border-4 border-black bg-gray-200 flex items-center justify-center font-headline font-black text-xl">
+                      {partido.sigla.slice(0, 2)}
+                    </div>
+                  )}
 
                   <div className="space-y-2">
                     <p className="font-label font-bold uppercase text-xs opacity-70">{partido.sigla}</p>
