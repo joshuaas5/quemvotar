@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useToast } from './Toast';
 
 function getShareUrl(path?: string) {
   if (typeof window === 'undefined') return '';
@@ -18,6 +19,7 @@ export default function ShareButtons({
 }) {
   const [copied, setCopied] = useState(false);
   const [url, setUrl] = useState('');
+  const { showToast } = useToast();
 
   useEffect(() => {
     setUrl(getShareUrl(path));
@@ -31,9 +33,10 @@ export default function ShareButtons({
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
+      showToast('Link copiado para a area de transferencia!', 'success');
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // ignore
+      showToast('Nao foi possivel copiar o link.', 'error');
     }
   };
 

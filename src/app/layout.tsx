@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Space_Grotesk, Work_Sans } from "next/font/google";
 import Script from "next/script";
 import AdSenseAutoAds from "@/components/AdSenseAutoAds";
+import { ToastProvider } from "@/components/Toast";
+import BackToTop from "@/components/BackToTop";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -122,7 +124,10 @@ export default function RootLayout({
             />
           </noscript>
         )}
-        {children}
+        <ToastProvider>
+          {children}
+          <BackToTop />
+        </ToastProvider>
 
         {gaId && (
           <>

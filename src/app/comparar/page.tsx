@@ -6,7 +6,9 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ShareButtons from '@/components/ShareButtons';
+import CompararClient from '@/components/CompararClient';
 import {
+  getParlamentares,
   getPerfilBasico,
   getPerfilEnriquecido,
   getPerfilHref,
@@ -89,34 +91,14 @@ export default async function CompararPage({
   const refB = parseId(b);
 
   if (!refA || !refB) {
+    const parlamentares = await getParlamentares().catch(() => []);
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-grow bg-surface-container py-10 md:py-16 px-4 md:px-6">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <Breadcrumbs items={[{ label: 'Comparar' }]} />
-            <div className="bg-white border-4 border-black p-8 md:p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-              <h1 className="font-headline font-black text-3xl md:text-4xl uppercase mb-4">
-                Comparar Parlamentares
-              </h1>
-              <p className="font-body font-bold mb-6">
-                Selecione dois parlamentares para comparar lado a lado.
-              </p>
-              <div className="space-y-4">
-                <p className="font-label font-bold uppercase text-xs opacity-70">
-                  Exemplo de URL:
-                </p>
-                <code className="block bg-surface-container-high border-2 border-black p-3 font-mono text-sm break-all">
-                  /comparar?a=camara/123&b=senado/456
-                </code>
-                <Link
-                  href="/parlamentares"
-                  className="inline-block mt-4 bg-black text-white font-headline font-black uppercase px-8 py-4 border-4 border-white hover:bg-white hover:text-black transition-colors"
-                >
-                  Escolher Parlamentares
-                </Link>
-              </div>
-            </div>
+            <CompararClient parlamentares={parlamentares} />
           </div>
         </main>
         <Footer />
