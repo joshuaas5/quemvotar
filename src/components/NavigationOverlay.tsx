@@ -1,24 +1,27 @@
 'use client';
 
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { useNavigation } from './NavigationProvider';
 
 export default function NavigationOverlay() {
   const { isNavigating, endNavigation } = useNavigation();
+  const pathname = usePathname();
 
+  // Detecta mudanca de rota e desliga o loading
+  useEffect(() => {
+    endNavigation();
+  }, [pathname, endNavigation]);
+
+  // Fallback: desliga sozinho apos 6s
   useEffect(() => {
     if (isNavigating) {
       const timer = setTimeout(() => {
         endNavigation();
-      }, 8000); // Fallback: max 8s loading
+      }, 6000);
       return () => clearTimeout(timer);
     }
   }, [isNavigating, endNavigation]);
-
-  // Quando a pagina monta, desliga o loading
-  useEffect(() => {
-    endNavigation();
-  }, [endNavigation]);
 
   if (!isNavigating) return null;
 
