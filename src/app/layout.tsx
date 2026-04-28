@@ -80,9 +80,12 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/favicon.ico?v=2",
-    apple: "/apple-touch-icon.png?v=2",
-    shortcut: "/favicon.ico?v=2",
+    icon: [
+      { url: "/icon.png?v=3", sizes: "512x512", type: "image/png" },
+      { url: "/favicon.ico?v=3", sizes: "any" },
+    ],
+    apple: "/apple-touch-icon.png?v=3",
+    shortcut: "/favicon.ico?v=3",
   },
   manifest: "/manifest.json",
   verification: {
