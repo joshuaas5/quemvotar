@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ShareButtons from '@/components/ShareButtons';
+import BotaoFavoritar from '@/components/BotaoFavoritar';
 import { CardSkeleton, SectionSkeleton, ThemeSkeleton } from '@/components/ProfileSkeleton';
 import { getPerfilBasico, getPerfilEnriquecido, getThemeVisual, type PerfilEnriquecido } from '@/lib/api';
 import { searchCnjByPoliticianName } from '@/lib/official';
@@ -792,11 +793,22 @@ export default async function PerfilPage({
                 { label: perfil.nome_urna },
               ]}
             />
-            <ShareButtons
-              title={`${perfil.nome_urna} (${perfil.partido}-${perfil.uf}) | QuemVotar`}
-              description={`Acompanhe o mandato de ${perfil.nome_urna}: nota, presença, gastos e votações.`}
-              path={`/perfil/${fonte}/${id}`}
-            />
+            <div className="flex items-center gap-2">
+              <BotaoFavoritar
+                id={id}
+                fonte={fonte as 'camara' | 'senado'}
+                nome_urna={perfil.nome_urna}
+                partido={perfil.partido}
+                uf={perfil.uf ?? ''}
+                cargo={perfil.cargo}
+                foto_url={perfil.foto_url}
+              />
+              <ShareButtons
+                title={`${perfil.nome_urna} (${perfil.partido}-${perfil.uf}) | QuemVotar`}
+                description={`Acompanhe o mandato de ${perfil.nome_urna}: nota, presença, gastos e votações.`}
+                path={`/perfil/${fonte}/${id}`}
+              />
+            </div>
           </div>
 
           {/* HERO — renders immediately with basic data */}

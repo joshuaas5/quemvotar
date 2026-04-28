@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: '/ranking', label: 'Ranking' },
   { href: '/match', label: 'Match' },
   { href: '/partidos', label: 'Partidos' },
+  { href: '/favoritos', label: 'Favoritos' },
   { href: '/#dados', label: 'Panorama' },
 ];
 
