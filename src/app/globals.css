@@ -89,6 +89,7 @@
   }
 }
 
+/* Toast slide-in */
 @keyframes slide-in {
   from {
     transform: translateX(100%);
@@ -102,6 +103,7 @@
   animation: slide-in 0.2s ease-out;
 }
 
+/* Fade-in-up for content */
 @keyframes fade-in-up {
   from {
     opacity: 0;
@@ -117,4 +119,46 @@
   animation: fade-in-up 0.5s ease-out;
 }
 
+/* Page transition fade-in */
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
+.animate-page-enter {
+  animation: page-fade-in 0.35s ease-out;
+}
+
+/* Loading spinner */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Card press feedback */
+.card-press:active {
+  transform: scale(0.97);
+  box-shadow: 2px 2px 0px 0px rgba(0,0,0,1) !important;
+}
+
+/* Cursor wait on page navigation */
+html.navigating {
+  cursor: wait;
+}
+html.navigating * {
+  cursor: wait !important;
+}

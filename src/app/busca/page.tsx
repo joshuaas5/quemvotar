@@ -69,7 +69,7 @@ export default async function BuscaPage({
                   <Link
                     key={`${perfil.fonte}-${perfil.id}`}
                     href={getPerfilHref(perfil)}
-                    className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all"
+                    className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] active:scale-[0.97] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all duration-150 cursor-pointer"
                   >
                     <div className="w-24 md:w-32 h-auto border-r-4 border-black bg-gray-200 shrink-0 relative">
                       {perfil.foto_url ? (

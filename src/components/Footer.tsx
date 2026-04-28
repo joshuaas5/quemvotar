@@ -21,9 +21,7 @@ export default function Footer() {
         <Link href="/api-docs" className="text-black no-underline hover:text-[#ffd709] transition-colors duration-75 cursor-pointer">
           Fontes
         </Link>
-        <Link href="/contact" className="text-black no-underline hover:text-[#ffd709] transition-colors duration-75 cursor-pointer">
-          Contato
-        </Link>
+
       </div>
 
       <div className="flex gap-4">

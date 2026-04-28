@@ -171,7 +171,7 @@ export default async function RankingPage({
                   href={perfilLocal ? getPerfilHref(perfilLocal) : item.fonteUrl}
                   target={perfilLocal ? '_self' : '_blank'}
                   rel={perfilLocal ? undefined : 'noreferrer'}
-                  className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-shadow cursor-pointer block"
+                  className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:-translate-x-1 active:scale-[0.97] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all duration-150 cursor-pointer block"
                 >
                   <div className="grid grid-cols-[96px_minmax(0,1fr)] md:grid-cols-[120px_minmax(0,1fr)] border-b-4 border-black">
                     <div className="bg-surface-container-high min-h-[96px] md:min-h-[120px] relative">

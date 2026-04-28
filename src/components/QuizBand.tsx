@@ -14,7 +14,7 @@ export default function QuizBand() {
         </div>
         <div className="w-full md:w-auto">
           <Link href="/match" className="block w-full md:w-auto">
-            <button className="w-full bg-black text-white font-headline font-black text-2xl md:text-3xl px-12 py-8 border-4 border-black shadow-[10px_10px_0px_0px_rgba(255,255,255,0.4)] hover:translate-x-2 hover:translate-y-2 hover:shadow-none transition-all uppercase">
+            <button className="w-full bg-black text-white font-headline font-black text-2xl md:text-3xl px-12 py-8 border-4 border-black shadow-[10px_10px_0px_0px_rgba(255,255,255,0.4)] hover:translate-x-2 hover:translate-y-2 hover:shadow-none active:scale-[0.97] active:shadow-none active:translate-x-0 active:translate-y-0 transition-all uppercase">
               ACOMPANHAR MATCH
             </button>
           </Link>

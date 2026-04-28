@@ -121,7 +121,7 @@ export default async function UfPage({ params }: { params: Promise<{ sigla: stri
                   <Link
                     key={`${perfil.fonte}-${perfil.id}`}
                     href={getPerfilHref(perfil)}
-                    className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:shadow-[0_10px_20px_rgba(0,0,0,0.14)] transition-shadow duration-200"
+                    className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:-translate-x-1 active:scale-[0.97] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all duration-150 cursor-pointer"
                   >
                     <div className="aspect-square border-b-4 border-black bg-surface-container-high overflow-hidden relative">
                       {perfil.foto_url ? (

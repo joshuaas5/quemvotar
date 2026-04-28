@@ -43,7 +43,7 @@ export default async function Highlights() {
               return (
                 <article
                   key={`${candidato.fonte}-${candidato.id}`}
-                  className="bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-100 group"
+                  className="bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] active:scale-[0.97] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all duration-150 group"
                 >
                   <div className={`${config.bgClass} ${config.textClass} p-4 font-headline font-black uppercase flex justify-between items-center`}>
                     <span>{getCasaBadge(candidato)}</span>
@@ -79,7 +79,7 @@ export default async function Highlights() {
 
                     <Link
                       href={getPerfilHref(candidato)}
-                      className="inline-block mt-auto bg-black text-white px-6 py-3 font-headline font-black text-lg uppercase border-2 border-black hover:bg-white hover:text-black transition-colors text-center"
+                      className="inline-block mt-auto bg-black text-white px-6 py-3 font-headline font-black text-lg uppercase border-2 border-black hover:bg-white hover:text-black active:bg-black active:text-white active:scale-[0.97] transition-all text-center"
                     >
                       Ver perfil completo
                     </Link>
