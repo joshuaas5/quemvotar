@@ -123,7 +123,13 @@ export function MatchClient({
   const [showResults, setShowResults] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
+  const [ufFilter, setUfFilter] = useState('');
+  const [casaFilter, setCasaFilter] = useState('');
   const spectrumSectionRef = useRef<HTMLDivElement | null>(null);
+
+  const ufs = useMemo(() => {
+    return Array.from(new Set(parlamentares.map((p) => p.uf).filter(Boolean))).sort();
+  }, [parlamentares]);
 
   const currentQuestion = QUESTIONS[currentStep];
   const totalSteps = QUESTIONS.length;
@@ -413,13 +419,49 @@ export function MatchClient({
             </div>
           )}
 
+          {/* Filtros dos resultados */}
+          <div className="bg-white border-4 border-black p-4 sm:p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] mb-6">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="font-label font-bold uppercase text-xs opacity-70">Filtrar por:</span>
+              <select
+                value={ufFilter}
+                onChange={(e) => setUfFilter(e.target.value)}
+                className="border-4 border-black px-3 py-2 font-headline font-bold uppercase text-sm bg-white"
+              >
+                <option value="">Todas as UFs</option>
+                {ufs.map((uf) => (
+                  <option key={uf} value={uf}>{uf}</option>
+                ))}
+              </select>
+              <select
+                value={casaFilter}
+                onChange={(e) => setCasaFilter(e.target.value)}
+                className="border-4 border-black px-3 py-2 font-headline font-bold uppercase text-sm bg-white"
+              >
+                <option value="">Deputados e Senadores</option>
+                <option value="camara">Deputados</option>
+                <option value="senado">Senadores</option>
+              </select>
+              {(ufFilter || casaFilter) && (
+                <button
+                  onClick={() => { setUfFilter(''); setCasaFilter(''); }}
+                  className="font-label font-bold uppercase text-xs border-2 border-black px-2 py-1 hover:bg-gray-100"
+                >
+                  Limpar
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* Cards de resultados */}
           <div>
             <h3 className="font-headline font-black text-2xl sm:text-3xl uppercase mb-4">
               Parlamentares mais alinhados
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {results.scored.map((pol, index) => {
+              {results.scored
+                .filter((pol) => (!ufFilter || pol.uf === ufFilter) && (!casaFilter || pol.fonte === casaFilter))
+                .map((pol, index) => {
                 const perfilHref = `/perfil/${pol.fonte}/${pol.idOrigem}`;
                 const delay = Math.min(index * 80, 600);
                 return (

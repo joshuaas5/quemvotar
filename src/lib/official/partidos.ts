@@ -275,11 +275,18 @@ export const fetchPartidosResumo = cache(async (): Promise<PartidoResumo[]> => {
   const detalhesCamara = new Map<string, CamaraPartidoDetalhe | null>();
   const detalhesTse = new Map<string, TsePartyDetail | null>();
 
+  // Busca detalhes em paralelo por partido (Camara + TSE ao mesmo tempo)
   await Promise.all(
     partidosOrdenados.map(async (partido) => {
       const referencia = camaraIndex.get(partido.sigla);
-      detalhesCamara.set(partido.sigla, referencia ? await fetchCamaraPartidoDetalhe(referencia.id) : null);
-      detalhesTse.set(partido.sigla, await fetchTsePartyDetail(partido.sigla));
+      const [detalheCamara, detalheTse] = await Promise.all([
+        referencia
+          ? fetchCamaraPartidoDetalhe(referencia.id).catch(() => null)
+          : Promise.resolve(null),
+        fetchTsePartyDetail(partido.sigla).catch(() => null),
+      ]);
+      detalhesCamara.set(partido.sigla, detalheCamara);
+      detalhesTse.set(partido.sigla, detalheTse);
     }),
   );
 
