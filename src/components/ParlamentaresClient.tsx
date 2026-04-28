@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useTransition, memo } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
+import LoadingLink from '@/components/LoadingLink';
 import type { PerfilPublico, PartidoResumo } from '@/lib/official';
 import { getCasaBadge, getPerfilHref } from '@/lib/api';
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
@@ -23,7 +23,7 @@ const ParlamentarCard = memo(function ParlamentarCard({ perfil }: { perfil: Perf
   const visual = getPartyVisualEmoji(perfil.partido);
 
   return (
-    <Link
+    <LoadingLink
       href={getPerfilHref(perfil)}
       className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:-translate-x-1 active:scale-[0.97] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all duration-150 cursor-pointer"
     >
@@ -61,7 +61,7 @@ const ParlamentarCard = memo(function ParlamentarCard({ perfil }: { perfil: Perf
           Abrir perfil
         </span>
       </div>
-    </Link>
+    </LoadingLink>
   );
 });
 
@@ -187,12 +187,12 @@ export default function ParlamentaresClient({ parlamentares, partidos, ufs }: Pa
           {isPending && <span className="ml-2 text-sm opacity-50">(filtrando...)</span>}
         </p>
         <div className="flex flex-wrap gap-4">
-          <Link href="/ranking" className="font-headline font-black uppercase border-b-4 border-black">
+          <LoadingLink href="/ranking" className="font-headline font-black uppercase border-b-4 border-black">
             Ver ranking
-          </Link>
-          <Link href="/partidos" className="font-headline font-black uppercase border-b-4 border-black">
+          </LoadingLink>
+          <LoadingLink href="/partidos" className="font-headline font-black uppercase border-b-4 border-black">
             Ver partidos
-          </Link>
+          </LoadingLink>
         </div>
       </section>
 

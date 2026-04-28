@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from 'next/image';
-import Link from 'next/link';
+import LoadingLink from '@/components/LoadingLink';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Breadcrumbs from '@/components/Breadcrumbs';
@@ -137,9 +137,9 @@ export default async function RankingPage({
             <p className="font-headline font-black text-xl md:text-2xl uppercase">
               {resultados.length} parlamentares no recorte atual
             </p>
-            <Link href="/parlamentares" className="font-headline font-black uppercase border-b-4 border-black">
+            <LoadingLink href="/parlamentares" className="font-headline font-black uppercase border-b-4 border-black">
               Explorar todos
-            </Link>
+            </LoadingLink>
           </section>
 
           {resultados.length === 0 ? (
@@ -166,7 +166,7 @@ export default async function RankingPage({
               const visual = getPartyVisualEmoji(item.partido);
 
               return (
-                <Link
+                <LoadingLink
                   key={item.id}
                   href={perfilLocal ? getPerfilHref(perfilLocal) : item.fonteUrl}
                   target={perfilLocal ? '_self' : '_blank'}
@@ -229,12 +229,12 @@ export default async function RankingPage({
 
                     <div className="flex flex-wrap gap-4">
                       {perfilLocal ? (
-                        <Link
+                        <LoadingLink
                           href={getPerfilHref(perfilLocal)}
                           className="font-headline font-black uppercase border-b-4 border-black"
                         >
                           Abrir perfil no site
-                        </Link>
+                        </LoadingLink>
                       ) : null}
                       <a
                         href={item.fonteUrl}
@@ -246,7 +246,7 @@ export default async function RankingPage({
                       </a>
                     </div>
                   </div>
-                </Link>
+                </LoadingLink>
               );
             })}
           </section>

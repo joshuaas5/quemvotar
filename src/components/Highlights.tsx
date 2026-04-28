@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import Link from 'next/link';
+import LoadingLink from '@/components/LoadingLink';
 import { getCasaBadge, getHighlights, getPerfilHref } from '@/lib/api';
 
 function getCardConfig(index: number) {
@@ -77,12 +77,12 @@ export default async function Highlights() {
                       temas defendidos.
                     </p>
 
-                    <Link
+                    <LoadingLink
                       href={getPerfilHref(candidato)}
                       className="inline-block mt-auto bg-black text-white px-6 py-3 font-headline font-black text-lg uppercase border-2 border-black hover:bg-white hover:text-black active:bg-black active:text-white active:scale-[0.97] transition-all text-center"
                     >
                       Ver perfil completo
-                    </Link>
+                    </LoadingLink>
                   </div>
                 </article>
               );

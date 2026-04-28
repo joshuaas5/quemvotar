@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
+import LoadingLink from '@/components/LoadingLink';
 import { useFavoritos } from '@/hooks/useFavoritos';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -46,12 +46,12 @@ export default function FavoritosPage() {
               <p className="font-body font-bold mt-2 max-w-lg mx-auto">
                 Ao navegar pelos perfis dos parlamentares, clique no icone de coracao para adiciona-los aqui.
               </p>
-              <Link
+              <LoadingLink
                 href="/parlamentares"
                 className="inline-block mt-6 bg-black text-white font-headline font-black px-6 py-3 uppercase border-4 border-black hover:bg-white hover:text-black transition-colors"
               >
                 Explorar parlamentares
-              </Link>
+              </LoadingLink>
             </div>
           ) : (
             <>
@@ -67,7 +67,7 @@ export default function FavoritosPage() {
                       key={`${fav.fonte}-${fav.id}`}
                       className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:-translate-x-1 active:scale-[0.97] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all duration-150"
                     >
-                      <Link href={perfilHref} className="aspect-square border-b-4 border-black bg-surface-container-high overflow-hidden relative block">
+                      <LoadingLink href={perfilHref} className="aspect-square border-b-4 border-black bg-surface-container-high overflow-hidden relative block">
                         {fav.foto_url ? (
                           <Image
                             src={fav.foto_url}
@@ -81,23 +81,23 @@ export default function FavoritosPage() {
                             {getInitials(fav.nome_urna)}
                           </div>
                         )}
-                      </Link>
+                      </LoadingLink>
                       <div className="p-5 md:p-6 space-y-3 flex-1">
-                        <Link href={perfilHref}>
+                        <LoadingLink href={perfilHref}>
                           <h2 className="font-headline font-black text-2xl md:text-3xl uppercase leading-none hover:underline">
                             {fav.nome_urna}
                           </h2>
-                        </Link>
+                        </LoadingLink>
                         <p className="font-body font-bold uppercase text-sm text-on-surface/90">
                           {fav.partido} • {fav.uf} • {fav.cargo}
                         </p>
                         <div className="pt-2 flex items-center justify-between">
-                          <Link
+                          <LoadingLink
                             href={perfilHref}
                             className="font-headline font-black uppercase border-b-4 border-black inline-block"
                           >
                             Abrir perfil
-                          </Link>
+                          </LoadingLink>
                           <button
                             onClick={() => removeFavorito(fav.id, fav.fonte)}
                             className="w-9 h-9 border-2 border-black bg-white flex items-center justify-center hover:bg-[#ff006e] hover:text-white transition-colors"

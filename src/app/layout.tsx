@@ -3,6 +3,8 @@ import { Space_Grotesk, Work_Sans } from "next/font/google";
 import Script from "next/script";
 import AdSenseAutoAds from "@/components/AdSenseAutoAds";
 import { ToastProvider } from "@/components/Toast";
+import { NavigationProvider } from "@/components/NavigationProvider";
+import NavigationOverlay from "@/components/NavigationOverlay";
 import BackToTop from "@/components/BackToTop";
 import "./globals.css";
 
@@ -124,10 +126,13 @@ export default function RootLayout({
             />
           </noscript>
         )}
-        <ToastProvider>
-          {children}
-          <BackToTop />
-        </ToastProvider>
+        <NavigationProvider>
+          <ToastProvider>
+            {children}
+            <NavigationOverlay />
+            <BackToTop />
+          </ToastProvider>
+        </NavigationProvider>
 
         {gaId && (
           <>

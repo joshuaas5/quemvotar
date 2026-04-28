@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from 'next/image';
-import Link from 'next/link';
+import LoadingLink from '@/components/LoadingLink';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import {
@@ -66,7 +66,7 @@ export default async function BuscaPage({
                 const visual = getPartyVisualEmoji(perfil.partido);
 
                 return (
-                  <Link
+                  <LoadingLink
                     key={`${perfil.fonte}-${perfil.id}`}
                     href={getPerfilHref(perfil)}
                     className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] active:scale-[0.97] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all duration-150 cursor-pointer"
@@ -112,19 +112,19 @@ export default async function BuscaPage({
                         Abrir perfil
                       </span>
                     </div>
-                  </Link>
+                  </LoadingLink>
                 );
               })}
             </div>
           )}
 
           <div className="mt-10 md:mt-12 text-center">
-            <Link
+            <LoadingLink
               href="/"
               className="inline-block font-headline font-black uppercase text-lg md:text-xl border-b-4 border-black hover:text-primary-container transition-colors"
             >
               Voltar ao inicio
-            </Link>
+            </LoadingLink>
           </div>
         </div>
       </main>
