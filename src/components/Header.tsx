@@ -25,9 +25,9 @@ export default function Header() {
           <Image
             src="/logo-header.png"
             alt="QuemVotar"
-            width={48}
-            height={48}
-            className="w-10 h-10 sm:w-12 sm:h-12"
+            width={64}
+            height={64}
+            className="w-14 h-14 sm:w-16 sm:h-16"
             priority
             unoptimized
           />
