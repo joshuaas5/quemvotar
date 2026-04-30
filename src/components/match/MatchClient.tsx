@@ -198,7 +198,7 @@ export function MatchClient({
     });
 
     return {
-      scored: scored.sort((a, b) => b.score - a.score).slice(0, 12),
+      scored: scored.sort((a, b) => b.score - a.score),
       nolan,
     };
   }, [answers, parlamentares, showResults, rankings]);
@@ -466,7 +466,9 @@ export function MatchClient({
               Parlamentares mais alinhados
             </h3>
             {(() => {
-              const filtered = results.scored.filter((pol) => (!ufFilter || pol.uf === ufFilter) && (!casaFilter || pol.fonte === casaFilter));
+              const filtered = results.scored
+                .filter((pol) => (!ufFilter || pol.uf === ufFilter) && (!casaFilter || pol.fonte === casaFilter))
+                .slice(0, 24);
               if (filtered.length === 0) {
                 return (
                   <div className="bg-white border-4 border-black p-8 md:p-12 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
