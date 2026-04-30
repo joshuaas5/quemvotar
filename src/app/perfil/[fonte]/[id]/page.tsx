@@ -28,6 +28,33 @@ function formatDate(value?: string | null) {
   return value;
 }
 
+/**
+ * Detecta se todas as datas de uma lista sao iguais e iguais a hoje.
+ * Isso indica dados suspeitos/gerados automaticamente.
+ */
+function areDatesSuspicious(items: PerfilItemLista[]): boolean {
+  if (items.length === 0) return false;
+  const dates = items.map((i) => i.data).filter((d): d is string => Boolean(d));
+  if (dates.length === 0) return false;
+  const uniqueDates = new Set(dates);
+  if (uniqueDates.size !== 1) return false;
+  const today = new Date().toISOString().split('T')[0];
+  return dates[0] === today || dates[0].startsWith(today);
+}
+
+/**
+ * Verifica se os dados de votacao sao muito antigos (antes de 2026).
+ * A legislatura atual comecou em 2023, mas votacoes "recentes" deveriam ser de 2026.
+ */
+function isVoteDataStale(items: PerfilItemLista[]): boolean {
+  if (items.length === 0) return true;
+  const dates = items.map((i) => i.data).filter((d): d is string => Boolean(d));
+  if (dates.length === 0) return true;
+  // Se a data mais recente for anterior a 2026, considera desatualizado
+  const maxDate = dates.reduce((max, d) => (d > max ? d : max), dates[0]);
+  return !maxDate.startsWith('2026');
+}
+
 function formatScore(value?: number | null) {
   if (typeof value !== 'number') return null;
   return value.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -179,8 +206,15 @@ function isExpenseAmount(destaque?: string) {
   return destaque && /^R\$/.test(destaque);
 }
 
-function renderListSection(title: string, description: string, items: PerfilItemLista[], emptyText: string) {
+function renderListSection(
+  title: string,
+  description: string,
+  items: PerfilItemLista[],
+  emptyText: string,
+  options?: { hideDates?: boolean; staleWarning?: string },
+) {
   const meta = SECTION_META[title] ?? { emoji: '📄', accent: 'text-gray-700', badgeBg: 'bg-gray-50', border: 'border-gray-200' };
+  const hideDates = options?.hideDates ?? false;
 
   return (
     <section className="space-y-5">
@@ -191,7 +225,11 @@ function renderListSection(title: string, description: string, items: PerfilItem
         <p className="font-body font-bold uppercase text-xs sm:text-sm opacity-70 mt-2">{description}</p>
       </div>
 
-      {items.length === 0 ? (
+      {options?.staleWarning ? (
+        <div className="bg-yellow-50 border-4 border-yellow-300 p-4 sm:p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.08)]">
+          <p className="font-body font-bold text-sm text-yellow-900">{options.staleWarning}</p>
+        </div>
+      ) : items.length === 0 ? (
         <div className={`${meta.badgeBg} border-4 ${meta.border} p-4 sm:p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.08)]`}>
           <p className="font-body font-bold text-sm">{emptyText}</p>
         </div>
@@ -209,7 +247,7 @@ function renderListSection(title: string, description: string, items: PerfilItem
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
-                      {item.data ? (
+                      {item.data && !hideDates ? (
                         <p className="font-label font-bold uppercase text-xs opacity-70 mb-1">
                           📅 {formatDate(item.data)}
                         </p>
@@ -243,7 +281,7 @@ function renderListSection(title: string, description: string, items: PerfilItem
                       rel="noreferrer"
                       className={`font-headline font-black uppercase text-sm border-b-4 ${meta.border} ${meta.accent} w-max`}
                     >
-                      Ver página oficial
+                      Ver pagina oficial
                     </a>
                   ) : null}
                 </div>
@@ -661,14 +699,23 @@ async function EnrichedProfile({
         'Matérias e autorias legislativas localizadas para este parlamentar.',
         enriched.autorias,
         'A fonte não retornou autorias recentes nesta consulta.',
+        areDatesSuspicious(enriched.autorias) ? { hideDates: true } : undefined,
       )}
 
-      {renderListSection(
-        'Votações recentes',
-        'Votos nominais e deliberações localizadas nas fontes consultadas.',
-        enriched.votacoes,
-        'A fonte não retornou votações recentes para este perfil nesta consulta.',
-      )}
+      {isVoteDataStale(enriched.votacoes)
+        ? renderListSection(
+            'Votações recentes',
+            'Votos nominais e deliberações localizadas nas fontes consultadas.',
+            enriched.votacoes,
+            'A fonte não retornou votações recentes para este perfil nesta consulta.',
+            { staleWarning: 'Dados de votacoes em atualizacao. As informacoes exibidas podem nao refletir posicionamentos mais recentes deste parlamentar.' },
+          )
+        : renderListSection(
+            'Votações recentes',
+            'Votos nominais e deliberações localizadas nas fontes consultadas.',
+            enriched.votacoes,
+            'A fonte não retornou votações recentes para este perfil nesta consulta.',
+          )}
 
       {renderMandatoTimeline(perfil.mandatos)}
 
