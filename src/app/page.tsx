@@ -34,8 +34,8 @@ export default function Home() {
 
       <main className="flex-grow">
         <Hero />
-        <Highlights />
         <QuizBand />
+        <Highlights />
         <StatsDashboard />
       </main>
 

@@ -10,13 +10,14 @@ import { buildRankingLookupKey } from '@/lib/match/ranking-key';
 import type { PerfilPublico } from '@/lib/api';
 
 /* Barras de stats estilo RPG */
-function StatBar({ label, value, color, icon }: { label: string; value: number; color: string; icon: string }) {
+function StatBar({ label, value, color, prefix }: { label: string; value: number; color: string; prefix: string }) {
   const filled = Math.round(value / 10);
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <span className="font-headline font-black uppercase text-sm sm:text-base">
-          {icon} {label}
+          <span className="bg-black text-white px-1.5 py-0.5 text-xs mr-2">{prefix}</span>
+          {label}
         </span>
         <span className="font-headline font-black text-xl">{value.toFixed(0)}%</span>
       </div>
@@ -111,6 +112,12 @@ function getNolanColors(label: string) {
   if (label.includes('Estatista')) return { bg: '#fde68a', border: '#d97706', text: '#92400e' };
   return { bg: '#f3f4f6', border: '#6b7280', text: '#374151' };
 }
+
+/* Labels escritos em vez de emojis */
+const STAT_LABELS: Record<string, string> = {
+  'Liberdade Econômica': 'Economia',
+  'Liberdade Pessoal': 'Social',
+};
 
 export function MatchClient({
   parlamentares,
@@ -286,29 +293,7 @@ export function MatchClient({
         </div>
       ) : (
         <div className="space-y-8">
-          {/* Header dos resultados */}
-          <div className="flex flex-col md:flex-row md:justify-between items-stretch md:items-center gap-4 bg-primary-container border-4 border-black p-6 sm:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
-            <div className="min-w-0">
-              <h2 className="font-headline font-black text-3xl sm:text-4xl uppercase leading-none">Seu resultado</h2>
-              <p className="font-body font-bold mt-2 opacity-80 max-w-xl text-sm sm:text-base">
-                Cruzamos suas respostas com o espectro partidário e histórico de votações teóricas de {parlamentares.length} parlamentares.
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={() => { setShowResults(false); setCurrentStep(0); }}
-                className="bg-white border-4 border-black font-headline font-black px-5 py-3 sm:px-6 sm:py-4 uppercase text-base hover:bg-gray-100 w-full sm:w-auto text-center transition-all"
-              >
-                Refazer quiz
-              </button>
-              {results.nolan && (
-                <MatchShareCard nolan={results.nolan} topMatches={results.scored} />
-              )}
-            </div>
-          </div>
-
-          {/* Dashboard de Perfil Nolan */}
+          {/* Dashboard de Perfil Nolan — PRIMEIRO */}
           {results.nolan && (
             <div
               ref={spectrumSectionRef}
@@ -339,13 +324,13 @@ export function MatchClient({
                       label="Liberdade Econômica"
                       value={results.nolan.econPercent}
                       color="#06d6a0"
-                      icon="💰"
+                      prefix="ECO"
                     />
                     <StatBar
                       label="Liberdade Pessoal"
                       value={results.nolan.personalPercent}
                       color="#ff9f1c"
-                      icon="🕊️"
+                      prefix="SOC"
                     />
                   </div>
                 </div>
@@ -419,6 +404,28 @@ export function MatchClient({
             </div>
           )}
 
+          {/* Header dos resultados */}
+          <div className="flex flex-col md:flex-row md:justify-between items-stretch md:items-center gap-4 bg-primary-container border-4 border-black p-6 sm:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+            <div className="min-w-0">
+              <h2 className="font-headline font-black text-3xl sm:text-4xl uppercase leading-none">Seu resultado</h2>
+              <p className="font-body font-bold mt-2 opacity-80 max-w-xl text-sm sm:text-base">
+                Cruzamos suas respostas com o espectro partidario e historico de votacoes teoricas de {parlamentares.length} parlamentares.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => { setShowResults(false); setCurrentStep(0); }}
+                className="bg-white border-4 border-black font-headline font-black px-5 py-3 sm:px-6 sm:py-4 uppercase text-base hover:bg-gray-100 w-full sm:w-auto text-center transition-all"
+              >
+                Refazer quiz
+              </button>
+              {results.nolan && (
+                <MatchShareCard nolan={results.nolan} topMatches={results.scored} />
+              )}
+            </div>
+          </div>
+
           {/* Filtros dos resultados */}
           <div className="bg-white border-4 border-black p-4 sm:p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] mb-6">
             <div className="flex flex-wrap items-center gap-3">
@@ -458,50 +465,72 @@ export function MatchClient({
             <h3 className="font-headline font-black text-2xl sm:text-3xl uppercase mb-4">
               Parlamentares mais alinhados
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {results.scored
-                .filter((pol) => (!ufFilter || pol.uf === ufFilter) && (!casaFilter || pol.fonte === casaFilter))
-                .map((pol, index) => {
-                const perfilHref = `/perfil/${pol.fonte}/${pol.idOrigem}`;
-                const delay = Math.min(index * 80, 600);
+            {(() => {
+              const filtered = results.scored.filter((pol) => (!ufFilter || pol.uf === ufFilter) && (!casaFilter || pol.fonte === casaFilter));
+              if (filtered.length === 0) {
                 return (
-                  <Link
-                    key={pol.idOrigem}
-                    href={perfilHref}
-                    className="bg-white border-4 border-black p-5 flex flex-col items-center text-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:-translate-x-1 transition-all duration-200 cursor-pointer animate-fade-in-up"
-                    style={{ animationDelay: `${delay}ms`, animationFillMode: 'both' }}
-                  >
-                    {pol.rankingNota !== null && (
-                      <div className="absolute top-2 right-2 bg-[#ffe066] border-4 border-black px-2 py-1 font-headline font-black text-xs sm:text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] z-10 leading-tight">
-                        Nota {pol.rankingNota.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
-                      </div>
-                    )}
-
-                    <div className="w-28 h-28 border-4 border-black bg-gray-200 rounded-full mb-3 overflow-hidden relative flex items-center justify-center">
-                      {pol.foto_url ? (
-                        <Image src={pol.foto_url} alt={pol.nome_urna} fill sizes="112px" className="object-cover object-top" unoptimized />
-                      ) : (
-                        <span className="font-headline font-black text-2xl text-gray-400">
-                          {pol.nome_urna.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                        </span>
-                      )}
-                    </div>
-
-                    <h4 className="font-headline font-black text-xl uppercase leading-tight mb-1 break-words w-full">
-                      {pol.nome_urna}
-                    </h4>
-                    <p className="font-label font-bold text-xs uppercase opacity-70 mb-3 bg-gray-100 px-2 py-1 border-2 border-black w-full break-words">
-                      {pol.partido} - {pol.uf}
+                  <div className="bg-white border-4 border-black p-8 md:p-12 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                    <span className="material-symbols-outlined text-6xl mb-4">filter_alt_off</span>
+                    <h3 className="font-headline font-black text-2xl md:text-3xl uppercase">
+                      Nenhum parlamentar encontrado
+                    </h3>
+                    <p className="font-body font-bold mt-2">
+                      Tente remover os filtros de UF ou Casa para ver mais resultados.
                     </p>
-
-                    <div className="mt-auto w-full bg-secondary-fixed border-4 border-black py-3">
-                      <span className="font-headline font-black text-3xl">{pol.score.toFixed(1)}%</span>
-                      <span className="block text-xs font-bold uppercase mt-1 opacity-90">Afinidade</span>
-                    </div>
-                  </Link>
+                    <button
+                      onClick={() => { setUfFilter(''); setCasaFilter(''); }}
+                      className="mt-6 bg-black text-white font-headline font-black px-6 py-3 uppercase border-4 border-black hover:bg-white hover:text-black transition-colors"
+                    >
+                      Limpar filtros
+                    </button>
+                  </div>
                 );
-              })}
-            </div>
+              }
+              return (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                  {filtered.map((pol, index) => {
+                    const perfilHref = `/perfil/${pol.fonte}/${pol.idOrigem}`;
+                    const delay = Math.min(index * 80, 600);
+                    return (
+                      <Link
+                        key={pol.idOrigem}
+                        href={perfilHref}
+                        className="bg-white border-4 border-black p-5 flex flex-col items-center text-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:-translate-x-1 transition-all duration-200 cursor-pointer animate-fade-in-up"
+                        style={{ animationDelay: `${delay}ms`, animationFillMode: 'both' }}
+                      >
+                        {pol.rankingNota !== null && (
+                          <div className="absolute top-2 right-2 bg-[#ffe066] border-4 border-black px-2 py-1 font-headline font-black text-xs sm:text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] z-10 leading-tight">
+                            Nota {pol.rankingNota.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+                          </div>
+                        )}
+
+                        <div className="w-28 h-28 border-4 border-black bg-gray-200 rounded-full mb-3 overflow-hidden relative flex items-center justify-center">
+                          {pol.foto_url ? (
+                            <Image src={pol.foto_url} alt={pol.nome_urna} fill sizes="112px" className="object-cover object-top" unoptimized />
+                          ) : (
+                            <span className="font-headline font-black text-2xl text-gray-400">
+                              {pol.nome_urna.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                            </span>
+                          )}
+                        </div>
+
+                        <h4 className="font-headline font-black text-xl uppercase leading-tight mb-1 break-words w-full">
+                          {pol.nome_urna}
+                        </h4>
+                        <p className="font-label font-bold text-xs uppercase opacity-70 mb-3 bg-gray-100 px-2 py-1 border-2 border-black w-full break-words">
+                          {pol.partido} - {pol.uf}
+                        </p>
+
+                        <div className="mt-auto w-full bg-secondary-fixed border-4 border-black py-3">
+                          <span className="font-headline font-black text-3xl">{pol.score.toFixed(1)}%</span>
+                          <span className="block text-xs font-bold uppercase mt-1 opacity-90">Afinidade</span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              );
+            })()}
           </div>
         </div>
       )}
