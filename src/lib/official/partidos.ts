@@ -68,9 +68,26 @@ interface TsePartyDetail {
   definicaoCurta?: string | null;
 }
 
-async function fetchOfficial(url: string, accept: string, attempt = 1): Promise<Response> {
+const API_TIMEOUT_MS = 8000;
+
+async function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+
   try {
     const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    return response;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+async function fetchOfficial(url: string, accept: string, attempt = 1): Promise<Response> {
+  try {
+    const response = await fetchWithTimeout(url, {
       headers: { Accept: accept },
       next: { revalidate: 86400 },
     });

@@ -94,8 +94,25 @@ function compact<T>(values: Array<T | null | undefined | false>): T[] {
   return values.filter(Boolean) as T[];
 }
 
+const API_TIMEOUT_MS = 8000;
+
+async function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    return response;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 async function fetchRadar<T>(path: string): Promise<T> {
-  const response = await fetch(`${RADAR_API_ROOT}${path}`, {
+  const response = await fetchWithTimeout(`${RADAR_API_ROOT}${path}`, {
     headers: { Accept: 'application/json' },
     next: { revalidate: REMOTE_REVALIDATE_SECONDS },
   });
@@ -108,7 +125,7 @@ async function fetchRadar<T>(path: string): Promise<T> {
 }
 
 async function fetchCamara<T>(path: string): Promise<T> {
-  const response = await fetch(`${CAMARA_API_ROOT}${path}`, {
+  const response = await fetchWithTimeout(`${CAMARA_API_ROOT}${path}`, {
     headers: { Accept: 'application/json' },
     next: { revalidate: REMOTE_REVALIDATE_SECONDS },
   });

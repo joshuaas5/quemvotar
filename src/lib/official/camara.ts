@@ -93,8 +93,25 @@ interface CamaraProposicaoDetalhe {
   };
 }
 
+const API_TIMEOUT_MS = 8000;
+
+async function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    return response;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 async function fetchCamara<T>(path: string): Promise<T> {
-  const response = await fetch(`${CAMARA_API_ROOT}${path}`, {
+  const response = await fetchWithTimeout(`${CAMARA_API_ROOT}${path}`, {
     headers: { Accept: 'application/json' },
     next: { revalidate: 86400 },
   });
