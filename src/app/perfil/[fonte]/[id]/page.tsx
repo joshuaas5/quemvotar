@@ -9,7 +9,6 @@ import ShareButtons from '@/components/ShareButtons';
 import BotaoFavoritar from '@/components/BotaoFavoritar';
 import { CardSkeleton, SectionSkeleton, ThemeSkeleton } from '@/components/ProfileSkeleton';
 import { getPerfilBasico, getPerfilEnriquecido, getThemeVisual, type PerfilEnriquecido } from '@/lib/api';
-import { searchCnjByPoliticianName } from '@/lib/official';
 import type { PartidoResumo, PerfilDetalhadoPublico, PerfilItemLista } from '@/lib/official';
 import { buildBreadcrumbSchema } from '@/lib/jsonld';
 
@@ -575,80 +574,6 @@ function renderGastosPanel(despesas: PerfilItemLista[]) {
   );
 }
 
-/* ── section: processos judiciais (CNJ por nome) ────────────────── */
-
-function ProcessosSkeleton() {
-  return (
-    <section className="bg-white border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-      <h2 className="font-headline font-black text-2xl sm:text-3xl uppercase mb-4">⚖️ Processos Judiciais</h2>
-      <div className="animate-pulse space-y-4">
-        <div className="h-4 bg-gray-200 border-2 border-black w-3/4" />
-        <div className="h-24 bg-gray-100 border-4 border-black" />
-        <div className="h-24 bg-gray-100 border-4 border-black" />
-      </div>
-    </section>
-  );
-}
-
-async function ProcessosSection({ nome }: { nome: string }) {
-  const processos = await searchCnjByPoliticianName(nome).catch(() => []);
-
-  if (processos.length === 0) {
-    return (
-      <section className="bg-white border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-        <h2 className="font-headline font-black text-2xl sm:text-3xl uppercase mb-4">⚖️ Processos Judiciais</h2>
-        <div className="bg-green-50 border-4 border-green-200 p-4 sm:p-6 text-center">
-          <span className="material-symbols-outlined text-4xl mb-2 block text-green-700">gavel</span>
-          <p className="font-body font-bold text-green-800">
-            Nenhum processo localizado nos tribunais consultados para este nome.
-          </p>
-        </div>
-      </section>
-    );
-  }
-
-  return (
-    <section className="bg-white border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-      <h2 className="font-headline font-black text-2xl sm:text-3xl uppercase mb-4">⚖️ Processos Judiciais</h2>
-      <p className="font-body font-medium text-sm sm:text-base mb-6">
-        Processos localizados nos tribunais brasileiros em que o nome do parlamentar aparece como parte.
-      </p>
-      <div className="space-y-4">
-        {processos.map((proc) => (
-          <article key={proc.numeroProcesso} className="border-4 border-black p-4 sm:p-5 bg-red-50">
-            <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
-              <p className="font-headline font-black text-base sm:text-lg uppercase">
-                {proc.classe}
-              </p>
-              <span className="bg-red-100 text-red-800 border-2 border-red-300 px-2 py-0.5 font-label font-bold uppercase text-xs">
-                {proc.tribunal}
-              </span>
-            </div>
-            <p className="font-label font-bold uppercase text-xs opacity-70 mb-1">
-              Nº {proc.numeroProcesso}
-            </p>
-            {proc.assuntoPrincipal ? (
-              <p className="font-body font-medium text-sm mb-2">{proc.assuntoPrincipal}</p>
-            ) : null}
-            {proc.orgaoJulgador ? (
-              <p className="font-label font-bold uppercase text-xs opacity-60 mb-2">
-                Órgão: {proc.orgaoJulgador}
-              </p>
-            ) : null}
-            <div className="flex flex-wrap gap-3 mt-3">
-              {proc.dataAjuizamento ? (
-                <span className="font-label font-bold uppercase text-[11px] opacity-70">
-                  Ajuizamento: {formatDate(proc.dataAjuizamento)}
-                </span>
-              ) : null}
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 /* ── Async: enriched data (loads via Suspense) ───────────────────── */
 
 async function EnrichedProfile({
@@ -959,10 +884,6 @@ export default async function PerfilPage({
           </Suspense>
 
           {renderSobreSection(perfil)}
-
-          <Suspense fallback={<ProcessosSkeleton />}>
-            <ProcessosSection nome={perfil.nomeCompleto || perfil.nome_urna} />
-          </Suspense>
 
           <section className="bg-white border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             <h2 className="font-headline font-black text-2xl sm:text-3xl uppercase mb-4">📂 Fontes desta página</h2>
