@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MatchQuiz } from './MatchQuiz';
 import MatchShareCard from './MatchShareCard';
 import { calculateMatchScoreDetailed, calculateNolanChart, type UserAnswersMap } from '@/lib/match/calculator';
@@ -132,6 +132,8 @@ export function MatchClient({
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
   const [ufFilter, setUfFilter] = useState('');
   const [casaFilter, setCasaFilter] = useState('');
+  const [matchScores, setMatchScores] = useState<Record<string, number>>({});
+  const [isCalculating, setIsCalculating] = useState(false);
   const spectrumSectionRef = useRef<HTMLDivElement | null>(null);
 
   const ufs = useMemo(() => {
@@ -151,6 +153,59 @@ export function MatchClient({
       }
     });
   }, [showResults]);
+
+  /* Busca scores reais no servidor (votacoes nominais da Camara) */
+  useEffect(() => {
+    if (!showResults) {
+      setMatchScores({});
+      setIsCalculating(false);
+      return;
+    }
+
+    let cancelled = false;
+    setIsCalculating(true);
+
+    async function fetchScores() {
+      try {
+        const payload = {
+          answers,
+          parlamentares: parlamentares.map((p) => ({
+            id: p.id,
+            idOrigem: p.idOrigem,
+            nome_urna: p.nome_urna,
+            partido: p.partido,
+            uf: p.uf,
+            fonte: p.fonte,
+          })),
+          rankings,
+        };
+
+        const resp = await fetch('/api/match', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+
+        if (!resp.ok) throw new Error('Falha ao calcular match');
+        const data = await resp.json();
+
+        if (!cancelled && data.scores) {
+          const map: Record<string, number> = {};
+          data.scores.forEach((s: { id: string; score: number }) => {
+            map[s.id] = s.score;
+          });
+          setMatchScores(map);
+        }
+      } catch (err) {
+        console.error('Erro ao buscar scores de match:', err);
+      } finally {
+        if (!cancelled) setIsCalculating(false);
+      }
+    }
+
+    fetchScores();
+    return () => { cancelled = true; };
+  }, [showResults, answers, parlamentares, rankings]);
 
   const handleAnswer = (questionId: string, answer: { score: number; weight: number }) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
@@ -188,12 +243,19 @@ export function MatchClient({
         casa: pol.fonte,
       });
       const rankingNota = rankings[rankingKey] ?? null;
-      const score = calculateMatchScoreDetailed(
-        answers,
-        pol.idOrigem || pol.nome_urna,
-        pol.partido || '',
-        rankingNota,
-      );
+
+      /* Usa score real do servidor se disponivel, senao fallback sincrono */
+      const realScore = matchScores[pol.id];
+      const score =
+        typeof realScore === 'number'
+          ? realScore
+          : calculateMatchScoreDetailed(
+              answers,
+              pol.idOrigem || pol.nome_urna,
+              pol.partido || '',
+              rankingNota,
+            );
+
       return { ...pol, score, rankingNota };
     });
 
@@ -201,7 +263,7 @@ export function MatchClient({
       scored: scored.sort((a, b) => b.score - a.score),
       nolan,
     };
-  }, [answers, parlamentares, showResults, rankings]);
+  }, [answers, parlamentares, showResults, rankings, matchScores]);
 
   const answeredCount = Object.keys(answers).length;
 
@@ -409,13 +471,23 @@ export function MatchClient({
             <div className="min-w-0">
               <h2 className="font-headline font-black text-3xl sm:text-4xl uppercase leading-none">Seu resultado</h2>
               <p className="font-body font-bold mt-2 opacity-80 max-w-xl text-sm sm:text-base">
-                Cruzamos suas respostas com o espectro partidario e historico de votacoes teoricas de {parlamentares.length} parlamentares.
+                Cruzamos suas respostas com o espectro partidario e historico de votacoes reais da Camara dos Deputados de {parlamentares.length} parlamentares.
               </p>
+              {isCalculating && (
+                <p className="font-label font-bold uppercase text-xs text-yellow-900 mt-2 animate-pulse">
+                  Consultando votacoes nominais reais na Camara dos Deputados...
+                </p>
+              )}
+              {!isCalculating && Object.keys(matchScores).length > 0 && (
+                <p className="font-label font-bold uppercase text-xs text-green-800 mt-2">
+                  Scores refinados com votacoes reais da Camara.
+                </p>
+              )}
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
               <button
-                onClick={() => { setShowResults(false); setCurrentStep(0); }}
+                onClick={() => { setShowResults(false); setCurrentStep(0); setMatchScores({}); }}
                 className="bg-white border-4 border-black font-headline font-black px-5 py-3 sm:px-6 sm:py-4 uppercase text-base hover:bg-gray-100 w-full sm:w-auto text-center transition-all"
               >
                 Refazer quiz

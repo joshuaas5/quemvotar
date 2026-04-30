@@ -211,7 +211,7 @@ function renderListSection(
   description: string,
   items: PerfilItemLista[],
   emptyText: string,
-  options?: { hideDates?: boolean; staleWarning?: string },
+  options?: { hideDates?: boolean },
 ) {
   const meta = SECTION_META[title] ?? { emoji: '📄', accent: 'text-gray-700', badgeBg: 'bg-gray-50', border: 'border-gray-200' };
   const hideDates = options?.hideDates ?? false;
@@ -225,11 +225,7 @@ function renderListSection(
         <p className="font-body font-bold uppercase text-xs sm:text-sm opacity-70 mt-2">{description}</p>
       </div>
 
-      {options?.staleWarning ? (
-        <div className="bg-yellow-50 border-4 border-yellow-300 p-4 sm:p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.08)]">
-          <p className="font-body font-bold text-sm text-yellow-900">{options.staleWarning}</p>
-        </div>
-      ) : items.length === 0 ? (
+      {items.length === 0 ? (
         <div className={`${meta.badgeBg} border-4 ${meta.border} p-4 sm:p-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.08)]`}>
           <p className="font-body font-bold text-sm">{emptyText}</p>
         </div>
@@ -702,20 +698,12 @@ async function EnrichedProfile({
         areDatesSuspicious(enriched.autorias) ? { hideDates: true } : undefined,
       )}
 
-      {isVoteDataStale(enriched.votacoes)
-        ? renderListSection(
-            'Votações recentes',
-            'Votos nominais e deliberações localizadas nas fontes consultadas.',
-            enriched.votacoes,
-            'A fonte não retornou votações recentes para este perfil nesta consulta.',
-            { staleWarning: 'Dados de votacoes em atualizacao. As informacoes exibidas podem nao refletir posicionamentos mais recentes deste parlamentar.' },
-          )
-        : renderListSection(
-            'Votações recentes',
-            'Votos nominais e deliberações localizadas nas fontes consultadas.',
-            enriched.votacoes,
-            'A fonte não retornou votações recentes para este perfil nesta consulta.',
-          )}
+      {!isVoteDataStale(enriched.votacoes) && renderListSection(
+        'Votações recentes',
+        'Votos nominais e deliberações localizadas nas fontes consultadas.',
+        enriched.votacoes,
+        'A fonte não retornou votações recentes para este perfil nesta consulta.',
+      )}
 
       {renderMandatoTimeline(perfil.mandatos)}
 
