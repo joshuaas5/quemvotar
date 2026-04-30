@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Work_Sans } from "next/font/google";
 import Script from "next/script";
-import AdSenseAutoAds from "@/components/AdSenseAutoAds";
 import { ToastProvider } from "@/components/Toast";
 import { NavigationProvider } from "@/components/NavigationProvider";
 import NavigationOverlay from "@/components/NavigationOverlay";
@@ -12,6 +11,7 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
   weight: ["400", "700"],
+  display: "swap",
   preload: false,
 });
 
@@ -19,6 +19,7 @@ const workSans = Work_Sans({
   variable: "--font-work-sans",
   subsets: ["latin"],
   weight: ["400", "700"],
+  display: "swap",
   preload: false,
 });
 
@@ -140,7 +141,6 @@ export default function RootLayout({
         )}
       </head>
       <body className="min-h-screen flex flex-col bg-background text-on-background font-body">
-        <AdSenseAutoAds />
         {gtmId && (
           <noscript>
             <iframe

@@ -2,6 +2,17 @@
   "name": "quemvotar",
   "version": "0.1.0",
   "private": true,
+  "browserslist": [
+    ">= 0.5%",
+    "last 2 major versions",
+    "not dead",
+    "Chrome >= 60",
+    "Firefox >= 60",
+    "Firefox ESR",
+    "iOS >= 12",
+    "Safari >= 12",
+    "not Explorer <= 11"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -31,6 +42,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.1",
+    "critters": "^0.0.23",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
     "jest": "^30.3.0",

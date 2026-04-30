@@ -58,7 +58,7 @@ export default async function Highlights() {
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                         className="object-cover object-top group-hover:scale-105 transition-transform duration-300"
-                        unoptimized
+                        quality={60}
                       />
                     ) : (
                       <span className="font-headline font-black text-5xl text-gray-300">{candidato.nome_urna.split(' ').map(n => n[0]).join('').slice(0,2)}</span>

@@ -35,7 +35,7 @@ const ParlamentarCard = memo(function ParlamentarCard({ perfil }: { perfil: Perf
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
             className="object-cover object-top"
-            unoptimized
+            quality={60}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center font-headline font-black text-5xl">
