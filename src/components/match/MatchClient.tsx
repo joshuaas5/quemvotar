@@ -154,7 +154,7 @@ export function MatchClient({
     });
   }, [showResults]);
 
-  /* Busca scores reais no servidor (votacoes nominais da Camara) */
+  /* Busca scores reais no servidor (votações nominais da Câmara) */
   useEffect(() => {
     if (!showResults) {
       setMatchScores({});
@@ -471,16 +471,16 @@ export function MatchClient({
             <div className="min-w-0">
               <h2 className="font-headline font-black text-3xl sm:text-4xl uppercase leading-none">Seu resultado</h2>
               <p className="font-body font-bold mt-2 opacity-80 max-w-xl text-sm sm:text-base">
-                Cruzamos suas respostas com o espectro partidario e historico de votacoes reais da Camara dos Deputados de {parlamentares.length} parlamentares.
+                Cruzamos suas respostas com o espectro partidário e histórico de votações reais da Câmara dos Deputados de {parlamentares.length} parlamentares.
               </p>
               {isCalculating && (
                 <p className="font-label font-bold uppercase text-xs text-yellow-900 mt-2 animate-pulse">
-                  Consultando votacoes nominais reais na Camara dos Deputados...
+                  Consultando votações nominais reais na Câmara dos Deputados...
                 </p>
               )}
               {!isCalculating && Object.keys(matchScores).length > 0 && (
                 <p className="font-label font-bold uppercase text-xs text-green-800 mt-2">
-                  Scores refinados com votacoes reais da Camara.
+                  Scores refinados com votações reais da Câmara.
                 </p>
               )}
             </div>
