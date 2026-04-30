@@ -1,5 +1,6 @@
 import { getPartyMeta } from '@/lib/party-meta';
 import { getPartyThemePosition } from './party-themes';
+import { fetchVotesByParliamentarian, voteToPosition } from './voting-record';
 
 export type UserAnswer = {
   score: number;
@@ -46,7 +47,7 @@ export function calculateMatchScoreDetailed(
 
   topics.forEach((topic) => {
     const userAns = userAnswers[topic];
-    if (!userAns) return;
+    if (!userAns || typeof userAns.score !== 'number' || typeof userAns.weight !== 'number') return;
 
     totalWeight += userAns.weight;
 
@@ -64,10 +65,13 @@ export function calculateMatchScoreDetailed(
   let score = (earnedPoints / (totalWeight * MAX_DIST)) * 100;
 
   // Ajuste leve pelo ranking: deputados com melhor ranking ganham até 5% a mais
-  if (politicianRanking != null) {
+  if (politicianRanking != null && !Number.isNaN(politicianRanking)) {
     const rankingBonus = (politicianRanking / 10) * 5;
     score = Math.min(100, score + rankingBonus);
   }
+
+  // Protecao contra NaN
+  if (Number.isNaN(score)) return 0;
 
   return score;
 }
