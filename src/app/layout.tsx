@@ -11,7 +11,6 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   weight: ["400", "700"],
   display: "swap",
-  preload: true,
 });
 
 const workSans = Work_Sans({
@@ -19,7 +18,6 @@ const workSans = Work_Sans({
   subsets: ["latin"],
   weight: ["400", "700"],
   display: "swap",
-  preload: true,
 });
 
 const siteUrl = "https://quemvotar.com.br";
