@@ -23,13 +23,12 @@ export default function Header() {
       <nav className="flex justify-between items-center w-full px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-50 bg-[#f5f6f7] border-b-4 border-black neo-brutalist-shadow">
         <Link href="/" className="flex items-center gap-2 active:scale-95 transition-transform">
           <Image
-            src="/logo-header.png"
+            src="/logo-header.webp"
             alt="QuemVotar"
             width={64}
             height={64}
             className="w-14 h-14 sm:w-16 sm:h-16"
             priority
-            unoptimized
           />
           <span className="text-2xl sm:text-3xl font-black text-black tracking-tighter font-headline uppercase">
             QUEM VOTAR.

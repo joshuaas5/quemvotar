@@ -109,10 +109,29 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        {/* Material Symbols: carregamento nao-bloqueante para nao atrasar FCP/LCP */}
         <link
+          rel="preload"
+          as="style"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,400,0..1&display=swap"
+        />
+        <link
+          id="material-symbols"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,400,0..1&display=swap"
           rel="stylesheet"
+          media="print"
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `document.getElementById('material-symbols').media='all';`,
+          }}
+        />
+        <noscript>
+          <link
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,400,0..1&display=swap"
+            rel="stylesheet"
+          />
+        </noscript>
         <style>{`.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }`}</style>
         <link rel="icon" type="image/png" sizes="512x512" href="/icon.png?v=5" />
         <link rel="shortcut icon" href="/favicon.ico?v=5" />
