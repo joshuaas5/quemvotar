@@ -19,19 +19,22 @@ export interface ParliamentarianVote {
 /**
  * Converte um voto nominal (sim/nao) para uma pontuacao de posicionamento (1-5).
  */
-export function voteToPosition(vote: VoteValue | string | null | undefined, theme: string): number | null {
+export function voteToPosition(vote: VoteValue | string | null | undefined, _theme: string): number | null {
   if (!vote) return null;
 
   const v = String(vote).trim();
 
+  /*
+   * Todos os PLs mapeados em TEMAS_PROPOSICOES tem redacao onde
+   * votar SIM = concordar com a afirmacao do quiz (posicao 5)
+   * votar NAO = discordar da afirmacao do quiz (posicao 1)
+   */
   switch (v) {
     case 'Sim':
-      // Para temas "progressistas", SIM = posicao forte (5)
-      // Para temas "conservadores", SIM = posicao fraca (1)
-      return isProgressiveTheme(theme) ? 5 : 1;
+      return 5;
     case 'Nao':
     case 'Não':
-      return isProgressiveTheme(theme) ? 1 : 5;
+      return 1;
     case 'Abstencao':
     case 'Abstenção':
       return 3;
@@ -48,9 +51,4 @@ export function voteToPosition(vote: VoteValue | string | null | undefined, them
     default:
       return null;
   }
-}
-
-function isProgressiveTheme(theme: string): boolean {
-  const progressiveThemes = ['cotas', 'abor', 'drogas', 'impostos', 'meio_amb'];
-  return progressiveThemes.includes(theme);
 }
