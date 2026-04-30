@@ -114,17 +114,6 @@ export default function RootLayout({
         )}
       </head>
       <body className="min-h-screen flex flex-col bg-background text-on-background font-body">
-        {gtmId && (
-          <noscript>
-            <iframe
-              src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
-              height="0"
-              width="0"
-              style={{ display: "none", visibility: "hidden" }}
-              title="gtm"
-            />
-          </noscript>
-        )}
         <NavigationProvider>
           <ToastProvider>
             {children}
