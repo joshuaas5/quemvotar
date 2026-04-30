@@ -843,6 +843,7 @@ export default async function PerfilPage({
                     sizes="(max-width: 1024px) 100vw, 280px"
                     className="object-cover object-top max-h-[300px] lg:max-h-none"
                     priority
+                    unoptimized
                   />
                 ) : (
                   <span className="font-headline font-black text-6xl text-white/50">{perfil.nome_urna.split(' ').map(n => n[0]).join('').slice(0,2)}</span>
