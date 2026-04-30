@@ -10,7 +10,7 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
   subsets: ["latin"],
   weight: ["400", "700"],
-  display: "optional",
+  display: "swap",
   preload: true,
 });
 
@@ -18,7 +18,7 @@ const workSans = Work_Sans({
   variable: "--font-work-sans",
   subsets: ["latin"],
   weight: ["400", "700"],
-  display: "optional",
+  display: "swap",
   preload: true,
 });
 
