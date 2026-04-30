@@ -6,6 +6,7 @@ import { buildPartyBadgeDataUrl, getPartyMeta, getSpectrumLabel } from '@/lib/pa
 import { getPartyLogoBySigla } from '@/lib/party-logos';
 import { normalizeRemoteImageUrl, upgradeCamaraPhotoUrl } from '@/lib/utils/profile-image';
 import { getMemoryCache, setMemoryCache } from '@/lib/utils/memory-cache';
+import { PARTIDOS_FALLBACK } from '@/lib/fallback-data';
 
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
@@ -258,7 +259,8 @@ export const fetchPartidosResumo = cache(async (): Promise<PartidoResumo[]> => {
   const cached = getMemoryCache<PartidoResumo[]>(PARTIDOS_CACHE_KEY);
   if (cached !== null && cached.length > 0) return cached;
 
-  const [deputados, senadores, partidosCamara, liderancas, senadoLista] = await Promise.all([
+  try {
+    const [deputados, senadores, partidosCamara, liderancas, senadoLista] = await Promise.all([
     fetchDeputados(),
     fetchSenadores(),
     fetchCamaraPartidos(),
@@ -347,7 +349,12 @@ export const fetchPartidosResumo = cache(async (): Promise<PartidoResumo[]> => {
   });
 
   setMemoryCache(PARTIDOS_CACHE_KEY, resultado, PARTIDOS_CACHE_TTL);
-  return resultado as PartidoResumo[];
+    return resultado as PartidoResumo[];
+  } catch (error) {
+    console.error('[fetchPartidosResumo] Falha ao carregar partidos:', error);
+    console.warn('[fetchPartidosResumo] Usando dados fallback para build');
+    return PARTIDOS_FALLBACK as PartidoResumo[];
+  }
 });
 
 function mapCategoria(descricao?: string): LiderancaCongresso['categoria'] | null {

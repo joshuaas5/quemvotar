@@ -4,6 +4,7 @@ import { buildVoteThemeCards } from '@/lib/political-themes';
 import { improveProfilePhotoUrl } from '@/lib/utils/profile-image';
 import { decodeMojibake } from '@/lib/utils/string';
 import { getMemoryCache, setMemoryCache } from '@/lib/utils/memory-cache';
+import { DEPUTADOS_FALLBACK } from '@/lib/fallback-data';
 
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
 const AUTORIAS_AMOSTRA_ANALISADA = 8;
@@ -376,7 +377,8 @@ export const fetchSenadores = cache(async (): Promise<PerfilPublico[]> => {
     return result;
   } catch (error) {
     console.error('[fetchSenadores] Falha ao carregar senadores:', error);
-    return [];
+    console.warn('[fetchSenadores] Usando dados fallback para build');
+    return DEPUTADOS_FALLBACK;
   }
 });
 
