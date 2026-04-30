@@ -508,7 +508,7 @@ export function MatchClient({
 
                         <div className="w-28 h-28 border-4 border-black bg-gray-200 rounded-full mb-3 overflow-hidden relative flex items-center justify-center">
                           {pol.foto_url ? (
-                            <Image src={pol.foto_url} alt={pol.nome_urna} fill sizes="112px" className="object-cover object-top" unoptimized />
+                            <Image src={pol.foto_url} alt={pol.nome_urna} fill sizes="112px" className="object-cover object-top" loading="lazy" />
                           ) : (
                             <span className="font-headline font-black text-2xl text-gray-400">
                               {pol.nome_urna.split(' ').map(n => n[0]).join('').slice(0, 2)}

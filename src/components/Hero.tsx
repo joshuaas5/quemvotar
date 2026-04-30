@@ -16,11 +16,6 @@ export default function Hero() {
 
   return (
     <section className="relative overflow-hidden pt-12 sm:pt-20 pb-16 sm:pb-24 px-4 sm:px-6 max-w-7xl mx-auto flex flex-col items-center text-center">
-      <div
-        className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none -z-10"
-        style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDFFhzqNWAOgdq2JT-9K1XQv-khLCVzlrzGEImfn4g99fwwLhOkg3Ppi0tsznx95QMkSKLKJ8iSald66hpMq8rI7QNZiqsiI5q0sFxOU3qxaMcNWXQFJGm7dgstjySQptrbEhSXW0AzRslA-xnDKGfwMLgp25Zeee0BLMcnVAacIbsf61V2QvCf7OH4yj3mLo-FLhGufSIEG9fd6GMAo0xuSbX9lIeZn9ohudnMhd9N28kZIa3dPAWRzyzUVr6zH5wfoyl764F6W8E')" }}
-      />
-
       <h1 className="font-headline font-black text-4xl sm:text-6xl md:text-8xl leading-none tracking-tighter mb-4 sm:mb-6 text-on-background uppercase">
         NÃO ELEJA <br /> NO <span className="bg-primary-container px-2 sm:px-4 text-on-primary-fixed">ESCURO</span>. <br /> VOTE COM DADOS.
       </h1>

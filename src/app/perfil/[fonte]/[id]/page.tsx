@@ -765,9 +765,24 @@ export default async function PerfilPage({
     memberOf: {
       '@type': 'Organization',
       name: `Partido ${perfil.partido}`,
+      alternateName: perfil.partido,
     },
     url: `https://quemvotar.com.br/perfil/${fonte}/${id}`,
     image: perfil.foto_url,
+    address: perfil.uf ? {
+      '@type': 'Place',
+      address: {
+        '@type': 'PostalAddress',
+        addressRegion: perfil.uf,
+        addressCountry: 'BR',
+      },
+    } : undefined,
+    description: perfil.biografia || `Perfil de ${perfil.nome_urna} (${perfil.partido}-${perfil.uf}), ${perfil.cargo} em exercicio.`,
+    knowsAbout: ['Politica', 'Legislacao', 'Direito'],
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://quemvotar.com.br/perfil/${fonte}/${id}`,
+    },
   };
 
   const breadcrumbSchema = buildBreadcrumbSchema([
@@ -828,7 +843,6 @@ export default async function PerfilPage({
                     sizes="(max-width: 1024px) 100vw, 280px"
                     className="object-cover object-top max-h-[300px] lg:max-h-none"
                     priority
-                    unoptimized
                   />
                 ) : (
                   <span className="font-headline font-black text-6xl text-white/50">{perfil.nome_urna.split(' ').map(n => n[0]).join('').slice(0,2)}</span>

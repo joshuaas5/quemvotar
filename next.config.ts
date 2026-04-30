@@ -19,20 +19,31 @@ const nextConfig: NextConfig = {
       {
         source: '/favicon.ico',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate, no-cache, no-store' },
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
         ],
       },
-
       {
         source: '/apple-touch-icon.png',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate, no-cache, no-store' },
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
         ],
       },
       {
         source: '/icon-:size.png',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate, no-cache, no-store' },
+          { key: 'Cache-Control', value: 'public, max-age=0, must-revalidate' },
+        ],
+      },
+      {
+        source: '/:all*(svg|jpg|png|ico|woff2)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
     ];
