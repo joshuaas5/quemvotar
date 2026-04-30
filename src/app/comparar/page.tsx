@@ -161,7 +161,7 @@ export default async function CompararPage({
               >
                 <div className="absolute -bottom-10 left-6 w-24 h-24 md:w-28 md:h-28 border-4 border-black bg-white overflow-hidden">
                   {pA.foto_url ? (
-                    <Image src={pA.foto_url} alt={pA.nome_urna} fill sizes="112px" className="object-cover object-top" />
+                    <Image src={pA.foto_url} alt={pA.nome_urna} fill sizes="112px" className="object-cover object-top" unoptimized />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center font-headline font-black text-2xl">
                       {getInitials(pA.nome_urna)}
@@ -195,7 +195,7 @@ export default async function CompararPage({
               >
                 <div className="absolute -bottom-10 left-6 w-24 h-24 md:w-28 md:h-28 border-4 border-black bg-white overflow-hidden">
                   {pB.foto_url ? (
-                    <Image src={pB.foto_url} alt={pB.nome_urna} fill sizes="112px" className="object-cover object-top" />
+                    <Image src={pB.foto_url} alt={pB.nome_urna} fill sizes="112px" className="object-cover object-top" unoptimized />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center font-headline font-black text-2xl">
                       {getInitials(pB.nome_urna)}

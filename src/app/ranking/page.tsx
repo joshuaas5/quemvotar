@@ -182,6 +182,7 @@ export default async function RankingPage({
                           fill
                           sizes="120px"
                           className="object-cover object-top"
+                          unoptimized
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center font-headline font-black text-3xl md:text-4xl">

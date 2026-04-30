@@ -131,6 +131,7 @@ export default async function UfPage({ params }: { params: Promise<{ sigla: stri
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
                           className="object-cover object-top"
+                          unoptimized
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center font-headline font-black text-5xl">
