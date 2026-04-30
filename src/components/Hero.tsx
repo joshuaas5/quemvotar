@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Icon from './Icon';
 
 export default function Hero() {
   const [query, setQuery] = useState('');
@@ -29,7 +30,7 @@ export default function Hero() {
         className="w-full max-w-4xl flex flex-col sm:flex-row gap-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-4 border-black"
       >
         <div className="flex-grow flex items-center bg-white px-4 sm:px-6 py-3 sm:py-4">
-          <span className="material-symbols-outlined text-2xl sm:text-4xl mr-3 sm:mr-4">search</span>
+          <Icon name="search" className="w-6 h-6 sm:w-10 sm:h-10 mr-3 sm:mr-4 shrink-0" />
           <input
             className="w-full border-none focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 text-base sm:text-xl font-headline font-bold uppercase placeholder-black/30"
             placeholder="Pesquise um parlamentar, partido ou UF..."
@@ -48,11 +49,11 @@ export default function Hero() {
 
       <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 font-label font-bold text-xs sm:text-sm uppercase">
         <span className="flex items-center gap-2 bg-on-background text-white px-3 py-1">
-          <span className="material-symbols-outlined text-sm">verified</span> Dados oficiais da
+          <Icon name="verified" className="w-4 h-4 shrink-0" /> Dados oficiais da
           Câmara e do Senado
         </span>
         <span className="flex items-center gap-2 bg-on-background text-white px-3 py-1">
-          <span className="material-symbols-outlined text-sm">database</span> Fontes externas
+          <Icon name="database" className="w-4 h-4 shrink-0" /> Fontes externas
           auditáveis
         </span>
       </div>

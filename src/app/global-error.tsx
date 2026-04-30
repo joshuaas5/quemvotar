@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
+import Icon from '@/components/Icon';
 
 export default function GlobalError({
   error,
@@ -18,7 +19,7 @@ export default function GlobalError({
     <html lang="pt-BR">
       <body className="min-h-screen bg-[#f5f6f7] flex items-center justify-center p-4">
         <div className="bg-white border-4 border-black p-8 sm:p-12 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] max-w-lg w-full text-center">
-          <span className="material-symbols-outlined text-6xl sm:text-8xl mb-4 block">warning</span>
+          <Icon name="warning" className="w-16 h-16 sm:w-24 sm:h-24 mb-4 block" />
           <h1 className="font-headline font-black text-3xl sm:text-5xl uppercase mb-4">
             Algo deu errado
           </h1>

@@ -2,6 +2,7 @@
 
 import { useFavoritos } from '@/hooks/useFavoritos';
 import { useToast } from '@/components/Toast';
+import Icon from './Icon';
 
 interface BotaoFavoritarProps {
   id: string;
@@ -44,9 +45,7 @@ export default function BotaoFavoritar({ id, fonte, nome_urna, partido, uf, carg
       aria-label={favorito ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
       title={favorito ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
     >
-      <span className="material-symbols-outlined text-xl">
-        {favorito ? 'favorite' : 'favorite_border'}
-      </span>
+      <Icon name="heart" className="w-6 h-6" />
     </button>
   );
 }

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';
+import Icon from './Icon';
 
 const NAV_LINKS = [
   { href: '/parlamentares', label: 'Parlamentares' },
@@ -64,7 +65,7 @@ export default function Header() {
             className="md:hidden w-10 h-10 border-2 border-black flex items-center justify-center bg-white active:scale-95 cursor-pointer"
             aria-label="Abrir menu"
           >
-            <span className="material-symbols-outlined text-xl">menu</span>
+            <Icon name="menu" className="w-6 h-6" />
           </button>
         </div>
       </nav>
@@ -89,7 +90,7 @@ export default function Header() {
                 className="w-9 h-9 border-2 border-black flex items-center justify-center bg-white active:scale-95 cursor-pointer"
                 aria-label="Fechar menu"
               >
-                <span className="material-symbols-outlined text-lg">close</span>
+                <Icon name="close" className="w-5 h-5" />
               </button>
             </div>
 

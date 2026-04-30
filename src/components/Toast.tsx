@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
+import Icon from './Icon';
 
 export type ToastType = 'success' | 'error' | 'info';
 
@@ -25,11 +26,11 @@ export function useToast() {
 function ToastIcon({ type }: { type: ToastType }) {
   switch (type) {
     case 'success':
-      return <span className="material-symbols-outlined">check_circle</span>;
+      return <Icon name="check_circle" className="w-5 h-5" />;
     case 'error':
-      return <span className="material-symbols-outlined">error</span>;
+      return <Icon name="error" className="w-5 h-5" />;
     case 'info':
-      return <span className="material-symbols-outlined">info</span>;
+      return <Icon name="info" className="w-5 h-5" />;
   }
 }
 

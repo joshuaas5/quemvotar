@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import LoadingLink from '@/components/LoadingLink';
+import Icon from './Icon';
 import { getCasaBadge, getHighlights, getPerfilHref } from '@/lib/api';
 
 function getCardConfig(index: number) {
@@ -47,7 +48,7 @@ export default async function Highlights() {
                 >
                   <div className={`${config.bgClass} ${config.textClass} p-4 font-headline font-black uppercase flex justify-between items-center`}>
                     <span>{getCasaBadge(candidato)}</span>
-                    <span className="material-symbols-outlined">verified</span>
+                    <Icon name="verified" className="w-5 h-5" />
                   </div>
 
                   <div className="aspect-square bg-gray-100 grayscale hover:grayscale-0 transition-all border-b-4 border-black overflow-hidden relative flex items-center justify-center">

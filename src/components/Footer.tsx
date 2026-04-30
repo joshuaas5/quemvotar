@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Icon from './Icon';
 
 export default function Footer() {
   return (
@@ -29,19 +30,19 @@ export default function Footer() {
           href="/partidos"
           className="w-10 h-10 border-2 border-black bg-on-background flex items-center justify-center text-white cursor-pointer hover:bg-secondary hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
         >
-          <span className="material-symbols-outlined">groups</span>
+          <Icon name="groups" className="w-5 h-5" />
         </Link>
         <Link
           href="/ranking"
           className="w-10 h-10 border-2 border-black bg-on-background flex items-center justify-center text-white cursor-pointer hover:bg-secondary hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
         >
-          <span className="material-symbols-outlined">leaderboard</span>
+          <Icon name="leaderboard" className="w-5 h-5" />
         </Link>
         <Link
           href="/parlamentares"
           className="w-10 h-10 border-2 border-black bg-on-background flex items-center justify-center text-white cursor-pointer hover:bg-secondary hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
         >
-          <span className="material-symbols-outlined">search</span>
+          <Icon name="search" className="w-5 h-5" />
         </Link>
       </div>
     </footer>

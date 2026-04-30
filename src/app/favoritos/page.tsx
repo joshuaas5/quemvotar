@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import LoadingLink from '@/components/LoadingLink';
+import Icon from '@/components/Icon';
 import { useFavoritos } from '@/hooks/useFavoritos';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -39,7 +40,7 @@ export default function FavoritosPage() {
             </div>
           ) : favoritos.length === 0 ? (
             <div className="bg-white border-4 border-black p-8 md:p-12 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <span className="material-symbols-outlined text-6xl mb-4">bookmark_border</span>
+              <Icon name="bookmark" className="w-16 h-16 mb-4" />
               <h2 className="font-headline font-black text-2xl md:text-3xl uppercase">
                 Nenhum favorito ainda
               </h2>
@@ -104,7 +105,7 @@ export default function FavoritosPage() {
                             className="w-9 h-9 border-2 border-black bg-white flex items-center justify-center hover:bg-[#ff006e] hover:text-white transition-colors"
                             aria-label="Remover dos favoritos"
                           >
-                            <span className="material-symbols-outlined text-lg">delete</span>
+                            <Icon name="delete" className="w-5 h-5" />
                           </button>
                         </div>
                       </div>

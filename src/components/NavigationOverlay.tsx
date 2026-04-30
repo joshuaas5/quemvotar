@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import Icon from './Icon';
 import { useNavigation } from './NavigationProvider';
 
 export default function NavigationOverlay() {
@@ -28,7 +29,7 @@ export default function NavigationOverlay() {
   return (
     <div className="fixed inset-0 z-[9999] bg-black/30 backdrop-blur-[2px] flex items-center justify-center animate-fade-in">
       <div className="bg-white border-4 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center gap-4 animate-fade-in-up">
-        <span className="material-symbols-outlined text-5xl animate-spin">progress_activity</span>
+        <Icon name="spinner" className="w-12 h-12 animate-spin" />
         <p className="font-headline font-black text-xl uppercase">Carregando...</p>
       </div>
     </div>

@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useCallback } from 'react';
+import Icon from '../Icon';
 import { useToast } from '@/components/Toast';
 import type { PerfilPublico } from '@/lib/api';
 import type { calculateNolanChart } from '@/lib/match/calculator';
@@ -109,7 +110,7 @@ export default function MatchShareCard({ nolan, topMatches }: MatchShareCardProp
         onClick={handleShare}
         className="w-full bg-black text-white font-headline font-black text-sm uppercase py-2.5 border-3 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] hover:-translate-y-0.5 hover:-translate-x-0.5 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] active:translate-x-0 active:translate-y-0 active:shadow-none transition-all flex items-center justify-center gap-1.5 cursor-pointer"
       >
-        <span className="material-symbols-outlined text-lg">share</span>
+        <Icon name="share" className="w-5 h-5" />
         Compartilhar
       </button>
     </div>

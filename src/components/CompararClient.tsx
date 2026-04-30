@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import Icon from './Icon';
 import { PoliticoPicker } from '@/components/PoliticoPicker';
 import { useToast } from '@/components/Toast';
 import type { PerfilPublico } from '@/lib/api';
@@ -151,7 +152,7 @@ function SelectedPreview({
         className="w-8 h-8 border-2 border-black bg-white flex items-center justify-center hover:bg-red-100 transition-colors"
         aria-label="Remover selecao"
       >
-        <span className="material-symbols-outlined text-sm">close</span>
+        <Icon name="close" className="w-4 h-4" />
       </button>
     </div>
   );

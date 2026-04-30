@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Icon from '../Icon';
 import { MatchQuiz } from './MatchQuiz';
 import MatchShareCard from './MatchShareCard';
 import { calculateMatchScoreDetailed, calculateNolanChart, type UserAnswersMap } from '@/lib/match/calculator';
@@ -544,7 +545,7 @@ export function MatchClient({
               if (filtered.length === 0) {
                 return (
                   <div className="bg-white border-4 border-black p-8 md:p-12 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-                    <span className="material-symbols-outlined text-6xl mb-4">filter_alt_off</span>
+                    <Icon name="filter_off" className="w-16 h-16 mb-4" />
                     <h3 className="font-headline font-black text-2xl md:text-3xl uppercase">
                       Nenhum parlamentar encontrado
                     </h3>

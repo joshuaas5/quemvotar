@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from 'next/image';
+import Icon from '@/components/Icon';
 import LoadingLink from '@/components/LoadingLink';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -144,7 +145,7 @@ export default async function RankingPage({
 
           {resultados.length === 0 ? (
             <div className="bg-white border-4 border-black p-8 md:p-12 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <span className="material-symbols-outlined text-6xl mb-4">search_off</span>
+              <Icon name="search_off" className="w-16 h-16 mb-4" />
               <h2 className="font-headline font-black text-2xl md:text-3xl uppercase">
                 Nenhum parlamentar encontrado
               </h2>
