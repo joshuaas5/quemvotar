@@ -94,7 +94,7 @@ export default function TermsPage() {
             <section>
               <h2 className="font-headline font-black text-xl md:text-2xl uppercase mb-3">10. Contato</h2>
               <p className="leading-relaxed">
-                Para questoes sobre estes Termos de Uso, entre em contato pelo e-mail: <strong>contato@quemvotar.com.br</strong>
+                Para questoes sobre estes Termos de Uso, entre em contato pelo e-mail: <strong>staterbills@gmail.com</strong>
               </p>
             </section>
 

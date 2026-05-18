@@ -34,8 +34,8 @@ export default function ContactPage() {
               </h2>
               <p className="leading-relaxed">
                 Para falar com a equipe, envie uma mensagem para{' '}
-                <a href="mailto:contato@quemvotar.com.br" className="font-bold underline">
-                  contato@quemvotar.com.br
+                <a href="mailto:staterbills@gmail.com" className="font-bold underline">
+                  staterbills@gmail.com
                 </a>
                 . Use esse canal para informar erros de dados, sugerir melhorias no site, tratar de parcerias ou pedir esclarecimentos sobre as fontes usadas.
               </p>
