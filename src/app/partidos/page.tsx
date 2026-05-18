@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "Partidos e Lideranças",
   description:
     "Conheça os partidos com assento no Congresso Nacional: bancada, lideranças, campo político e definição.",
-  alternates: { canonical: "https://quemvotar.com.br/partidos" },
+  alternates: { canonical: "https://www.quemvotar.com.br/partidos" },
 };
 
 export const revalidate = 3600;

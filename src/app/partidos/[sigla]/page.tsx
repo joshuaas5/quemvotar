@@ -25,7 +25,7 @@ export async function generateMetadata(
     };
   }
 
-  const canonicalUrl = `https://quemvotar.com.br/partidos/${partido.sigla}`;
+  const canonicalUrl = `https://www.quemvotar.com.br/partidos/${partido.sigla}`;
 
   return {
     title: `${partido.nome} (${partido.sigla}) | QuemVotar`,
@@ -57,7 +57,7 @@ export default async function PartidoDetailPage({
 
   const cores = partido.cores ?? ['#111827', '#9ca3af'];
   const visual = getPartyVisualEmoji(partido.sigla);
-  const canonicalUrl = `https://quemvotar.com.br/partidos/${partido.sigla}`;
+  const canonicalUrl = `https://www.quemvotar.com.br/partidos/${partido.sigla}`;
 
   const orgSchema = buildOrganizationSchema(
     partido.nome,
@@ -68,8 +68,8 @@ export default async function PartidoDetailPage({
   );
 
   const breadcrumbSchema = buildBreadcrumbSchema([
-    { name: 'Início', url: 'https://quemvotar.com.br/' },
-    { name: 'Partidos', url: 'https://quemvotar.com.br/partidos' },
+    { name: 'Início', url: 'https://www.quemvotar.com.br/' },
+    { name: 'Partidos', url: 'https://www.quemvotar.com.br/partidos' },
     { name: partido.sigla },
   ]);
 

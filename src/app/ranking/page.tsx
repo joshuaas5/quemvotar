@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: "Ranking dos Parlamentares",
   description:
     "Veja a nota pública de desempenho legislativo dos deputados e senadores com base no Ranking dos Políticos. Filtre por casa, UF e nome.",
-  alternates: { canonical: "https://quemvotar.com.br/ranking" },
+  alternates: { canonical: "https://www.quemvotar.com.br/ranking" },
 };
 
 function normalizeText(value: string) {

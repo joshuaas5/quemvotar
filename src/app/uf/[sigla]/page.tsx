@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: { params: Promise<{ sigla: st
   return {
     title: `Guia Eleitoral - ${nome}`,
     description: `Conheça os deputados federais e senadores do ${nome}. Dados oficiais de mandato, gastos, presença e ranking de desempenho.`,
-    alternates: { canonical: `https://quemvotar.com.br/uf/${uf}` },
+    alternates: { canonical: `https://www.quemvotar.com.br/uf/${uf}` },
   };
 }
 

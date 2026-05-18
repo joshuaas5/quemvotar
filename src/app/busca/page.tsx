@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "Busca de Parlamentares",
   description:
     "Pesquise deputados e senadores por nome, partido ou UF com dados oficiais da Câmara e do Senado.",
-  alternates: { canonical: "https://quemvotar.com.br/busca" },
+  alternates: { canonical: "https://www.quemvotar.com.br/busca" },
 };
 
 function getInitials(nome: string) {

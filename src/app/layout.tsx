@@ -20,7 +20,7 @@ const workSans = Work_Sans({
   display: "swap",
 });
 
-const siteUrl = "https://quemvotar.com.br";
+const siteUrl = "https://www.quemvotar.com.br";
 const defaultTitle = "QuemVotar - Descubra quem é quem na política";
 const defaultDescription =
   "Consulte parlamentares em exercício com dados oficiais e rastreáveis da Câmara dos Deputados e do Senado Federal. Notas, presença, gastos, votações e match eleitoral.";
@@ -93,7 +93,7 @@ export const metadata: Metadata = {
 
 const gaId = process.env.NEXT_PUBLIC_GA_ID;
 const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
-const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? 'ca-pub-4642158915962893';
+const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? 'ca-pub-4642150915962893';
 
 export default function RootLayout({
   children,

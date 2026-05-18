@@ -11,14 +11,14 @@ export const metadata: Metadata = {
   title: "QuemVotar - Descubra quem é quem na política",
   description:
     "Consulte deputados, senadores, partidos e rankings com dados oficiais da Câmara, Senado e TSE. Vote com dados, não no escuro.",
-  alternates: { canonical: "https://quemvotar.com.br/" },
+  alternates: { canonical: "https://www.quemvotar.com.br/" },
 };
 
 export const revalidate = 1800;
 
 export default function Home() {
   const websiteSchema = buildWebSiteSchema(
-    'https://quemvotar.com.br',
+    'https://www.quemvotar.com.br',
     'QuemVotar',
     'Consulte deputados, senadores, partidos e rankings com dados oficiais da Câmara, Senado e TSE.',
     '/busca?q={q}'

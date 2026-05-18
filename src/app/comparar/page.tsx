@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   title: 'Comparar Parlamentares',
   description:
     'Compare lado a lado dois deputados ou senadores: notas, presença, gastos, governismo e alinhamento político.',
-  alternates: { canonical: 'https://quemvotar.com.br/comparar' },
+  alternates: { canonical: 'https://www.quemvotar.com.br/comparar' },
 };
 
 function formatScore(value?: number | null) {

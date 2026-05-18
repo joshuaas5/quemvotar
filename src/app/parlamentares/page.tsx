@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: "Parlamentares em Exercício",
   description:
     "Busque deputados federais e senadores por nome, partido, UF ou casa legislativa. Dados oficiais atualizados.",
-  alternates: { canonical: "https://quemvotar.com.br/parlamentares" },
+  alternates: { canonical: "https://www.quemvotar.com.br/parlamentares" },
 };
 
 export const revalidate = 1800;

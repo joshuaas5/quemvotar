@@ -6,7 +6,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 export const metadata: Metadata = {
   title: 'Termos de Uso',
   description: 'Termos de uso e condicoes de acesso ao QuemVotar. Consulte dados oficiais sobre politicos brasileiros.',
-  alternates: { canonical: 'https://quemvotar.com.br/terms' },
+  alternates: { canonical: 'https://www.quemvotar.com.br/terms' },
   robots: { index: true, follow: true },
 };
 

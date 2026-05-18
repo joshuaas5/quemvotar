@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: "Match Eleitoral",
   description:
     "Responda a um quiz rápido e descubra quais parlamentares são mais alinhados com o seu perfil político. Veja sua posição no Diagrama de Nolan.",
-  alternates: { canonical: "https://quemvotar.com.br/match" },
+  alternates: { canonical: "https://www.quemvotar.com.br/match" },
 };
 
 export const revalidate = 86400;

@@ -676,7 +676,7 @@ export async function generateMetadata(
   const estado = perfil.uf ? `-${perfil.uf}` : '';
   const cargo = perfil.cargo;
 
-  const canonicalUrl = `https://quemvotar.com.br/perfil/${fonte}/${id}`;
+  const canonicalUrl = `https://www.quemvotar.com.br/perfil/${fonte}/${id}`;
 
   return {
     title: `${perfil.nome_urna} (${sigla}${estado}) - ${cargo} | QuemVotar`,
@@ -727,7 +727,7 @@ export default async function PerfilPage({
       name: `Partido ${perfil.partido}`,
       alternateName: perfil.partido,
     },
-    url: `https://quemvotar.com.br/perfil/${fonte}/${id}`,
+    url: `https://www.quemvotar.com.br/perfil/${fonte}/${id}`,
     image: perfil.foto_url,
     address: perfil.uf ? {
       '@type': 'Place',
@@ -741,13 +741,13 @@ export default async function PerfilPage({
     knowsAbout: ['Politica', 'Legislacao', 'Direito'],
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://quemvotar.com.br/perfil/${fonte}/${id}`,
+      '@id': `https://www.quemvotar.com.br/perfil/${fonte}/${id}`,
     },
   };
 
   const breadcrumbSchema = buildBreadcrumbSchema([
-    { name: 'Início', url: 'https://quemvotar.com.br/' },
-    { name: 'Parlamentares', url: 'https://quemvotar.com.br/parlamentares' },
+    { name: 'Início', url: 'https://www.quemvotar.com.br/' },
+    { name: 'Parlamentares', url: 'https://www.quemvotar.com.br/parlamentares' },
     { name: perfil.nome_urna },
   ]);
 

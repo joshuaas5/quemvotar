@@ -4,7 +4,7 @@ import { fetchOfficialCongressProfiles, getPartidosResumo } from '@/lib/official
 export const revalidate = 86400;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://quemvotar.com.br';
+  const baseUrl = 'https://www.quemvotar.com.br';
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${baseUrl}/`, lastModified: new Date(), changeFrequency: 'daily', priority: 1 },

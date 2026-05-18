@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/api/', '/_next/'],
     },
-    sitemap: 'https://quemvotar.com.br/sitemap.xml',
+    sitemap: 'https://www.quemvotar.com.br/sitemap.xml',
   };
 }
