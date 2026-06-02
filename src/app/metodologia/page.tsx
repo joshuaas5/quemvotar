@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import PageHero from '@/components/PageHero';
 
 export const metadata: Metadata = {
   title: 'Metodologia',
@@ -19,14 +20,13 @@ export default function MetodologiaPage() {
         <div className="max-w-5xl mx-auto space-y-8 md:space-y-10">
           <Breadcrumbs items={[{ label: 'Metodologia' }]} />
 
-          <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <h1 className="font-headline font-black text-3xl md:text-5xl uppercase mb-3 md:mb-4">
-              Metodologia
-            </h1>
-            <p className="font-body font-bold text-sm md:text-lg uppercase opacity-80">
-              Como coletamos, organizamos e apresentamos informações públicas sobre parlamentares.
-            </p>
-          </section>
+          <PageHero
+            eyebrow="Como os dados são tratados"
+            title="Metodologia"
+            description="Como coletamos, organizamos e apresentamos informações públicas sobre parlamentares."
+            accent="green"
+            stat={{ value: '7 critérios', label: 'Fontes, limites, indicadores, match e uso responsável dos dados.' }}
+          />
 
           <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-8 font-body">
             <div>

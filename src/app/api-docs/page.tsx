@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import PageHero from '@/components/PageHero';
 import { OFFICIAL_SOURCE_LINKS, getOfficialSourceStatus, getTseDatasets } from '@/lib/api';
 
 export const metadata: Metadata = {
@@ -47,13 +48,13 @@ export default async function ApiDocsPage() {
 
       <main className="flex-grow bg-surface-container py-16 px-6">
         <div className="max-w-6xl mx-auto space-y-10">
-          <section className="bg-white border-4 border-black p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <h1 className="font-headline font-black text-5xl uppercase mb-4">APIs E FONTES OFICIAIS</h1>
-            <p className="font-body font-bold text-lg uppercase opacity-80">
-              O projeto agora separa claramente fonte da verdade, rotas internas e eventual camada
-              de armazenamento.
-            </p>
-          </section>
+          <PageHero
+            eyebrow="Fontes verificáveis"
+            title="APIs e Fontes Oficiais"
+            description="O projeto separa fonte da verdade, rotas internas e eventual camada de armazenamento."
+            accent="cyan"
+            stat={{ value: 'Auditável', label: 'Câmara, Senado, TSE, CNJ e bases externas identificadas.' }}
+          />
 
           <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {fontes.map((fonte) => (

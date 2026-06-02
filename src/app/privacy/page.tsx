@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import PageHero from '@/components/PageHero';
 
 export const metadata: Metadata = {
   title: 'Politica de Privacidade',
@@ -18,14 +19,13 @@ export default function PrivacyPage() {
         <div className="max-w-4xl mx-auto space-y-8 md:space-y-10">
           <Breadcrumbs items={[{ label: 'Politica de Privacidade' }]} />
 
-          <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <h1 className="font-headline font-black text-3xl md:text-5xl uppercase mb-3 md:mb-4">
-              Politica de Privacidade
-            </h1>
-            <p className="font-body font-bold text-sm md:text-lg uppercase opacity-80">
-              Como coletamos, usamos e protegemos suas informacoes no QuemVotar.
-            </p>
-          </section>
+          <PageHero
+            eyebrow="Privacidade e dados"
+            title="Política de Privacidade"
+            description="Como coletamos, usamos e protegemos suas informações no QuemVotar."
+            accent="purple"
+            stat={{ value: 'LGPD', label: 'Transparência sobre cookies, analytics, favoritos locais e contato.' }}
+          />
 
           <div className="bg-white border-4 border-black p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-8 font-body">
             <section>

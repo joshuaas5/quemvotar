@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { GUIDE_ARTICLES, GUIDE_CATEGORIES, getGuideCardStyle, getGuideCategory, getGuideWordCount } from '@/lib/guides';
+import { GUIDE_ARTICLES, GUIDE_CATEGORIES, getGuideCardStyle, getGuideCategory, getGuideReadingTime, getGuideWordCount } from '@/lib/guides';
 
 export const metadata: Metadata = {
   title: 'Guias do Eleitor',
@@ -69,7 +69,7 @@ export default function GuiasPage() {
               <article className="bg-white border-4 border-black p-6 md:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between">
                 <div>
                   <p className="font-label font-black uppercase text-xs bg-black text-white px-3 py-1 w-max mb-4">
-                    Destaque • {featured.readingTime}
+                    Destaque • {getGuideReadingTime(featured)}
                   </p>
                   <h2 className="font-headline font-black text-3xl md:text-5xl uppercase leading-tight mb-4">
                     {featured.title}
@@ -134,7 +134,7 @@ export default function GuiasPage() {
                         {category.label}
                       </span>
                       <span className="font-label font-black uppercase text-[11px]">
-                        {article.readingTime}
+                        {getGuideReadingTime(article)}
                       </span>
                     </div>
                     <div className="p-5 md:p-6 flex flex-col flex-1">

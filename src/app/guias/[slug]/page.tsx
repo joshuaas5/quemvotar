@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { GUIDE_ARTICLES, getGuideBySlug, getGuideCardStyle, getGuideCategory, getGuideWordCount } from '@/lib/guides';
+import { GUIDE_ARTICLES, getGuideBySlug, getGuideCardStyle, getGuideCategory, getGuideReadingTime, getGuideWordCount } from '@/lib/guides';
 
 export function generateStaticParams() {
   return GUIDE_ARTICLES.map((article) => ({ slug: article.slug }));
@@ -102,7 +102,7 @@ export default async function GuiaPage({ params }: { params: Promise<{ slug: str
                 <p className="font-headline font-black text-3xl uppercase mb-4">Dados do guia</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="border-2 border-black p-3 bg-[#FFD709]">
-                    <p className="font-headline font-black text-2xl">{article.readingTime}</p>
+                    <p className="font-headline font-black text-2xl">{getGuideReadingTime(article)}</p>
                     <p className="font-label font-bold uppercase text-[10px]">leitura</p>
                   </div>
                   <div className="border-2 border-black p-3 bg-[#9BF6FF]">
@@ -169,7 +169,7 @@ export default async function GuiaPage({ params }: { params: Promise<{ slug: str
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6">
                 {related.map((item, index) => (
                   <Link key={item.slug} href={`/guias/${item.slug}`} className={`${getGuideCardStyle(index + 2)} border-4 border-black p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[9px_9px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:-translate-x-1 transition-all block`}>
-                    <p className="font-label font-black uppercase text-xs mb-3">Relacionado • {item.readingTime}</p>
+                    <p className="font-label font-black uppercase text-xs mb-3">Relacionado • {getGuideReadingTime(item)}</p>
                     <h3 className="font-headline font-black text-2xl uppercase leading-tight mb-3">{item.title}</h3>
                     <p className="font-body font-bold text-sm leading-relaxed">{item.description}</p>
                   </Link>

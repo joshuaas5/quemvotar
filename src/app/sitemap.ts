@@ -4,7 +4,7 @@ import { GUIDE_ARTICLES } from '@/lib/guides';
 
 export const revalidate = 86400;
 
-const editorialLastModified = new Date('2026-04-28');
+const editorialLastModified = new Date('2026-06-02');
 
 function isIndexablePerfil(perfil: { fonte: string; idOrigem: string; nome_urna: string; partido: string; uf?: string | null }) {
   return (
@@ -21,18 +21,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${baseUrl}/`, lastModified: editorialLastModified, changeFrequency: 'daily', priority: 1 },
-    { url: `${baseUrl}/parlamentares`, lastModified: editorialLastModified, changeFrequency: 'daily', priority: 0.9 },
-    { url: `${baseUrl}/ranking`, lastModified: editorialLastModified, changeFrequency: 'daily', priority: 0.9 },
-    { url: `${baseUrl}/match`, lastModified: editorialLastModified, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${baseUrl}/partidos`, lastModified: editorialLastModified, changeFrequency: 'weekly', priority: 0.8 },
-    { url: `${baseUrl}/sobre`, lastModified: editorialLastModified, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${baseUrl}/metodologia`, lastModified: editorialLastModified, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${baseUrl}/politica-editorial`, lastModified: editorialLastModified, changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${baseUrl}/guias`, lastModified: editorialLastModified, changeFrequency: 'monthly', priority: 0.75 },
-    { url: `${baseUrl}/contact`, lastModified: editorialLastModified, changeFrequency: 'monthly', priority: 0.4 },
+    { url: `${baseUrl}/guias`, lastModified: editorialLastModified, changeFrequency: 'weekly', priority: 0.95 },
+    { url: `${baseUrl}/metodologia`, lastModified: editorialLastModified, changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${baseUrl}/sobre`, lastModified: editorialLastModified, changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${baseUrl}/politica-editorial`, lastModified: editorialLastModified, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${baseUrl}/parlamentares`, lastModified: editorialLastModified, changeFrequency: 'daily', priority: 0.75 },
+    { url: `${baseUrl}/ranking`, lastModified: editorialLastModified, changeFrequency: 'daily', priority: 0.75 },
+    { url: `${baseUrl}/match`, lastModified: editorialLastModified, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${baseUrl}/partidos`, lastModified: editorialLastModified, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${baseUrl}/api-docs`, lastModified: editorialLastModified, changeFrequency: 'monthly', priority: 0.65 },
+    { url: `${baseUrl}/contact`, lastModified: editorialLastModified, changeFrequency: 'monthly', priority: 0.55 },
     { url: `${baseUrl}/terms`, lastModified: editorialLastModified, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${baseUrl}/privacy`, lastModified: editorialLastModified, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${baseUrl}/api-docs`, lastModified: editorialLastModified, changeFrequency: 'monthly', priority: 0.4 },
   ];
 
   const [perfis, partidos] = await Promise.all([
@@ -44,14 +44,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${baseUrl}/perfil/${perfil.fonte}/${perfil.idOrigem}`,
     lastModified: editorialLastModified,
     changeFrequency: 'weekly',
-    priority: 0.85,
+    priority: 0.55,
   }));
 
   const partidoRoutes: MetadataRoute.Sitemap = partidos.map((partido) => ({
     url: `${baseUrl}/partidos/${partido.sigla}`,
     lastModified: editorialLastModified,
     changeFrequency: 'weekly',
-    priority: 0.7,
+    priority: 0.6,
   }));
 
   const ufSet = new Set(perfis.map((p) => p.uf).filter((uf): uf is string => Boolean(uf)));
@@ -59,14 +59,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${baseUrl}/uf/${uf.toLowerCase()}`,
     lastModified: editorialLastModified,
     changeFrequency: 'weekly',
-    priority: 0.75,
+    priority: 0.6,
   }));
 
   const guideRoutes: MetadataRoute.Sitemap = GUIDE_ARTICLES.map((article) => ({
     url: `${baseUrl}/guias/${article.slug}`,
-    lastModified: new Date(article.updatedAt),
+    lastModified: editorialLastModified,
     changeFrequency: 'monthly',
-    priority: 0.7,
+    priority: 0.9,
   }));
 
   return [...staticRoutes, ...guideRoutes, ...perfilRoutes, ...partidoRoutes, ...ufRoutes];

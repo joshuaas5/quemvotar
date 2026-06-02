@@ -1438,3 +1438,8 @@ export function getGuideWordCount(article: GuideArticle) {
 
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
+
+export function getGuideReadingTime(article: GuideArticle) {
+  const minutes = Math.max(2, Math.ceil(getGuideWordCount(article) / 260));
+  return `${minutes} min`;
+}

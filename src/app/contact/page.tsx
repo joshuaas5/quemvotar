@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import PageHero from '@/components/PageHero';
 
 export const metadata: Metadata = {
   title: 'Contato',
@@ -18,14 +19,13 @@ export default function ContactPage() {
         <div className="max-w-4xl mx-auto space-y-8 md:space-y-10">
           <Breadcrumbs items={[{ label: 'Contato' }]} />
 
-          <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <h1 className="font-headline font-black text-3xl md:text-5xl uppercase mb-3 md:mb-4">
-              Contato
-            </h1>
-            <p className="font-body font-bold text-sm md:text-lg uppercase opacity-80">
-              Fale com o QuemVotar sobre correções, fontes públicas, parcerias e sugestões.
-            </p>
-          </section>
+          <PageHero
+            eyebrow="Canal aberto"
+            title="Contato"
+            description="Fale com o QuemVotar sobre correções, fontes públicas, parcerias e sugestões."
+            accent="orange"
+            stat={{ value: 'Correção', label: 'Envie URL, trecho questionado e fonte oficial atualizada.' }}
+          />
 
           <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-8 font-body">
             <div>

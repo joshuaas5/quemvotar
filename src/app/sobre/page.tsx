@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import PageHero from '@/components/PageHero';
 
 export const metadata: Metadata = {
   title: 'Sobre o QuemVotar',
@@ -18,14 +19,13 @@ export default function SobrePage() {
         <div className="max-w-5xl mx-auto space-y-8 md:space-y-10">
           <Breadcrumbs items={[{ label: 'Sobre' }]} />
 
-          <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <h1 className="font-headline font-black text-3xl md:text-5xl uppercase mb-3 md:mb-4">
-              Sobre o QuemVotar
-            </h1>
-            <p className="font-body font-bold text-sm md:text-lg uppercase opacity-80">
-              Uma plataforma independente para transformar dados públicos em consulta eleitoral compreensível.
-            </p>
-          </section>
+          <PageHero
+            eyebrow="Transparência política"
+            title="Sobre o QuemVotar"
+            description="Uma plataforma independente para transformar dados públicos em consulta eleitoral compreensível."
+            accent="cyan"
+            stat={{ value: 'Independente', label: 'Sem vínculo com partido, mandato, candidato ou órgão público.' }}
+          />
 
           <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-8 font-body">
             <div>
