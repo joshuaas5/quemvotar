@@ -51,33 +51,40 @@ function getInitials(nome: string) {
     .join('');
 }
 
+const ROW_ACCENTS = {
+  neutral: 'bg-white',
+  yellow: 'bg-[#FFF4C2]',
+  cyan: 'bg-[#D7F6FF]',
+  pink: 'bg-[#FFE1F0]',
+  green: 'bg-[#E9FFD2]',
+  orange: 'bg-[#FFE0C7]',
+  purple: 'bg-[#EFE2FF]',
+};
+
 function CompareRow({
   label,
   left,
   right,
-  highlight = false,
+  accent = 'neutral',
 }: {
   label: string;
   left: React.ReactNode;
   right: React.ReactNode;
-  highlight?: boolean;
+  accent?: keyof typeof ROW_ACCENTS;
 }) {
   return (
-    <div
-      className={`grid grid-cols-1 md:grid-cols-[1fr_120px_1fr] gap-4 items-center border-b-2 border-black/10 py-4 ${
-        highlight ? 'bg-surface-container-low' : ''
-      }`}
-    >
-      <div className="text-right order-2 md:order-1 px-4">
-        <div className="font-body font-bold">{left}</div>
-      </div>
-      <div className="text-center order-1 md:order-2">
-        <span className="font-label font-bold uppercase text-xs opacity-60 bg-white border-2 border-black px-2 py-1 inline-block">
-          {label}
-        </span>
-      </div>
-      <div className="text-left order-3 px-4">
-        <div className="font-body font-bold">{right}</div>
+    <div className={`${ROW_ACCENTS[accent]} border-4 border-black p-3 md:p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_150px_1fr] gap-3 md:gap-4 items-stretch">
+        <div className="bg-white border-2 border-black p-4 min-h-[84px] flex items-center md:justify-end text-left md:text-right">
+          <div className="font-body font-bold w-full">{left}</div>
+        </div>
+        <div className="bg-black text-white border-2 border-black p-3 flex flex-col items-center justify-center text-center min-h-[72px]">
+          <span className="font-label font-black uppercase text-[11px] opacity-70">Comparando</span>
+          <span className="font-headline font-black uppercase text-sm leading-tight mt-1">{label}</span>
+        </div>
+        <div className="bg-white border-2 border-black p-4 min-h-[84px] flex items-center text-left">
+          <div className="font-body font-bold w-full">{right}</div>
+        </div>
       </div>
     </div>
   );
@@ -160,107 +167,128 @@ export default async function CompararPage({
             />
           </section>
 
-          <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <article className="bg-[#FFD709] border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
-              <p className="font-label font-black uppercase text-xs opacity-70">Nota pública</p>
-              <p className="font-headline font-black text-3xl mt-1">
-                {formatScore(enriA.ranking?.nota)} x {formatScore(enriB.ranking?.nota)}
-              </p>
-            </article>
-            <article className="bg-[#9BF6FF] border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
-              <p className="font-label font-black uppercase text-xs opacity-70">Presença</p>
-              <p className="font-headline font-black text-3xl mt-1">
-                {formatPercent(enriA.presenca?.percentual)} x {formatPercent(enriB.presenca?.percentual)}
-              </p>
-            </article>
-            <article className="bg-[#FFB3D9] border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
-              <p className="font-label font-black uppercase text-xs opacity-70">Governo</p>
-              <p className="font-headline font-black text-3xl mt-1">
-                {formatPercent(enriA.governismo?.percentualFavoravel)} x {formatPercent(enriB.governismo?.percentualFavoravel)}
-              </p>
-            </article>
-            <article className="bg-[#C8FF8C] border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
-              <p className="font-label font-black uppercase text-xs opacity-70">Campo</p>
-              <p className="font-headline font-black text-xl mt-1 uppercase leading-tight">
-                {enriA.espectro?.label ?? partA?.espectro ?? '-'} x {enriB.espectro?.label ?? partB?.espectro ?? '-'}
-              </p>
-            </article>
-          </section>
-
           {/* Header cards */}
           <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Card A */}
-            <article className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
-              <div
-                className="h-32 md:h-40 border-b-4 border-black relative"
-                style={{
-                  background: `linear-gradient(135deg, ${partA?.cores?.[0] ?? '#111827'} 0%, ${partA?.cores?.[1] ?? '#d1d5db'} 100%)`,
-                }}
-              >
-                <div className="absolute -bottom-10 left-6 w-24 h-24 md:w-28 md:h-28 border-4 border-black bg-white overflow-hidden">
-                  {pA.foto_url ? (
-                    <Image src={pA.foto_url} alt={pA.nome_urna} fill sizes="112px" className="object-cover object-top" unoptimized />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center font-headline font-black text-2xl">
-                      {getInitials(pA.nome_urna)}
-                    </div>
-                  )}
+            <article className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+              <div className="grid grid-cols-[132px_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)] min-h-[240px]">
+                <div
+                  className="relative border-r-4 border-black"
+                  style={{
+                    background: `linear-gradient(160deg, ${partA?.cores?.[0] ?? '#111827'} 0%, ${partA?.cores?.[1] ?? '#d1d5db'} 100%)`,
+                  }}
+                >
+                  <div className="absolute inset-3 border-4 border-black bg-white overflow-hidden shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+                    {pA.foto_url ? (
+                      <Image src={pA.foto_url} alt={pA.nome_urna} fill sizes="180px" className="object-cover object-top" unoptimized />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center font-headline font-black text-3xl">
+                        {getInitials(pA.nome_urna)}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="pt-12 pb-6 px-6">
-                <p className="font-label font-bold uppercase text-xs opacity-70">
-                  {pA.casa} • {pA.partido} • {pA.uf}
-                </p>
-                <h2 className="font-headline font-black text-2xl md:text-3xl uppercase leading-none mt-1">
-                  {pA.nome_urna}
-                </h2>
+                <div className="p-5 md:p-6 flex flex-col gap-4">
+                  <div className="flex flex-wrap gap-2">
+                    <span className="bg-black text-white border-2 border-black px-2 py-1 font-label font-black uppercase text-[11px]">
+                      {pA.fonte === 'camara' ? 'Câmara' : 'Senado'}
+                    </span>
+                    <span className="bg-[#FFD709] text-black border-2 border-black px-2 py-1 font-label font-black uppercase text-[11px]">
+                      {pA.partido} / {pA.uf ?? '-'}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="font-label font-bold uppercase text-xs opacity-70">Perfil A</p>
+                    <h2 className="font-headline font-black text-3xl md:text-4xl uppercase leading-none mt-1">
+                      {pA.nome_urna}
+                    </h2>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <div className="bg-[#FFF4C2] border-2 border-black p-2">
+                      <p className="font-label font-black uppercase text-[10px] opacity-70">Nota</p>
+                      <p className="font-headline font-black text-xl">{formatScore(enriA.ranking?.nota)}</p>
+                    </div>
+                    <div className="bg-[#D7F6FF] border-2 border-black p-2">
+                      <p className="font-label font-black uppercase text-[10px] opacity-70">Presença</p>
+                      <p className="font-headline font-black text-xl">{formatPercent(enriA.presenca?.percentual)}</p>
+                    </div>
+                    <div className="bg-[#FFE1F0] border-2 border-black p-2">
+                      <p className="font-label font-black uppercase text-[10px] opacity-70">Governo</p>
+                      <p className="font-headline font-black text-xl">{formatPercent(enriA.governismo?.percentualFavoravel)}</p>
+                    </div>
+                  </div>
                 <Link
                   href={getPerfilHref(pA)}
-                  className="inline-block mt-3 font-headline font-black uppercase text-sm border-b-4 border-black"
+                  className="mt-auto inline-block bg-black text-white border-4 border-black px-4 py-2 font-headline font-black uppercase text-sm hover:bg-primary-container hover:text-black transition-colors w-max"
                 >
                   Ver perfil completo
                 </Link>
+                </div>
               </div>
             </article>
 
             {/* Card B */}
-            <article className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
-              <div
-                className="h-32 md:h-40 border-b-4 border-black relative"
-                style={{
-                  background: `linear-gradient(135deg, ${partB?.cores?.[0] ?? '#111827'} 0%, ${partB?.cores?.[1] ?? '#d1d5db'} 100%)`,
-                }}
-              >
-                <div className="absolute -bottom-10 left-6 w-24 h-24 md:w-28 md:h-28 border-4 border-black bg-white overflow-hidden">
-                  {pB.foto_url ? (
-                    <Image src={pB.foto_url} alt={pB.nome_urna} fill sizes="112px" className="object-cover object-top" unoptimized />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center font-headline font-black text-2xl">
-                      {getInitials(pB.nome_urna)}
-                    </div>
-                  )}
+            <article className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+              <div className="grid grid-cols-[132px_minmax(0,1fr)] sm:grid-cols-[180px_minmax(0,1fr)] min-h-[240px]">
+                <div
+                  className="relative border-r-4 border-black"
+                  style={{
+                    background: `linear-gradient(160deg, ${partB?.cores?.[0] ?? '#111827'} 0%, ${partB?.cores?.[1] ?? '#d1d5db'} 100%)`,
+                  }}
+                >
+                  <div className="absolute inset-3 border-4 border-black bg-white overflow-hidden shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+                    {pB.foto_url ? (
+                      <Image src={pB.foto_url} alt={pB.nome_urna} fill sizes="180px" className="object-cover object-top" unoptimized />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center font-headline font-black text-3xl">
+                        {getInitials(pB.nome_urna)}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="pt-12 pb-6 px-6">
-                <p className="font-label font-bold uppercase text-xs opacity-70">
-                  {pB.casa} • {pB.partido} • {pB.uf}
-                </p>
-                <h2 className="font-headline font-black text-2xl md:text-3xl uppercase leading-none mt-1">
-                  {pB.nome_urna}
-                </h2>
+                <div className="p-5 md:p-6 flex flex-col gap-4">
+                  <div className="flex flex-wrap gap-2">
+                    <span className="bg-black text-white border-2 border-black px-2 py-1 font-label font-black uppercase text-[11px]">
+                      {pB.fonte === 'camara' ? 'Câmara' : 'Senado'}
+                    </span>
+                    <span className="bg-[#9BF6FF] text-black border-2 border-black px-2 py-1 font-label font-black uppercase text-[11px]">
+                      {pB.partido} / {pB.uf ?? '-'}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="font-label font-bold uppercase text-xs opacity-70">Perfil B</p>
+                    <h2 className="font-headline font-black text-3xl md:text-4xl uppercase leading-none mt-1">
+                      {pB.nome_urna}
+                    </h2>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <div className="bg-[#FFF4C2] border-2 border-black p-2">
+                      <p className="font-label font-black uppercase text-[10px] opacity-70">Nota</p>
+                      <p className="font-headline font-black text-xl">{formatScore(enriB.ranking?.nota)}</p>
+                    </div>
+                    <div className="bg-[#D7F6FF] border-2 border-black p-2">
+                      <p className="font-label font-black uppercase text-[10px] opacity-70">Presença</p>
+                      <p className="font-headline font-black text-xl">{formatPercent(enriB.presenca?.percentual)}</p>
+                    </div>
+                    <div className="bg-[#FFE1F0] border-2 border-black p-2">
+                      <p className="font-label font-black uppercase text-[10px] opacity-70">Governo</p>
+                      <p className="font-headline font-black text-xl">{formatPercent(enriB.governismo?.percentualFavoravel)}</p>
+                    </div>
+                  </div>
                 <Link
                   href={getPerfilHref(pB)}
-                  className="inline-block mt-3 font-headline font-black uppercase text-sm border-b-4 border-black"
+                  className="mt-auto inline-block bg-black text-white border-4 border-black px-4 py-2 font-headline font-black uppercase text-sm hover:bg-primary-container hover:text-black transition-colors w-max"
                 >
                   Ver perfil completo
                 </Link>
+                </div>
               </div>
             </article>
           </section>
 
           {/* Comparison table */}
-          <section className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
-            <div className="p-4 md:p-6 border-b-4 border-black bg-surface-container-low">
+          <section className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+            <div className="p-4 md:p-6 border-b-4 border-black bg-[#111827] text-white">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                   <h2 className="font-headline font-black text-xl md:text-2xl uppercase">Métricas principais</h2>
@@ -273,17 +301,18 @@ export default async function CompararPage({
                 </Link>
               </div>
             </div>
-            <div className="divide-y-2 divide-black/10">
+            <div className="p-4 md:p-6 space-y-4">
               <CompareRow
                 label="Cargo"
                 left={pA.cargo}
                 right={pB.cargo}
+                accent="purple"
               />
               <CompareRow
                 label="Partido / UF"
                 left={`${pA.partido} / ${pA.uf ?? '-'}`}
                 right={`${pB.partido} / ${pB.uf ?? '-'}`}
-                highlight
+                accent="green"
               />
               <CompareRow
                 label="Nota"
@@ -303,7 +332,7 @@ export default async function CompararPage({
                     ) : null}
                   </div>
                 }
-                highlight
+                accent="yellow"
               />
               <CompareRow
                 label="Presença"
@@ -327,6 +356,7 @@ export default async function CompararPage({
                     ) : null}
                   </div>
                 }
+                accent="cyan"
               />
               <CompareRow
                 label="Alinhamento com governo"
@@ -342,12 +372,13 @@ export default async function CompararPage({
                     <span className="font-label font-bold uppercase text-xs opacity-70">apoio ao governo</span>
                   </div>
                 }
-                highlight
+                accent="pink"
               />
               <CompareRow
                 label="Campo"
                 left={enriA.espectro?.label ?? partA?.espectro ?? '-'}
                 right={enriB.espectro?.label ?? partB?.espectro ?? '-'}
+                accent="green"
               />
               <CompareRow
                 label="Gastos (últimos)"
@@ -369,7 +400,7 @@ export default async function CompararPage({
                     '-'
                   )
                 }
-                highlight
+                accent="orange"
               />
             </div>
           </section>
