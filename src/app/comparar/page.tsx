@@ -33,6 +33,15 @@ function formatPercent(value?: number | null) {
   return `${value.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}%`;
 }
 
+function sumTopExpenses(despesas: { destaque?: string }[]) {
+  if (despesas.length === 0) return null;
+
+  return despesas.slice(0, 3).reduce((acc, despesa) => {
+    const value = despesa.destaque?.replace(/[^\d,.-]/g, '').replace('.', '').replace(',', '.');
+    return acc + (parseFloat(value || '0') || 0);
+  }, 0);
+}
+
 function getInitials(nome: string) {
   return nome
     .split(' ')
@@ -125,6 +134,8 @@ export default async function CompararPage({
   const pB = basicoB.perfil;
   const partA = basicoA.partido;
   const partB = basicoB.partido;
+  const gastosA = sumTopExpenses(enriA.despesas);
+  const gastosB = sumTopExpenses(enriB.despesas);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -147,6 +158,33 @@ export default async function CompararPage({
               description="Veja a comparação lado a lado entre dois parlamentares."
               path={`/comparar?a=${refA.fonte}/${refA.id}&b=${refB.fonte}/${refB.id}`}
             />
+          </section>
+
+          <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <article className="bg-[#FFD709] border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+              <p className="font-label font-black uppercase text-xs opacity-70">Nota pública</p>
+              <p className="font-headline font-black text-3xl mt-1">
+                {formatScore(enriA.ranking?.nota)} x {formatScore(enriB.ranking?.nota)}
+              </p>
+            </article>
+            <article className="bg-[#9BF6FF] border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+              <p className="font-label font-black uppercase text-xs opacity-70">Presença</p>
+              <p className="font-headline font-black text-3xl mt-1">
+                {formatPercent(enriA.presenca?.percentual)} x {formatPercent(enriB.presenca?.percentual)}
+              </p>
+            </article>
+            <article className="bg-[#FFB3D9] border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+              <p className="font-label font-black uppercase text-xs opacity-70">Governo</p>
+              <p className="font-headline font-black text-3xl mt-1">
+                {formatPercent(enriA.governismo?.percentualFavoravel)} x {formatPercent(enriB.governismo?.percentualFavoravel)}
+              </p>
+            </article>
+            <article className="bg-[#C8FF8C] border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+              <p className="font-label font-black uppercase text-xs opacity-70">Campo</p>
+              <p className="font-headline font-black text-xl mt-1 uppercase leading-tight">
+                {enriA.espectro?.label ?? partA?.espectro ?? '-'} x {enriB.espectro?.label ?? partB?.espectro ?? '-'}
+              </p>
+            </article>
           </section>
 
           {/* Header cards */}
@@ -223,9 +261,30 @@ export default async function CompararPage({
           {/* Comparison table */}
           <section className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
             <div className="p-4 md:p-6 border-b-4 border-black bg-surface-container-low">
-              <h2 className="font-headline font-black text-xl md:text-2xl uppercase">Métricas principais</h2>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>
+                  <h2 className="font-headline font-black text-xl md:text-2xl uppercase">Métricas principais</h2>
+                  <p className="font-body font-bold text-sm uppercase opacity-70 mt-1">
+                    Compare sinais objetivos, mas abra os perfis para ver contexto e fontes.
+                  </p>
+                </div>
+                <Link href="/comparar" className="bg-black text-white border-4 border-black px-4 py-2 font-headline font-black uppercase text-sm hover:bg-primary-container hover:text-black transition-colors w-max">
+                  Trocar seleção
+                </Link>
+              </div>
             </div>
             <div className="divide-y-2 divide-black/10">
+              <CompareRow
+                label="Cargo"
+                left={pA.cargo}
+                right={pB.cargo}
+              />
+              <CompareRow
+                label="Partido / UF"
+                left={`${pA.partido} / ${pA.uf ?? '-'}`}
+                right={`${pB.partido} / ${pB.uf ?? '-'}`}
+                highlight
+              />
               <CompareRow
                 label="Nota"
                 left={
@@ -293,24 +352,18 @@ export default async function CompararPage({
               <CompareRow
                 label="Gastos (últimos)"
                 left={
-                  enriA.despesas.length > 0 ? (
+                  gastosA !== null ? (
                     <span className="font-headline font-black text-xl">
-                      {enriA.despesas.slice(0, 3).reduce((acc, d) => {
-                        const val = d.destaque?.replace(/[^\d,.-]/g, '').replace('.', '').replace(',', '.');
-                        return acc + (parseFloat(val || '0') || 0);
-                      }, 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                      {gastosA.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                     </span>
                   ) : (
                     '-'
                   )
                 }
                 right={
-                  enriB.despesas.length > 0 ? (
+                  gastosB !== null ? (
                     <span className="font-headline font-black text-xl">
-                      {enriB.despesas.slice(0, 3).reduce((acc, d) => {
-                        const val = d.destaque?.replace(/[^\d,.-]/g, '').replace('.', '').replace(',', '.');
-                        return acc + (parseFloat(val || '0') || 0);
-                      }, 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                      {gastosB.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                     </span>
                   ) : (
                     '-'
@@ -319,6 +372,13 @@ export default async function CompararPage({
                 highlight
               />
             </div>
+          </section>
+
+          <section className="bg-white border-4 border-black p-5 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            <h2 className="font-headline font-black text-2xl uppercase mb-3">Como ler esta comparação</h2>
+            <p className="font-body font-bold leading-relaxed">
+              A comparação não recomenda voto. Ela coloca dados públicos lado a lado para mostrar diferença de atuação, presença, partido, campo político aproximado e apoio ao governo nas votações monitoradas.
+            </p>
           </section>
         </div>
       </main>

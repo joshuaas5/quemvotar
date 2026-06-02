@@ -49,17 +49,34 @@ export default function CompararClient({ parlamentares }: CompararClientProps) {
         stat={{ value: parlamentares.length.toLocaleString('pt-BR'), label: 'Perfis disponíveis para comparação.' }}
       />
 
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <article className="bg-[#FFD709] border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+          <p className="font-headline font-black text-2xl uppercase">1. Escolha</p>
+          <p className="font-body font-bold text-sm uppercase mt-1">Use busca, UF, partido ou casa para achar qualquer parlamentar.</p>
+        </article>
+        <article className="bg-[#9BF6FF] border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+          <p className="font-headline font-black text-2xl uppercase">2. Compare</p>
+          <p className="font-body font-bold text-sm uppercase mt-1">Veja nota, presença, governo, partido e gastos no mesmo quadro.</p>
+        </article>
+        <article className="bg-[#FFB3D9] border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]">
+          <p className="font-headline font-black text-2xl uppercase">3. Confira</p>
+          <p className="font-body font-bold text-sm uppercase mt-1">Abra os perfis completos para validar fontes e contexto.</p>
+        </article>
+      </section>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <PoliticoPicker
           parlamentares={parlamentares}
           onSelect={(fonte, id) => setA({ fonte, id })}
           selected={a}
+          disabledSelection={b}
           label="Primeiro parlamentar"
         />
         <PoliticoPicker
           parlamentares={parlamentares}
           onSelect={(fonte, id) => setB({ fonte, id })}
           selected={b}
+          disabledSelection={a}
           label="Segundo parlamentar"
         />
       </div>
@@ -68,7 +85,7 @@ export default function CompararClient({ parlamentares }: CompararClientProps) {
         <button
           onClick={handleCompare}
           disabled={!a || !b}
-          className="bg-black text-white font-headline font-black text-xl md:text-2xl uppercase px-10 py-5 border-4 border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:translate-x-0 disabled:hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all"
+          className="bg-black text-white font-headline font-black text-xl md:text-2xl uppercase px-10 py-5 border-4 border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:translate-x-0 disabled:hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all w-full sm:w-auto"
         >
           Comparar lado a lado →
         </button>
@@ -123,14 +140,14 @@ function SelectedPreview({
   const logo = getPartyLogoBySigla(perfil.partido);
 
   return (
-    <div className="border-4 border-black p-3 flex items-center gap-3 bg-[#ffe066]">
-      <div className="w-12 h-12 border-2 border-black bg-gray-200 shrink-0 relative overflow-hidden">
+    <div className="border-4 border-black p-3 flex items-center gap-3 bg-[#ffe066] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+      <div className="w-14 h-14 border-2 border-black bg-gray-200 shrink-0 relative overflow-hidden">
         {perfil.foto_url ? (
           <Image
             src={perfil.foto_url}
             alt={perfil.nome_urna}
             fill
-            sizes="48px"
+            sizes="56px"
             className="object-cover object-top"
             unoptimized
           />
@@ -142,9 +159,14 @@ function SelectedPreview({
       </div>
       <div className="min-w-0 flex-1">
         <p className="font-headline font-black text-sm uppercase truncate">{perfil.nome_urna}</p>
-        <p className="font-label font-bold text-[11px] uppercase opacity-70">
-          {perfil.partido} • {perfil.uf}
-        </p>
+        <div className="flex items-center gap-2 mt-1">
+          {logo ? (
+            <Image src={logo} alt={`Logo ${perfil.partido}`} width={22} height={22} className="object-contain rounded-full bg-white border-2 border-black p-0.5" />
+          ) : null}
+          <p className="font-label font-bold text-[11px] uppercase opacity-70 truncate">
+            {perfil.partido} • {perfil.uf} • {perfil.fonte === 'camara' ? 'Câmara' : 'Senado'}
+          </p>
+        </div>
       </div>
       <button
         onClick={onClear}

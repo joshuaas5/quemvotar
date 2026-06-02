@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Icon from './Icon';
 
@@ -43,10 +44,10 @@ export default function Hero() {
                 <p className="font-headline font-black text-3xl uppercase">Dados</p>
                 <p className="font-label font-bold uppercase text-xs">fontes verificáveis</p>
               </div>
-              <div className="bg-[#FFB3D9] text-black border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(255,255,255,1)]">
-                <p className="font-headline font-black text-3xl uppercase">Match</p>
-                <p className="font-label font-bold uppercase text-xs">comparação explicada</p>
-              </div>
+              <Link href="/comparar" className="bg-[#FFB3D9] text-black border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-all">
+                <p className="font-headline font-black text-3xl uppercase">Comparar</p>
+                <p className="font-label font-bold uppercase text-xs">dois perfis lado a lado</p>
+              </Link>
             </div>
           </div>
 

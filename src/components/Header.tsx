@@ -8,13 +8,12 @@ import Icon from './Icon';
 
 const NAV_LINKS = [
   { href: '/parlamentares', label: 'Parlamentares' },
+  { href: '/comparar', label: 'Comparar' },
   { href: '/ranking', label: 'Ranking' },
   { href: '/match', label: 'Match' },
   { href: '/partidos', label: 'Partidos' },
   { href: '/guias', label: 'Guias' },
   { href: '/sobre', label: 'Sobre' },
-  { href: '/favoritos', label: 'Favoritos' },
-  { href: '/#dados', label: 'Panorama' },
 ];
 
 export default function Header() {
@@ -55,10 +54,10 @@ export default function Header() {
 
         <div className="flex items-center gap-3">
           <Link
-            href="/parlamentares"
+            href="/comparar"
             className="hidden sm:block bg-primary-container text-black border-4 border-black px-6 py-2 font-headline font-black uppercase tracking-tighter hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-75 active:scale-95 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
           >
-            Explorar
+            Comparar
           </Link>
 
           <button
@@ -111,11 +110,11 @@ export default function Header() {
 
             <div className="mt-auto p-5">
               <Link
-                href="/parlamentares"
+                href="/comparar"
                 onClick={() => setOpen(false)}
                 className="block w-full bg-primary-container text-center text-black border-4 border-black px-6 py-3 font-headline font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
               >
-                Explorar
+                Comparar parlamentares
               </Link>
             </div>
           </aside>
