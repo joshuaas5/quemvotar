@@ -13,6 +13,104 @@ export interface GuideArticle {
   sections: GuideSection[];
 }
 
+export interface GuideCategory {
+  id: string;
+  label: string;
+  description: string;
+  colorClass: string;
+  textClass: string;
+  slugs: string[];
+}
+
+export const GUIDE_CATEGORIES: GuideCategory[] = [
+  {
+    id: 'avaliacao',
+    label: 'Avaliação de Mandato',
+    description: 'Critérios para avaliar deputados, senadores, promessas, partidos e desempenho real.',
+    colorClass: 'bg-[#FFD709]',
+    textClass: 'text-black',
+    slugs: [
+      'como-avaliar-deputado-federal',
+      'como-avaliar-senador',
+      'como-comparar-parlamentares',
+      'como-acompanhar-promessas-campanha',
+      'como-analisar-rankings-politicos',
+      'como-entender-historico-partidario',
+      'como-avaliar-politicas-publicas',
+      'como-avaliar-reeleicao',
+    ],
+  },
+  {
+    id: 'congresso',
+    label: 'Como o Congresso Funciona',
+    description: 'Explicações sobre cargos, comissões, propostas, votações, orçamento e rotina legislativa.',
+    colorClass: 'bg-[#9BF6FF]',
+    textClass: 'text-black',
+    slugs: [
+      'glossario-politico-congresso',
+      'diferenca-deputado-senador',
+      'como-funcionam-comissoes',
+      'como-ler-projetos-de-lei',
+      'como-entender-orcamento-emendas',
+    ],
+  },
+  {
+    id: 'sistema-eleitoral',
+    label: 'Sistema Eleitoral',
+    description: 'Regras que explicam eleição proporcional, suplência, federações, partidos e pesquisas.',
+    colorClass: 'bg-[#D7B8FF]',
+    textClass: 'text-black',
+    slugs: [
+      'como-funciona-quociente-eleitoral',
+      'federacoes-coligacoes-partidos',
+      'o-que-faz-suplente',
+      'voto-proporcional-legenda',
+      'como-checar-pesquisas-eleitorais',
+    ],
+  },
+  {
+    id: 'checagem',
+    label: 'Checagem e Fontes',
+    description: 'Guias para conferir dados oficiais, evitar boatos e ler registros públicos com cuidado.',
+    colorClass: 'bg-[#C8FF8C]',
+    textClass: 'text-black',
+    slugs: [
+      'como-conferir-fontes-oficiais',
+      'como-evitar-desinformacao-eleitoral',
+      'como-checar-processos-e-condenacoes',
+      'como-usar-portais-transparencia',
+      'como-avaliar-politico-redes-sociais',
+    ],
+  },
+  {
+    id: 'voto',
+    label: 'Voto Consciente',
+    description: 'Conteúdo prático para transformar dados públicos em decisão eleitoral mais responsável.',
+    colorClass: 'bg-[#FFB3D9]',
+    textClass: 'text-black',
+    slugs: [
+      'como-ler-votacoes-nominais',
+      'guia-primeiro-voto',
+      'como-montar-lista-criterios-voto',
+      'como-conversar-politica-familia',
+      'guia-temas-seguranca-publica',
+      'guia-temas-educacao',
+      'guia-temas-saude',
+      'guia-temas-meio-ambiente',
+      'guia-temas-economia-impostos',
+    ],
+  },
+];
+
+const GUIDE_CARD_STYLES = [
+  'bg-[#FFD709]',
+  'bg-[#9BF6FF]',
+  'bg-[#FFB3D9]',
+  'bg-[#C8FF8C]',
+  'bg-[#FFC27A]',
+  'bg-[#D7B8FF]',
+];
+
 export const GUIDE_ARTICLES: GuideArticle[] = [
   {
     slug: 'como-avaliar-deputado-federal',
@@ -261,8 +359,1082 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       },
     ],
   },
+  {
+    slug: 'diferenca-deputado-senador',
+    title: 'Qual é a diferença entre deputado federal e senador?',
+    description:
+      'Entenda funções, mandato, forma de eleição, peso político e como comparar deputados e senadores sem misturar papéis diferentes.',
+    updatedAt: '2026-04-28',
+    readingTime: '9 min',
+    intro:
+      'Deputados federais e senadores fazem parte do Congresso Nacional, mas não ocupam o mesmo papel. Eles votam leis, fiscalizam o governo e representam a população, porém atuam em casas diferentes, com mandatos diferentes e responsabilidades institucionais próprias. Entender essa diferença evita cobranças erradas e melhora a avaliação do voto.',
+    sections: [
+      {
+        title: 'A Câmara representa a população de forma proporcional',
+        paragraphs: [
+          'Deputados federais são eleitos para representar a população dos estados de forma proporcional. Estados mais populosos elegem mais deputados, respeitando limites constitucionais. Na prática, isso cria uma casa maior, mais plural e mais diretamente ligada à diversidade eleitoral do país.',
+          'A Câmara costuma ser o ponto inicial de muitas propostas e tem papel central na formação de maiorias políticas. Deputados atuam em comissões, apresentam projetos, votam medidas provisórias, discutem orçamento e fiscalizam o governo federal. A quantidade maior de parlamentares também faz com que a atuação partidária e de blocos tenha grande peso.',
+          'Ao avaliar um deputado, é razoável observar presença, votações, temas de atuação, projetos, relatorias, gastos, emendas, participação em comissões e coerência com o programa pelo qual foi eleito. Mas é importante lembrar que nem todo deputado terá o mesmo espaço político: líderes, relatores e presidentes de comissão costumam ter mais influência no processo legislativo.',
+        ],
+      },
+      {
+        title: 'O Senado representa os estados de forma igualitária',
+        paragraphs: [
+          'Cada estado e o Distrito Federal elegem três senadores, independentemente do tamanho da população. Isso faz do Senado uma casa de equilíbrio federativo: São Paulo e Roraima têm o mesmo número de senadores, embora tenham populações muito diferentes.',
+          'Senadores têm mandato de oito anos e participam de decisões institucionais relevantes, como aprovação de autoridades, análise de temas federativos, sabatinas, relações exteriores, dívida pública e revisão de projetos vindos da Câmara. A casa é menor, então cada senador tende a ter peso individual maior.',
+          'Ao avaliar um senador, observe relatorias, sabatinas, comissões, votações em temas nacionais, postura institucional e relação com interesses do estado. Popularidade regional pode ajudar a entender sua força política, mas não substitui análise de registro legislativo.',
+        ],
+      },
+      {
+        title: 'Comparações diretas podem enganar',
+        paragraphs: [
+          'Comparar um deputado e um senador usando os mesmos critérios pode distorcer a avaliação. Deputados costumam ter mais concorrência interna, mais fragmentação partidária e uma rotina de votação mais numerosa. Senadores, por outro lado, têm mandatos mais longos e maior exposição em decisões institucionais específicas.',
+          'Se você quer comparar desempenho, prefira deputado com deputado e senador com senador. Quando a comparação envolver casas diferentes, deixe claro o critério: posição sobre um tema, atuação pelo estado, coerência partidária, transparência de gastos ou capacidade de articulação.',
+          'Uma boa pergunta é: dentro do papel institucional que ocupa, esse parlamentar entrega o tipo de representação que prometeu? Essa pergunta é mais justa do que tentar aplicar o mesmo placar a cargos diferentes.',
+        ],
+      },
+      {
+        title: 'Como usar essa diferença na hora de votar',
+        paragraphs: [
+          'Para deputado federal, vale olhar com atenção a pauta temática, a relação com o partido, as votações recentes, o trabalho em comissões e a capacidade de fiscalizar o Executivo. Para senador, vale acrescentar análise de sabatinas, relatorias estruturantes, decisões federativas e postura em temas institucionais.',
+          'Nos dois casos, evite decidir apenas por fama, cortes de vídeo ou propaganda. O melhor voto nasce da combinação entre valores pessoais, dados oficiais, histórico público e clareza sobre o que cada cargo realmente pode fazer.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-funcionam-comissoes',
+    title: 'Como funcionam as comissões da Câmara e do Senado',
+    description:
+      'Veja por que comissões, relatorias e audiências públicas são essenciais para entender a atuação real de um parlamentar.',
+    updatedAt: '2026-04-28',
+    readingTime: '10 min',
+    intro:
+      'Muita gente acompanha apenas votações de plenário, mas uma parte decisiva do Congresso acontece nas comissões. É nelas que propostas são debatidas tecnicamente, relatórios são construídos, audiências públicas acontecem e matérias podem avançar ou travar antes de chegar ao público mais amplo.',
+    sections: [
+      {
+        title: 'Comissões são filtros temáticos',
+        paragraphs: [
+          'Uma comissão reúne parlamentares para discutir uma área específica, como Constituição e Justiça, Educação, Saúde, Segurança Pública, Meio Ambiente, Agricultura, Fiscalização Financeira ou Assuntos Econômicos. Em vez de todo o Congresso analisar tudo ao mesmo tempo, as comissões distribuem o trabalho por tema.',
+          'Esse filtro é importante porque muitas propostas exigem conhecimento técnico. Uma proposta sobre orçamento deve ser analisada com critérios diferentes de uma proposta sobre saúde pública ou segurança. A comissão cria um espaço para audiências, pareceres, emendas e negociação.',
+          'Quando um parlamentar participa de uma comissão relacionada a sua principal pauta, isso pode mostrar coerência de atuação. Por outro lado, presença formal na comissão não garante influência real: é preciso observar participação, relatórios, votos e protagonismo nos debates.',
+        ],
+      },
+      {
+        title: 'O relator pode mudar o destino de uma proposta',
+        paragraphs: [
+          'O relator é escolhido para analisar uma matéria e apresentar parecer. Esse parecer pode recomendar aprovação, rejeição, substitutivo, alterações ou ajustes técnicos. Em muitos casos, a versão final votada tem mais relação com o relatório do que com o texto original.',
+          'Por isso, relatorias são sinal importante de poder legislativo. Um parlamentar que relata temas relevantes pode influenciar políticas públicas mesmo sem aparecer tanto em discursos de plenário. A relatoria também revela confiança política: líderes e presidentes de comissão tendem a entregar matérias estratégicas a quem tem capacidade de negociação.',
+          'Ao avaliar um parlamentar, veja se ele foi relator de propostas relevantes, qual foi sua posição, se ouviu setores afetados e se o texto final preservou coerência com as promessas que fez aos eleitores.',
+        ],
+      },
+      {
+        title: 'Audiências públicas revelam prioridades',
+        paragraphs: [
+          'Audiências públicas permitem ouvir especialistas, governo, sociedade civil, empresas, sindicatos e grupos afetados por determinada proposta. Elas não são apenas formalidade: podem revelar quem o parlamentar escuta e quais evidências considera importantes.',
+          'Um parlamentar que convoca audiência sobre tema técnico demonstra interesse em aprofundar o debate. Mas também é importante observar diversidade de convidados. Audiências com apenas um lado do problema podem funcionar mais como palco político do que como investigação séria.',
+          'Para o eleitor, acompanhar audiências ajuda a identificar se o mandato age com base em dados, pressão de grupos específicos, ideologia ou estratégia eleitoral.',
+        ],
+      },
+      {
+        title: 'Comissões podem aprovar sem plenário',
+        paragraphs: [
+          'Algumas matérias podem ter tramitação conclusiva ou terminativa, dependendo da casa e do regimento. Isso significa que uma comissão pode aprovar uma proposta sem que ela vá ao plenário, salvo recurso ou regra específica.',
+          'Esse ponto é essencial: se você acompanha apenas plenário, pode perder decisões importantes. Parlamentares ativos em comissões podem influenciar leis mesmo sem grande visibilidade pública.',
+          'Ao usar dados legislativos, procure entender se determinada proposta passou por comissão, quem relatou, quem votou e se houve recurso ao plenário. Essa trilha mostra melhor o caminho real da decisão.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-ler-projetos-de-lei',
+    title: 'Como ler projetos de lei sem se perder no juridiquês',
+    description:
+      'Aprenda a entender ementa, autoria, justificativa, parecer, substitutivo, emenda e tramitação de uma proposta legislativa.',
+    updatedAt: '2026-04-28',
+    readingTime: '11 min',
+    intro:
+      'Projetos de lei costumam parecer documentos difíceis, mas boa parte da leitura pode ser organizada em perguntas simples: quem apresentou, o que muda, por que muda, qual texto está valendo agora, onde está tramitando e quem será afetado. Esse roteiro ajuda a ler propostas com menos dependência de interpretações prontas.',
+    sections: [
+      {
+        title: 'Comece pela ementa, mas não pare nela',
+        paragraphs: [
+          'A ementa é o resumo oficial da proposta. Ela ajuda a identificar o assunto, mas não substitui a leitura do texto. Às vezes a ementa é ampla demais, técnica demais ou positiva demais para revelar os efeitos práticos da medida.',
+          'Depois da ementa, procure o texto completo. Veja quais leis são alteradas, quais artigos são criados ou revogados e se a proposta impõe obrigações, cria benefícios, muda punições, altera orçamento ou transfere responsabilidade entre órgãos.',
+          'Uma leitura responsável separa intenção declarada de efeito jurídico. Uma proposta pode dizer que protege determinado grupo, mas criar mecanismos fracos. Outra pode parecer simples, mas alterar pontos centrais de uma política pública.',
+        ],
+      },
+      {
+        title: 'Autoria não é o mesmo que aprovação',
+        paragraphs: [
+          'Muitos parlamentares divulgam projetos apresentados, mas apresentar não significa aprovar. A proposta ainda precisa tramitar, receber pareceres, passar por comissões, eventualmente ir ao plenário e, dependendo do caso, seguir para outra casa legislativa e sanção presidencial.',
+          'Avalie se o parlamentar só protocolou textos ou se conseguiu construir apoio para avançar. Projetos parados por anos podem indicar baixa prioridade, falta de articulação, resistência política ou simplesmente congestionamento legislativo.',
+          'Coautoria também merece contexto. Assinar uma proposta pode demonstrar apoio político, mas o papel do autor principal, do relator e das lideranças costuma ter peso diferente.',
+        ],
+      },
+      {
+        title: 'Parecer e substitutivo podem mudar tudo',
+        paragraphs: [
+          'Durante a tramitação, o relator pode apresentar parecer com substitutivo. Um substitutivo troca o texto original por uma nova versão. Isso significa que a proposta votada pode ser muito diferente da proposta apresentada inicialmente.',
+          'Por isso, quando alguém diz que um parlamentar “apoiou um projeto”, confira qual versão estava em votação. O parlamentar pode ter apoiado um substitutivo moderado, rejeitado um destaque específico ou votado em uma etapa procedimental.',
+          'Acompanhar pareceres é mais trabalhoso, mas melhora muito a qualidade da análise. Pareceres mostram argumentos técnicos, constitucionalidade, impactos e negociações feitas ao longo do processo.',
+        ],
+      },
+      {
+        title: 'Tramitação mostra prioridade e viabilidade',
+        paragraphs: [
+          'A tramitação indica onde a proposta está, por quais comissões passou, quem relatou, quais prazos existem e se houve movimentação recente. Uma proposta parada pode estar aguardando parecer, acordo político, recurso, pauta de comissão ou decisão da presidência da casa.',
+          'Para o eleitor, a tramitação ajuda a separar propaganda de resultado. Um mandato pode divulgar dezenas de projetos, mas poucos avançarem. Outro pode trabalhar em menos matérias, porém com maior efeito prático por meio de relatorias ou negociações.',
+          'Sempre que possível, combine leitura da proposta com registro de tramitação e votos. Assim você entende não apenas o que foi prometido, mas o que aconteceu institucionalmente.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-entender-orcamento-emendas',
+    title: 'Como entender orçamento, emendas parlamentares e dinheiro público',
+    description:
+      'Um guia para diferenciar emendas, orçamento, gastos de gabinete, cota parlamentar e responsabilidade na destinação de recursos.',
+    updatedAt: '2026-04-28',
+    readingTime: '12 min',
+    intro:
+      'Dinheiro público é um dos temas mais importantes para avaliar representantes, mas também um dos mais fáceis de confundir. Emenda parlamentar, orçamento federal, cota de exercício parlamentar, verba de gabinete e gasto de campanha são coisas diferentes. Misturar esses conceitos atrapalha a fiscalização cidadã.',
+    sections: [
+      {
+        title: 'Orçamento não é caixa pessoal do parlamentar',
+        paragraphs: [
+          'O orçamento federal é aprovado pelo Congresso e executado pelo Executivo, seguindo regras, programas, órgãos responsáveis e limites legais. Parlamentares influenciam esse processo por votações, relatorias, emendas e negociações políticas, mas não deveriam tratar recursos públicos como propriedade pessoal.',
+          'Quando um político diz que “trouxe dinheiro” para uma cidade, vale perguntar: qual emenda, qual programa, qual órgão executou, qual valor foi empenhado, qual valor foi pago e qual obra ou serviço foi entregue? A diferença entre anúncio e pagamento efetivo pode ser grande.',
+          'O eleitor deve procurar documentos que identifiquem número da emenda, beneficiário, ministério, município, objeto e fase da execução. Sem isso, a promessa pode virar marketing sem rastreabilidade.',
+        ],
+      },
+      {
+        title: 'Emenda parlamentar precisa ser acompanhada até a entrega',
+        paragraphs: [
+          'Uma emenda pode indicar destinação de recursos, mas o caminho até a entrega passa por empenho, convênio, execução, fiscalização e pagamento. Nem toda emenda anunciada vira obra concluída ou serviço entregue.',
+          'Avaliar um parlamentar por emendas exige olhar qualidade da destinação. Recursos foram para saúde, educação, infraestrutura, cultura ou entidades? Havia critério público? O destino atende necessidade real? Houve concentração em aliados políticos?',
+          'Transparência não é só publicar valor. É permitir que o cidadão entenda finalidade, beneficiário, execução e resultado concreto.',
+        ],
+      },
+      {
+        title: 'Cota parlamentar é outra coisa',
+        paragraphs: [
+          'A cota parlamentar financia despesas relacionadas ao exercício do mandato, como passagens, comunicação, aluguel de escritório, combustíveis ou serviços autorizados pelas regras da casa legislativa. Ela não é a mesma coisa que emenda nem orçamento de política pública.',
+          'Ao analisar cota, observe padrões: fornecedores recorrentes, valores altos, gastos perto do limite, tipo de serviço e relação com a atividade parlamentar. Despesa regular não é automaticamente irregular, mas precisa fazer sentido e ser verificável.',
+          'Também compare parlamentares em contextos parecidos. Um representante de estado distante de Brasília pode ter padrão de passagem diferente de outro que mora mais perto. Contexto não elimina fiscalização, mas evita conclusões apressadas.',
+        ],
+      },
+      {
+        title: 'O que perguntar antes de elogiar ou criticar',
+        paragraphs: [
+          'Antes de concluir que um parlamentar foi eficiente no uso de recursos, pergunte se há fonte pública, se o valor foi executado, se o resultado chegou ao cidadão e se a destinação seguiu critérios transparentes.',
+          'Antes de concluir que houve desperdício, verifique a regra aplicável, o período, a finalidade e a documentação. Fiscalização boa é firme, mas precisa ser precisa.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-acompanhar-promessas-campanha',
+    title: 'Como acompanhar promessas de campanha depois da eleição',
+    description:
+      'Aprenda a transformar promessas eleitorais em critérios verificáveis durante o mandato, separando discurso, competência e resultado.',
+    updatedAt: '2026-04-28',
+    readingTime: '9 min',
+    intro:
+      'Promessa de campanha costuma ser simples, direta e emocional. Mandato parlamentar é mais complexo: depende de competência legal, articulação, orçamento, maioria política e tempo. Acompanhar promessas exige transformar frases de campanha em indicadores verificáveis.',
+    sections: [
+      {
+        title: 'Primeiro veja se a promessa cabe no cargo',
+        paragraphs: [
+          'Candidatos muitas vezes prometem resolver problemas que não dependem diretamente do cargo disputado. Um deputado federal não administra hospital municipal, um senador não executa obra local sozinho e um vereador não controla política nacional. Isso não significa que não possam influenciar, mas a cobrança precisa respeitar competência institucional.',
+          'Antes de avaliar cumprimento, pergunte: esse cargo pode fazer isso diretamente? Precisa de lei? Precisa de orçamento? Depende do Executivo? Depende do estado ou município? Essa triagem evita cobrar o parlamentar por algo que ele não controla ou aceitar desculpas quando ele tinha instrumentos reais.',
+        ],
+      },
+      {
+        title: 'Transforme promessa em pergunta verificável',
+        paragraphs: [
+          'Uma promessa como “vou defender a saúde” é vaga. Para acompanhar, transforme em perguntas: apresentou projetos sobre saúde? Votou em propostas da área? Destinou emendas? Participou de comissão relacionada? Fiscalizou políticas públicas? Publicou prestação de contas?',
+          'Quanto mais concreta a pergunta, mais fácil verificar. Promessas genéricas favorecem propaganda permanente; critérios específicos aproximam o eleitor de dados oficiais.',
+        ],
+      },
+      {
+        title: 'Diferencie tentativa de resultado',
+        paragraphs: [
+          'Um parlamentar pode tentar cumprir uma promessa e fracassar por falta de apoio. Outro pode prometer, não agir e depois culpar o sistema. Para diferenciar, procure evidências de ação: projetos, requerimentos, votos, relatorias, audiências, emendas, fiscalização e articulação pública.',
+          'Resultado importa, mas tentativa documentada também diz algo sobre prioridade. O eleitor deve observar se houve esforço consistente ou apenas lembrança da promessa em época eleitoral.',
+        ],
+      },
+      {
+        title: 'Crie uma lista de acompanhamento anual',
+        paragraphs: [
+          'Uma prática simples é registrar três a cinco promessas principais do candidato eleito e revisá-las anualmente. Para cada promessa, anote qual fonte será usada para verificar avanço: página oficial, votações, emendas, projetos, comissões ou prestação de contas.',
+          'Isso reduz dependência de memória e propaganda. Ao final do mandato, você terá uma linha do tempo mais justa: o que prometeu, o que podia fazer, o que tentou e o que entregou.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-analisar-rankings-politicos',
+    title: 'Como analisar rankings políticos sem terceirizar seu voto',
+    description:
+      'Entenda vantagens, riscos e perguntas essenciais antes de usar notas públicas, rankings e índices legislativos na decisão eleitoral.',
+    updatedAt: '2026-04-28',
+    readingTime: '10 min',
+    intro:
+      'Rankings políticos podem ajudar a organizar muita informação, mas também podem induzir o eleitor a terceirizar julgamento. Uma nota resume critérios escolhidos por alguém. Para usar bem, é preciso entender o que entra na nota, o que fica de fora e se os critérios combinam com seus valores.',
+    sections: [
+      {
+        title: 'Toda nota carrega uma visão de mundo',
+        paragraphs: [
+          'Um ranking pode valorizar economia de recursos, presença, combate a privilégios, alinhamento econômico, transparência, produtividade legislativa ou votos em temas específicos. Nenhum desses critérios é neutro por si só; todos expressam escolhas metodológicas.',
+          'Isso não torna rankings inúteis. Pelo contrário: eles podem ser excelentes atalhos quando são transparentes. O problema é usar uma nota sem saber o que ela mede. Uma pessoa pode concordar com o parlamentar em temas sociais, mas discordar dos critérios econômicos de um ranking, ou o contrário.',
+        ],
+      },
+      {
+        title: 'Procure metodologia antes de olhar colocação',
+        paragraphs: [
+          'Antes de comemorar ou condenar uma posição, leia a metodologia. Quais votos entram? Qual período é considerado? Ausência pesa? Processos contam? Há diferença entre deputado e senador? O ranking trata partidos pequenos e grandes da mesma forma?',
+          'Sem essas respostas, a colocação vira número solto. Um parlamentar pode subir por um critério que você considera secundário e cair por outro que você considera central.',
+        ],
+      },
+      {
+        title: 'Compare ranking com dados brutos',
+        paragraphs: [
+          'Use rankings como porta de entrada. Se alguém aparece muito bem ou muito mal colocado, abra o perfil e veja votos, presença, despesas, projetos e fontes oficiais. O objetivo é entender por que a nota existe.',
+          'Quando a nota e os dados brutos contam histórias diferentes, investigue. Pode haver erro, atraso de atualização, critério controverso ou simplesmente uma diferença legítima entre o que o ranking valoriza e o que você valoriza.',
+        ],
+      },
+      {
+        title: 'Não transforme ranking em santificação ou cancelamento',
+        paragraphs: [
+          'Uma nota alta não prova que o parlamentar é bom em tudo. Uma nota baixa não prova que ele é ruim em tudo. Mandatos são multidimensionais: ideologia, competência, ética, presença, articulação e impacto público não cabem perfeitamente em um único número.',
+          'A pergunta útil é: esse ranking ilumina um aspecto relevante do mandato? Se sim, use. Se ele tenta substituir todo o julgamento político, desconfie.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-entender-historico-partidario',
+    title: 'Como entender troca de partido e histórico partidário',
+    description:
+      'Veja quando mudança partidária é sinal de incoerência, estratégia, sobrevivência política ou reorganização legítima do sistema.',
+    updatedAt: '2026-04-28',
+    readingTime: '8 min',
+    intro:
+      'Trocar de partido é comum na política brasileira, mas nem toda troca tem o mesmo significado. Algumas revelam mudança real de posição, outras refletem reorganização partidária, janela legal, fusões, federações, disputas internas ou busca por viabilidade eleitoral. O histórico partidário precisa ser lido com contexto.',
+    sections: [
+      {
+        title: 'Partido importa porque organiza poder',
+        paragraphs: [
+          'Partidos controlam tempo de campanha, fundo eleitoral, liderança, comissões, orientação de voto e alianças. Mesmo parlamentares com marca pessoal forte dependem de estrutura partidária para disputar eleições e influenciar votações.',
+          'Por isso, histórico partidário ajuda a entender trajetória política. Um parlamentar que passou por legendas muito diferentes pode ter explicação legítima, mas também pode indicar baixa coerência ideológica. A conclusão depende do padrão e dos temas votados.',
+        ],
+      },
+      {
+        title: 'Nem toda troca é igual',
+        paragraphs: [
+          'Mudanças podem acontecer por fusão de partidos, criação de federação, janela partidária, conflito com direção, mudança de liderança local, sobrevivência eleitoral ou alteração real de convicções. Tratar todas como oportunismo simplifica demais a política.',
+          'A pergunta mais útil é: depois da troca, o parlamentar mudou seus votos e prioridades? Se mudou, em quais temas? Se não mudou, talvez a troca tenha sido mais estratégica do que ideológica.',
+        ],
+      },
+      {
+        title: 'Compare discurso antigo e atuação recente',
+        paragraphs: [
+          'Um bom teste é comparar promessas de campanha, partido pelo qual foi eleito, votações recentes e justificativas públicas da mudança. Coerência não significa nunca mudar de opinião, mas mudança responsável exige explicação.',
+          'Quando a troca partidária acontece logo após a eleição ou contraria frontalmente a pauta apresentada ao eleitor, o nível de cobrança deve ser maior. O eleitor votou em uma combinação de pessoa, partido e programa.',
+        ],
+      },
+      {
+        title: 'Use histórico como pista, não como prova única',
+        paragraphs: [
+          'Histórico partidário é um sinal, mas não substitui análise de votos, projetos, presença e fontes oficiais. Há parlamentares estáveis em partido, mas incoerentes em votações; há parlamentares que trocaram de legenda, mas mantiveram linha programática clara.',
+          'A melhor análise combina trajetória, justificativa, atuação e consequências práticas para o mandato.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-evitar-desinformacao-eleitoral',
+    title: 'Como evitar desinformação eleitoral no WhatsApp e nas redes',
+    description:
+      'Um guia prático para identificar recortes enganosos, prints sem fonte, vídeos fora de contexto e falsas acusações políticas.',
+    updatedAt: '2026-04-28',
+    readingTime: '12 min',
+    intro:
+      'Desinformação eleitoral raramente aparece como mentira óbvia. Muitas vezes ela mistura dado real, recorte fora de contexto, título exagerado, print sem link e emoção moral. A melhor proteção é criar um ritual simples antes de compartilhar qualquer conteúdo político.',
+    sections: [
+      {
+        title: 'Desconfie de urgência emocional',
+        paragraphs: [
+          'Mensagens que pedem compartilhamento imediato, usam linguagem de pânico ou dizem que “a mídia não quer mostrar” costumam tentar reduzir sua disposição de checar. A pressa é parte da estratégia.',
+          'Antes de repassar, respire e pergunte: há link? há data? há fonte primária? o conteúdo mostra documento completo ou apenas print? quem ganha com a circulação dessa versão?',
+          'Informação verdadeira resiste a alguns minutos de verificação. Se uma mensagem só funciona quando você não confere, ela provavelmente é frágil.',
+        ],
+      },
+      {
+        title: 'Print não é fonte',
+        paragraphs: [
+          'Prints podem ser editados, recortados ou tirados de contexto. Mesmo quando são reais, podem ocultar data, sequência da conversa, link original ou resposta posterior. Use print como pista, nunca como prova final.',
+          'Procure o documento, vídeo, votação ou declaração original. Se a acusação envolve voto parlamentar, abra a página da votação. Se envolve processo, procure número e tribunal. Se envolve fala, busque a gravação completa ou transcrição confiável.',
+        ],
+      },
+      {
+        title: 'Vídeos curtos precisam de contexto',
+        paragraphs: [
+          'Um corte de 20 segundos pode mudar o sentido de uma fala. Pode retirar pergunta, ironia, continuação, data ou circunstância. Em política, cortes são usados para confirmar crenças de quem já concorda com a mensagem.',
+          'Quando o vídeo for grave, procure versão longa, data, local e tema. Veja se outros veículos ou fontes institucionais registraram a mesma fala. Se só existe um corte sem origem, a chance de manipulação aumenta.',
+        ],
+      },
+      {
+        title: 'Crie uma regra pessoal de compartilhamento',
+        paragraphs: [
+          'Uma regra simples: não compartilhe acusação individual sem fonte primária ou veículo confiável; não compartilhe votação sem link oficial; não compartilhe processo sem número; não compartilhe ranking sem metodologia.',
+          'Essa disciplina reduz o alcance de boatos e melhora a conversa política. O objetivo não é defender político, mas defender a qualidade da decisão pública.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-checar-processos-e-condenacoes',
+    title: 'Como checar processos, condenações e acusações contra políticos',
+    description:
+      'Entenda diferença entre acusação, investigação, ação judicial, condenação, recurso, trânsito em julgado e inelegibilidade.',
+    updatedAt: '2026-04-28',
+    readingTime: '11 min',
+    intro:
+      'Informações judiciais sobre políticos exigem cuidado. Uma investigação não é condenação; uma ação em andamento não é culpa provada; uma condenação pode estar sujeita a recurso; e inelegibilidade depende de regras específicas. Checar corretamente evita injustiça e evita propaganda enganosa.',
+    sections: [
+      {
+        title: 'Comece separando os termos',
+        paragraphs: [
+          'Acusação é uma afirmação de que alguém praticou algo. Investigação é apuração. Denúncia aceita pode iniciar ação penal. Ação judicial é processo em tramitação. Condenação é decisão de uma autoridade judicial. Trânsito em julgado é quando não cabem mais recursos ordinários. Cada fase tem peso diferente.',
+          'Misturar esses termos é comum em disputa eleitoral. Uma campanha pode chamar investigação de “condenação” para atacar adversário; outra pode chamar condenação recorrível de “nada comprovado” para reduzir gravidade. A leitura correta exige identificar a fase processual.',
+        ],
+      },
+      {
+        title: 'Procure número do processo e tribunal',
+        paragraphs: [
+          'Notícia séria sobre processo deve permitir encontrar número, tribunal, classe processual, partes e movimentação. Sem esses dados, a checagem fica frágil. Nome de pessoa pode gerar homônimos, erros e confusões.',
+          'Quando consultar, veja se o processo é cível, criminal, eleitoral, administrativo ou de improbidade. Cada área tem consequências diferentes. Também observe se há segredo de justiça, recurso pendente ou decisão reformada.',
+        ],
+      },
+      {
+        title: 'Condenação não é sempre inelegibilidade',
+        paragraphs: [
+          'Inelegibilidade depende da legislação eleitoral, do tipo de decisão, do órgão julgador, do crime ou ato discutido e do momento processual. Nem toda condenação impede candidatura automaticamente, e nem toda candidatura liberada significa ausência de problemas judiciais.',
+          'Para avaliar politicamente, você pode considerar gravidade ética mesmo quando não há inelegibilidade. Mas precisa separar julgamento jurídico de julgamento político.',
+        ],
+      },
+      {
+        title: 'Cuidado com listas sem atualização',
+        paragraphs: [
+          'Listas antigas de processos podem incluir ações arquivadas, decisões reformadas, homônimos ou registros sem contexto. Sempre procure data e status atual.',
+          'Se a informação for decisiva para seu voto, vá além do resumo: consulte movimentação, decisão principal e fonte institucional. O custo de errar em acusações pessoais é alto para o debate público.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-usar-portais-transparencia',
+    title: 'Como usar portais de transparência para fiscalizar políticos',
+    description:
+      'Aprenda a navegar por portais públicos, entender filtros, datas, empenhos, pagamentos, fornecedores e limitações dos dados.',
+    updatedAt: '2026-04-28',
+    readingTime: '10 min',
+    intro:
+      'Portais de transparência são ferramentas poderosas, mas nem sempre fáceis. Eles usam termos administrativos, filtros por data, campos técnicos e bases que podem ter atraso. Saber navegar evita conclusões precipitadas e melhora a fiscalização cidadã.',
+    sections: [
+      {
+        title: 'Defina a pergunta antes de abrir o portal',
+        paragraphs: [
+          'Entrar em um portal sem pergunta clara gera confusão. Você quer saber quanto foi pago? Quanto foi empenhado? Quem recebeu? Qual órgão executou? Qual município foi beneficiado? Qual parlamentar indicou recurso? Cada pergunta exige filtro diferente.',
+          'Anote antes: pessoa, período, órgão, cidade, tipo de despesa e palavra-chave. Isso reduz ruído e evita transformar uma base pública enorme em caça aleatória por suspeitas.',
+        ],
+      },
+      {
+        title: 'Entenda empenho, liquidação e pagamento',
+        paragraphs: [
+          'Empenho é reserva de orçamento para determinada despesa. Liquidação é reconhecimento de que o serviço ou bem foi entregue conforme regras. Pagamento é saída efetiva do dinheiro. Um valor empenhado pode não ter sido pago ainda.',
+          'Muitas divulgações políticas usam valor anunciado ou empenhado como se fosse entrega concluída. Para fiscalizar resultado, veja a cadeia completa e, quando possível, confirme obra, serviço ou compra realizada.',
+        ],
+      },
+      {
+        title: 'Fornecedor recorrente merece atenção, não condenação automática',
+        paragraphs: [
+          'Quando um mesmo fornecedor aparece muitas vezes, vale investigar contrato, objeto, competição, valores e vínculos. Recorrência pode ser normal em serviços contínuos, mas também pode revelar concentração problemática.',
+          'A análise deve combinar dados do portal com documentos de contratação, notas fiscais, termos de referência e comparação de preços quando disponíveis.',
+        ],
+      },
+      {
+        title: 'Guarde links e datas de consulta',
+        paragraphs: [
+          'Portais mudam, dados atualizam e filtros expiram. Ao encontrar algo relevante, registre link, data da consulta, parâmetros usados e, se possível, baixe arquivo em formato aberto.',
+          'Isso torna sua checagem reprodutível. Fiscalização boa permite que outra pessoa siga o mesmo caminho e chegue ao mesmo dado.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'guia-primeiro-voto',
+    title: 'Guia do primeiro voto: como decidir sem depender de propaganda',
+    description:
+      'Um roteiro para jovens eleitores organizarem valores, fontes, prioridades e comparação de candidatos antes da eleição.',
+    updatedAt: '2026-04-28',
+    readingTime: '9 min',
+    intro:
+      'O primeiro voto pode parecer uma mistura de pressão familiar, redes sociais, propaganda e medo de errar. A boa notícia é que voto consciente não exige saber tudo sobre política. Exige método: entender cargos, definir prioridades, conferir fontes e comparar opções com calma.',
+    sections: [
+      {
+        title: 'Entenda o que cada cargo pode fazer',
+        paragraphs: [
+          'Antes de escolher, entenda a função do cargo em disputa. Presidente, governador, prefeito, senador, deputado, vereador e deputado estadual não têm as mesmas responsabilidades. Muita frustração política nasce de esperar de um cargo algo que ele não pode entregar sozinho.',
+          'Quando você sabe o papel do cargo, consegue avaliar propostas com mais precisão. Uma promessa pode ser importante, mas estar no nível errado de governo. Outra pode depender de lei, orçamento ou maioria legislativa.',
+        ],
+      },
+      {
+        title: 'Escolha três prioridades pessoais',
+        paragraphs: [
+          'Ninguém acompanha todos os temas com profundidade. Escolha três áreas que mais importam para você: educação, emprego, segurança, saúde, meio ambiente, transporte, direitos sociais, economia, combate à corrupção ou tecnologia.',
+          'Depois, avalie candidatos a partir dessas prioridades. Isso reduz influência de memes, brigas e carisma. Você passa a perguntar: essa pessoa tem histórico ou proposta consistente nos temas que considero centrais?',
+        ],
+      },
+      {
+        title: 'Use redes sociais como vitrine, não como prova',
+        paragraphs: [
+          'Rede social mostra como o candidato quer ser visto. Fonte oficial mostra parte do que ele fez. As duas coisas podem ser úteis, mas têm pesos diferentes. Vídeos, slogans e cortes devem levar você a pesquisar, não encerrar a pesquisa.',
+          'Quando um candidato fizer uma afirmação forte, procure documento, votação, projeto, dado público ou notícia confiável. O hábito de checar uma informação por dia já muda a qualidade do voto.',
+        ],
+      },
+      {
+        title: 'Converse sem transformar tudo em torcida',
+        paragraphs: [
+          'Família e amigos influenciam, mas voto é responsabilidade individual. Escute argumentos, peça fontes e compare critérios. Discordar de alguém próximo não precisa virar briga pessoal.',
+          'Uma boa conversa política começa com pergunta concreta: “qual dado fez você decidir isso?” Quando a conversa sai do rótulo e entra na evidência, todo mundo aprende mais.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-montar-lista-criterios-voto',
+    title: 'Como montar uma lista de critérios para escolher candidato',
+    description:
+      'Crie uma matriz simples para comparar candidatos por valores, histórico, propostas, viabilidade, ética e fontes públicas.',
+    updatedAt: '2026-04-28',
+    readingTime: '8 min',
+    intro:
+      'Uma lista de critérios ajuda a transformar voto em decisão organizada. Em vez de depender apenas de simpatia, rejeição ou propaganda, você define o que importa e compara candidatos de forma mais clara. Não precisa ser uma planilha complexa: cinco critérios bem escolhidos já melhoram muito a decisão.',
+    sections: [
+      {
+        title: 'Separe valores de evidências',
+        paragraphs: [
+          'Valores são suas prioridades: liberdade, igualdade, segurança, crescimento econômico, proteção ambiental, responsabilidade fiscal, direitos sociais, transparência. Evidências são registros que mostram se o candidato age de forma compatível com esses valores.',
+          'Um erro comum é escolher candidato apenas porque ele usa palavras parecidas com seus valores. O melhor é perguntar: que votos, projetos, alianças, decisões e histórico confirmam esse discurso?',
+        ],
+      },
+      {
+        title: 'Escolha poucos critérios e dê peso',
+        paragraphs: [
+          'Uma matriz simples pode ter cinco critérios: coerência com meus valores, histórico público, competência para o cargo, transparência das fontes e viabilidade política. Dê nota de 1 a 5 para cada um ou apenas classifique como forte, médio ou fraco.',
+          'Se um tema for decisivo para você, dê peso maior. Por exemplo: se meio ambiente é prioridade absoluta, a posição do candidato nesse tema deve pesar mais do que carisma em debate.',
+        ],
+      },
+      {
+        title: 'Inclua um critério de risco',
+        paragraphs: [
+          'Além de pontos positivos, avalie riscos: acusações graves, falta de transparência, mudança brusca de posição, alianças incompatíveis, histórico de desinformação ou promessa impossível.',
+          'Risco não significa cancelamento automático. Significa que você precisa de mais evidência antes de confiar. Quanto maior o poder do cargo, maior deve ser o cuidado.',
+        ],
+      },
+      {
+        title: 'Revise quando surgirem fatos novos',
+        paragraphs: [
+          'Critérios não devem virar prisão mental. Se surgirem fatos relevantes, atualize sua avaliação. Mudar de opinião diante de evidência boa é sinal de maturidade política.',
+          'O importante é não mudar por pressão emocional de última hora sem checar. Tenha método, mas mantenha abertura para informação nova.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-conversar-politica-familia',
+    title: 'Como conversar sobre política em família sem virar guerra',
+    description:
+      'Estratégias para discutir voto, dados públicos e divergências políticas com menos briga e mais foco em evidências.',
+    updatedAt: '2026-04-28',
+    readingTime: '7 min',
+    intro:
+      'Conversar sobre política em família pode ser difícil porque mistura identidade, memória, medo, religião, classe social, território e experiências pessoais. O objetivo não precisa ser convencer todo mundo. Às vezes, a vitória é só melhorar a qualidade da conversa e reduzir desinformação.',
+    sections: [
+      {
+        title: 'Comece por perguntas, não por acusações',
+        paragraphs: [
+          'Frases como “você está errado” ou “você caiu em fake news” fecham a conversa. Perguntas abrem espaço: “onde você viu isso?”, “tem link?”, “qual votação foi essa?”, “qual fonte confirmou?”.',
+          'Perguntar não é concordar. É deslocar a conversa da identidade para a evidência. Quando a pessoa precisa mostrar fonte, o debate melhora naturalmente.',
+        ],
+      },
+      {
+        title: 'Escolha uma informação por vez',
+        paragraphs: [
+          'Tentar corrigir dez boatos ao mesmo tempo vira disputa de resistência. Escolha uma afirmação concreta e investigue junto. Pode ser uma votação, uma promessa, um processo ou uma despesa.',
+          'Quando a família aprende o caminho de checagem em um caso, fica mais fácil repetir em outros. O método vale mais do que vencer uma discussão isolada.',
+        ],
+      },
+      {
+        title: 'Separe valor moral de fato verificável',
+        paragraphs: [
+          'Duas pessoas podem concordar sobre o fato e discordar sobre o valor. Por exemplo: ambas podem confirmar que um parlamentar votou “sim” em uma proposta, mas discordar se isso foi bom ou ruim. Essa separação reduz briga inútil.',
+          'Primeiro verifique o dado; depois discuta interpretação. Misturar as duas etapas faz todo mundo disputar realidade e opinião ao mesmo tempo.',
+        ],
+      },
+      {
+        title: 'Saiba quando parar',
+        paragraphs: [
+          'Nem toda conversa precisa terminar em acordo. Se o clima virou humilhação, ironia ou ataque pessoal, pare. Política é importante, mas relações familiares também importam.',
+          'Você pode deixar um link, uma pergunta e um convite para continuar depois. Conversas boas às vezes amadurecem em silêncio, não na hora da discussão.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-funciona-quociente-eleitoral',
+    title: 'Como funciona o quociente eleitoral e por que seu voto pode eleger outro nome',
+    description:
+      'Entenda a regra do voto proporcional, cálculo de vagas, quociente eleitoral, sobras e por que partido importa na eleição para deputado.',
+    updatedAt: '2026-04-28',
+    readingTime: '11 min',
+    intro:
+      'Na eleição para deputado federal, deputado estadual e vereador, nem sempre os mais votados individualmente ficam com todas as vagas. O Brasil usa sistema proporcional, em que o desempenho do partido ou federação influencia quem entra. Entender o quociente eleitoral ajuda a perceber por que escolher partido também faz parte do voto.',
+    sections: [
+      {
+        title: 'O voto proporcional começa no conjunto, não só no candidato',
+        paragraphs: [
+          'Em eleições proporcionais, os votos dados a candidatos de um partido ou federação são somados aos votos de legenda. Esse total ajuda a definir quantas cadeiras aquele grupo terá. Depois, as vagas são preenchidas pelos candidatos mais votados dentro do grupo, respeitando regras de desempenho individual.',
+          'Isso significa que seu voto em um candidato ajuda primeiro a fortalecer a lista partidária. Se o partido tiver votos suficientes para várias cadeiras, outros nomes da mesma lista podem entrar. Por isso, votar em uma pessoa sem olhar o partido pode gerar surpresa no resultado final.',
+        ],
+      },
+      {
+        title: 'Quociente eleitoral é uma régua de entrada',
+        paragraphs: [
+          'De forma simplificada, o quociente eleitoral nasce da divisão dos votos válidos pelo número de vagas em disputa. Ele funciona como referência para calcular quantas cadeiras cada partido ou federação pode conquistar inicialmente.',
+          'A regra tem detalhes e pode envolver distribuição de sobras, desempenho mínimo e mudanças legais ao longo do tempo. O ponto prático para o eleitor é entender que a eleição proporcional não é uma corrida puramente individual. O desempenho coletivo pesa muito.',
+        ],
+      },
+      {
+        title: 'Candidato puxador de voto pode alterar a bancada',
+        paragraphs: [
+          'Um candidato muito votado pode ajudar o partido a conquistar mais cadeiras. Essas cadeiras podem ser ocupadas por outros candidatos do mesmo partido ou federação, desde que cumpram as exigências legais. Esse fenômeno é conhecido popularmente como efeito puxador de voto.',
+          'O eleitor deve perguntar: se meu candidato ajudar a eleger outros nomes, eu aceito a bancada que vem junto? Essa pergunta é essencial porque o voto proporcional carrega consequência coletiva.',
+        ],
+      },
+      {
+        title: 'Como usar isso na decisão de voto',
+        paragraphs: [
+          'Antes de votar para deputado, olhe candidato, partido, federação, principais nomes da lista e linha programática. Se você gosta de um candidato, mas rejeita fortemente o partido e a provável bancada, vale repensar o risco.',
+          'O voto proporcional recompensa organização coletiva. Um voto consciente considera a pessoa e o grupo político que ela ajuda a fortalecer.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'federacoes-coligacoes-partidos',
+    title: 'Federações, coligações e partidos: o que mudou e por que isso afeta seu voto',
+    description:
+      'Entenda diferenças entre partido, federação e coligação, e como alianças eleitorais podem mudar a leitura do candidato.',
+    updatedAt: '2026-04-28',
+    readingTime: '10 min',
+    intro:
+      'Alianças partidárias parecem detalhe burocrático, mas afetam eleição, bancada, tempo de propaganda, distribuição de recursos e comportamento legislativo. Entender a diferença entre partido, federação e coligação ajuda a enxergar quem está junto antes e depois da votação.',
+    sections: [
+      {
+        title: 'Partido é a unidade básica da representação',
+        paragraphs: [
+          'Partidos organizam candidaturas, programas, líderes, bancadas, orientação de voto e acesso a recursos eleitorais. Mesmo quando o candidato tem marca pessoal forte, ele disputa por uma estrutura partidária e depois atua dentro de uma bancada.',
+          'Por isso, partido não é rodapé da urna. Ele influencia quem será eleito junto, quais alianças terão força e como o parlamentar poderá atuar no Congresso.',
+        ],
+      },
+      {
+        title: 'Federação é aliança com compromisso mais duradouro',
+        paragraphs: [
+          'Federações partidárias unem partidos para atuar de forma conjunta por período determinado em lei. Diferentemente de uma aliança informal de campanha, a federação cria obrigações de atuação conjunta e impacta a organização parlamentar.',
+          'Para o eleitor, isso significa que partidos federados devem ser analisados como bloco em muitos contextos. Não basta olhar apenas a sigla preferida; é importante ver quem está federado com ela.',
+        ],
+      },
+      {
+        title: 'Coligações mudaram de peso nas eleições proporcionais',
+        paragraphs: [
+          'As regras sobre coligações variam conforme o tipo de eleição e mudanças legais. Em eleições proporcionais, coligações deixaram de funcionar como antes, o que tornou partidos e federações ainda mais relevantes para a distribuição de cadeiras.',
+          'Como regra prática, sempre confira a regra vigente da eleição em disputa. O sistema eleitoral brasileiro muda e detalhes podem alterar estratégia partidária e consequência do voto.',
+        ],
+      },
+      {
+        title: 'Aliança local pode contrariar discurso nacional',
+        paragraphs: [
+          'Um partido pode ter discurso nacional forte e fazer alianças locais pragmáticas. Isso não é necessariamente ilegal, mas importa para o eleitor. Alianças mostram prioridades reais, capacidade de negociação e limites do discurso público.',
+          'Antes de votar, observe quem apoia quem no seu estado, quem compõe federação e quais candidaturas caminham juntas. Muitas vezes a política real está nas alianças, não apenas no slogan.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'o-que-faz-suplente',
+    title: 'O que faz um suplente e por que ele importa no seu voto',
+    description:
+      'Entenda suplência na Câmara e no Senado, substituições, licenças, riscos e por que suplente também deve ser avaliado.',
+    updatedAt: '2026-04-28',
+    readingTime: '8 min',
+    intro:
+      'Suplente costuma aparecer pouco na campanha, mas pode assumir mandato e votar decisões importantes. Em eleições majoritárias e proporcionais, a suplência funciona de formas diferentes. Ignorar suplentes é deixar parte da representação fora da análise.',
+    sections: [
+      {
+        title: 'No Senado, suplentes vêm na chapa',
+        paragraphs: [
+          'Cada candidato ao Senado registra suplentes. Se o titular se afasta, renuncia, morre ou assume outro cargo, o suplente pode ocupar a cadeira. Como o mandato de senador dura oito anos, suplente pode acabar exercendo poder por bastante tempo.',
+          'Por isso, o eleitor deve olhar quem são os suplentes do candidato ao Senado. Eles têm trajetória pública? Representam quais interesses? Têm relação familiar, empresarial ou política com o titular? Essas perguntas importam.',
+        ],
+      },
+      {
+        title: 'Na Câmara, suplência depende da lista partidária',
+        paragraphs: [
+          'Para deputado, suplentes são definidos pelo desempenho da lista partidária ou federação. Quando um titular sai temporária ou definitivamente, assume o próximo nome elegível do mesmo grupo, conforme regras aplicáveis.',
+          'Isso reforça a importância de observar o partido inteiro. Seu voto pode ajudar a eleger um titular e, em caso de mudança, abrir espaço para outro nome da mesma legenda ou federação.',
+        ],
+      },
+      {
+        title: 'Licenças podem mudar a representação real',
+        paragraphs: [
+          'Parlamentares podem se licenciar por saúde, missão, interesse particular ou para ocupar cargos no Executivo. Em alguns casos, o suplente assume e participa de votações, comissões e decisões políticas.',
+          'A representação que o eleitor escolheu pode mudar ao longo do mandato. Isso não é necessariamente problema, mas precisa ser transparente e acompanhado.',
+        ],
+      },
+      {
+        title: 'Como avaliar suplentes antes da eleição',
+        paragraphs: [
+          'Para senador, veja nome, histórico, vínculos e experiência dos suplentes. Para deputado, olhe a lista de candidatos do partido e seus principais nomes. Em ambos os casos, entenda que voto nunca é só individual.',
+          'Suplente não deve ser tratado como detalhe. Ele pode virar titular, votar leis e influenciar decisões nacionais.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'voto-proporcional-legenda',
+    title: 'Voto de legenda: quando faz sentido votar só no partido?',
+    description:
+      'Entenda voto de legenda, diferenças entre votar em candidato e votar no partido, e os riscos de não conhecer a lista.',
+    updatedAt: '2026-04-28',
+    readingTime: '8 min',
+    intro:
+      'Em eleições proporcionais, o eleitor pode votar diretamente em um candidato ou votar na legenda do partido. O voto de legenda fortalece a lista partidária sem escolher um nome específico. Pode ser uma decisão coerente, mas exige confiança no conjunto do partido.',
+    sections: [
+      {
+        title: 'Voto de legenda fortalece o partido',
+        paragraphs: [
+          'Quando você vota na legenda, seu voto entra para o total do partido ou federação. Esse total ajuda a calcular cadeiras, mas a ocupação das vagas depende dos candidatos mais votados dentro da lista e das regras de desempenho.',
+          'Esse voto pode fazer sentido quando o eleitor confia mais no programa partidário do que em um nome específico. Mas ele também pode ajudar candidatos da lista que o eleitor talvez não conheça.',
+        ],
+      },
+      {
+        title: 'Não use voto de legenda como voto sem consequência',
+        paragraphs: [
+          'Algumas pessoas votam na legenda para evitar escolher candidato, como se fosse uma opção neutra. Não é neutra. Ela influencia a bancada e pode ajudar a eleger nomes específicos da lista partidária.',
+          'Antes de votar na legenda, veja quem são os candidatos competitivos daquele partido no seu estado. Pergunte se você ficaria confortável com qualquer um deles ocupando a cadeira.',
+        ],
+      },
+      {
+        title: 'Quando pode ser uma escolha coerente',
+        paragraphs: [
+          'O voto de legenda pode ser coerente quando o partido tem programa claro, lista consistente, histórico compatível com seus valores e candidaturas que você considera aceitáveis. Nesse caso, você está escolhendo um projeto coletivo.',
+          'Também pode ser usado por quem quer fortalecer uma bancada temática ou ideológica, desde que conheça os riscos da lista.',
+        ],
+      },
+      {
+        title: 'Como decidir entre candidato e legenda',
+        paragraphs: [
+          'Se você encontrou um candidato confiável dentro de um partido aceitável, votar no candidato dá sinal individual e fortalece a legenda. Se não encontrou nome específico, mas confia no partido inteiro, voto de legenda pode fazer sentido.',
+          'Se você gosta de um candidato, mas rejeita a lista, o voto proporcional cria dilema real. Nesse caso, talvez seja melhor buscar outro nome em grupo político mais compatível.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-checar-pesquisas-eleitorais',
+    title: 'Como ler pesquisas eleitorais sem cair em manchete fácil',
+    description:
+      'Aprenda a observar margem de erro, amostra, método, registro, data de campo, contratante e diferença entre tendência e certeza.',
+    updatedAt: '2026-04-28',
+    readingTime: '10 min',
+    intro:
+      'Pesquisa eleitoral é fotografia de um momento, não profecia. Ela pode indicar tendências, medir cenários e mostrar mudanças de humor do eleitorado, mas precisa ser lida com método. Manchetes costumam simplificar demais números que dependem de amostra, data, pergunta e margem de erro.',
+    sections: [
+      {
+        title: 'Margem de erro muda a leitura do empate',
+        paragraphs: [
+          'Se dois candidatos aparecem separados por poucos pontos, eles podem estar tecnicamente empatados dentro da margem de erro. Isso não significa que estão exatamente iguais, mas que a pesquisa não permite afirmar com segurança quem está na frente.',
+          'Manchetes que tratam diferença pequena como virada definitiva podem enganar. Sempre veja margem de erro e nível de confiança antes de concluir mudança real.',
+        ],
+      },
+      {
+        title: 'Data de campo importa muito',
+        paragraphs: [
+          'Pesquisa feita antes de debate, escândalo, aliança ou fato relevante pode não refletir o cenário depois do evento. A data de divulgação nem sempre é a data de coleta.',
+          'Ao comparar pesquisas, veja quando as entrevistas foram realizadas. Duas pesquisas divulgadas no mesmo dia podem medir momentos diferentes.',
+        ],
+      },
+      {
+        title: 'Amostra e método afetam resultado',
+        paragraphs: [
+          'Pesquisas podem usar entrevistas presenciais, telefônicas ou outros métodos. Cada abordagem tem limitações, custos e riscos de viés. O desenho da amostra busca representar o eleitorado, mas nunca é perfeito.',
+          'Também observe abrangência: pesquisa nacional, estadual, municipal ou por segmento. Não use dado de um recorte como se representasse todo o eleitorado.',
+        ],
+      },
+      {
+        title: 'Pesquisa não deve substituir avaliação de candidato',
+        paragraphs: [
+          'Votar apenas em quem está na frente transforma pesquisa em profecia autorrealizável. Pesquisa informa viabilidade e cenário, mas não responde se o candidato é bom, coerente ou confiável.',
+          'Use pesquisas como um dado do ambiente eleitoral. Para decidir voto, combine com propostas, histórico, partido, fontes oficiais e seus critérios pessoais.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-avaliar-politico-redes-sociais',
+    title: 'Como avaliar político pelas redes sociais sem cair em performance',
+    description:
+      'Aprenda a separar comunicação eficiente, prestação de contas, propaganda, indignação encenada e desinformação nas redes.',
+    updatedAt: '2026-04-28',
+    readingTime: '9 min',
+    intro:
+      'Redes sociais são vitrine obrigatória da política moderna. Elas podem aproximar eleitor e mandato, mas também premiam exagero, recorte, briga e simplificação. Avaliar político pelas redes exige separar comunicação de atuação concreta.',
+    sections: [
+      {
+        title: 'Engajamento não é entrega pública',
+        paragraphs: [
+          'Curtidas, compartilhamentos e visualizações mostram capacidade de mobilização, não necessariamente qualidade legislativa. Um vídeo viral pode tratar de tema real, mas também pode esconder ausência de trabalho em comissões, votações ou fiscalização.',
+          'Use redes como porta de entrada. Quando o político afirma que fez algo, procure o documento, projeto, votação, emenda ou fonte oficial correspondente.',
+        ],
+      },
+      {
+        title: 'Prestação de contas deve ter link e detalhe',
+        paragraphs: [
+          'Boa comunicação pública mostra fonte, data, valor, projeto, cidade, órgão responsável e etapa de execução. Propaganda fraca usa apenas foto, frase de impacto e “conquista” sem rastreabilidade.',
+          'Se a postagem anuncia obra, recurso ou votação, pergunte onde conferir. Político que facilita verificação tende a respeitar mais o eleitor.',
+        ],
+      },
+      {
+        title: 'Indignação permanente pode esconder baixa produção',
+        paragraphs: [
+          'Alguns perfis vivem de conflito. Denunciam, atacam, ironizam e mobilizam base, mas oferecem pouca solução verificável. Fiscalizar é parte do mandato, mas fiscalização séria gera documentos, requerimentos, audiências, representações ou votos.',
+          'Não confunda agressividade com coragem. A pergunta é: a indignação virou ação institucional ou apenas conteúdo?',
+        ],
+      },
+      {
+        title: 'Observe consistência entre rede e voto',
+        paragraphs: [
+          'Um parlamentar pode se apresentar como defensor de uma pauta nas redes e votar de forma diferente no Congresso. Também pode omitir votações impopulares e destacar apenas cortes favoráveis.',
+          'Compare discurso público com registro oficial. A coerência entre fala e voto é um dos melhores testes de autenticidade política.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-avaliar-politicas-publicas',
+    title: 'Como avaliar políticas públicas prometidas por políticos',
+    description:
+      'Um guia para analisar propostas de saúde, educação, segurança, economia e assistência sem cair em slogans impossíveis.',
+    updatedAt: '2026-04-28',
+    readingTime: '11 min',
+    intro:
+      'Propostas políticas costumam ser vendidas como solução simples para problemas complexos. Avaliar política pública exige perguntar qual problema será resolvido, com qual instrumento, quanto custará, quem executará, quem será afetado e como o resultado será medido.',
+    sections: [
+      {
+        title: 'Toda política precisa definir problema',
+        paragraphs: [
+          'Promessas vagas como “melhorar a educação” ou “combater a violência” não bastam. Qual indicador está ruim? Em qual território? Para qual público? Em que prazo? Sem diagnóstico, a proposta vira slogan.',
+          'Uma política boa começa descrevendo o problema de forma verificável. Se o candidato não sabe explicar o problema, provavelmente também não sabe resolver.',
+        ],
+      },
+      {
+        title: 'Instrumento e competência precisam combinar',
+        paragraphs: [
+          'Algumas soluções dependem de lei federal, outras de orçamento estadual, gestão municipal, convênio ou decisão administrativa. Proposta séria identifica quem tem competência para agir.',
+          'Quando candidato promete algo fora do alcance do cargo, pode estar usando tema popular sem plano real. Isso não impede articulação política, mas exige transparência sobre limites.',
+        ],
+      },
+      {
+        title: 'Custo e financiamento são parte da proposta',
+        paragraphs: [
+          'Toda política pública custa dinheiro, tempo, equipe ou prioridade. Mesmo medidas regulatórias têm custo de implementação e fiscalização. Promessa sem financiamento é incompleta.',
+          'Pergunte de onde virá o recurso, qual programa será reduzido, se há estimativa de impacto e como será evitado desperdício. Responsabilidade fiscal não é assunto separado da política social; é condição para ela durar.',
+        ],
+      },
+      {
+        title: 'Resultado precisa ser mensurável',
+        paragraphs: [
+          'Uma proposta deve permitir avaliação: reduzir fila, aumentar matrícula, diminuir evasão, melhorar vacinação, reduzir homicídios, ampliar renda, melhorar saneamento. Sem indicador, qualquer resultado pode ser vendido como sucesso.',
+          'Eleitor consciente acompanha promessa por evidência, não por propaganda. Se a política foi implementada, pergunte se mudou o indicador que pretendia mudar.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-avaliar-reeleicao',
+    title: 'Como avaliar candidato à reeleição usando o mandato que ele já teve',
+    description:
+      'Veja como cobrar quem já ocupou cargo: promessas cumpridas, votos, entregas, ausências, alianças e prestação de contas.',
+    updatedAt: '2026-04-28',
+    readingTime: '9 min',
+    intro:
+      'Candidato à reeleição não deve ser avaliado como promessa em branco. Ele já teve mandato, poder, recursos, equipe e oportunidades de agir. Isso torna a avaliação mais objetiva: o eleitor pode comparar discurso anterior, atuação real e nova campanha.',
+    sections: [
+      {
+        title: 'Comece pelas promessas anteriores',
+        paragraphs: [
+          'Recupere propostas da campanha passada, plano de governo, entrevistas e materiais públicos. Depois veja o que virou ação, o que ficou parado e o que foi abandonado sem explicação.',
+          'Nem toda promessa não cumprida é má-fé; pode haver derrota legislativa ou falta de competência do cargo. Mas candidato sério explica limites e mostra tentativa documentada.',
+        ],
+      },
+      {
+        title: 'Compare presença, votos e prioridades',
+        paragraphs: [
+          'Quem já teve mandato deixou registros: votações, presença, projetos, emendas, relatorias, despesas e discursos oficiais. Esses dados são mais fortes do que nova propaganda.',
+          'Veja se as prioridades da campanha atual combinam com o que ele fez. Mudanças podem ser legítimas, mas devem vir acompanhadas de justificativa clara.',
+        ],
+      },
+      {
+        title: 'Analise alianças formadas no exercício do poder',
+        paragraphs: [
+          'Aliança de campanha é uma coisa; aliança de governo ou de bancada é outra. Quem já ocupou cargo mostrou com quem votou, quem apoiou, quais acordos aceitou e quais temas priorizou quando havia custo político.',
+          'Essa trajetória revela mais do que slogans. O eleitor deve observar se alianças foram coerentes com o mandato prometido.',
+        ],
+      },
+      {
+        title: 'Reeleição precisa de prestação de contas, não só promessa nova',
+        paragraphs: [
+          'Candidato à reeleição deve explicar o mandato anterior: o que entregou, onde falhou, quais dados comprovam e o que pretende corrigir. Campanha que ignora o próprio mandato merece desconfiança.',
+          'A pergunta central é simples: depois de ver o que fez com poder real, você daria mais tempo e mais influência a essa pessoa?',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'guia-temas-seguranca-publica',
+    title: 'Guia para avaliar propostas de segurança pública',
+    description:
+      'Critérios para analisar discurso sobre polícia, armas, prevenção, sistema prisional, investigação e redução de violência.',
+    updatedAt: '2026-04-28',
+    readingTime: '10 min',
+    intro:
+      'Segurança pública é um dos temas mais emocionais da política. Medo, indignação e experiências pessoais pesam muito. Justamente por isso, propostas de segurança precisam ser avaliadas com cuidado: promessa dura não é automaticamente eficiente, e discurso técnico também precisa mostrar resultado.',
+    sections: [
+      {
+        title: 'Separe prevenção, repressão e investigação',
+        paragraphs: [
+          'Segurança envolve prevenção social, policiamento ostensivo, inteligência, investigação, perícia, sistema prisional, justiça criminal e políticas urbanas. Proposta séria diz qual parte do problema pretende atacar.',
+          'Aumentar pena, por exemplo, não melhora investigação automaticamente. Comprar viaturas não resolve perícia. Construir presídio não substitui prevenção. Cada instrumento atua em ponto diferente da cadeia.',
+        ],
+      },
+      {
+        title: 'Pergunte qual indicador será melhorado',
+        paragraphs: [
+          'Homicídios, roubos, violência doméstica, letalidade policial, elucidação de crimes, reincidência e sensação de segurança são indicadores diferentes. Uma política pode melhorar um e piorar outro.',
+          'Quando candidato promete “mais segurança”, pergunte: segurança para quem, contra qual crime, em qual território e medida por qual dado?',
+        ],
+      },
+      {
+        title: 'Armas e polícia exigem debate com evidência',
+        paragraphs: [
+          'Temas como armas, abordagem policial e uso da força mobilizam valores fortes. O eleitor pode ter posição ideológica, mas deve exigir evidência de impacto, controle, treinamento e responsabilidade.',
+          'Política de segurança sem transparência pode produzir abuso. Política sem capacidade operacional pode virar promessa vazia. O equilíbrio está em cobrar resultado e controle público.',
+        ],
+      },
+      {
+        title: 'Quem executa nem sempre é quem promete',
+        paragraphs: [
+          'Muitas competências de segurança são estaduais, mas deputados e senadores influenciam leis penais, orçamento, fiscalização, fundos e regras nacionais. Prefeitos influenciam iluminação, urbanismo, guarda municipal e prevenção local.',
+          'Avalie se o candidato promete algo compatível com o cargo. Segurança é tema legítimo em várias esferas, mas cada esfera tem ferramentas diferentes.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'guia-temas-educacao',
+    title: 'Guia para avaliar propostas de educação',
+    description:
+      'Como analisar promessas sobre escola, professores, alfabetização, ensino técnico, universidades, financiamento e resultados.',
+    updatedAt: '2026-04-28',
+    readingTime: '10 min',
+    intro:
+      'Educação aparece em quase toda campanha, mas propostas variam muito em qualidade. Algumas focam infraestrutura, outras currículo, professores, alfabetização, tecnologia, ensino técnico ou universidade. O eleitor precisa entender qual problema educacional está sendo enfrentado e como medir avanço.',
+    sections: [
+      {
+        title: 'Identifique a etapa da educação',
+        paragraphs: [
+          'Creche, alfabetização, ensino fundamental, ensino médio, ensino técnico e ensino superior têm problemas diferentes. Uma proposta boa para universidade pode não resolver alfabetização; uma política de creche exige gestão diferente de uma política de pesquisa científica.',
+          'Antes de avaliar, pergunte qual etapa será priorizada e por quê. A resposta deve vir com diagnóstico, dados e público-alvo.',
+        ],
+      },
+      {
+        title: 'Professor é central, mas não é o único fator',
+        paragraphs: [
+          'Valorização docente importa: formação, carreira, salário, condições de trabalho e apoio pedagógico afetam resultado. Mas educação também depende de gestão, currículo, material, infraestrutura, alimentação, transporte e acompanhamento familiar.',
+          'Desconfie de proposta que promete revolução educacional atacando apenas um fator. Sistemas educacionais melhoram com combinação de políticas consistentes ao longo do tempo.',
+        ],
+      },
+      {
+        title: 'Resultado precisa ir além de inauguração',
+        paragraphs: [
+          'Construir escola ou comprar equipamento pode ser importante, mas resultado educacional aparece em aprendizagem, permanência, redução de evasão, alfabetização e qualidade do ensino.',
+          'Uma campanha pode mostrar obra bonita sem provar melhora pedagógica. O eleitor deve procurar indicadores, avaliações e continuidade da política.',
+        ],
+      },
+      {
+        title: 'Competência federativa muda a cobrança',
+        paragraphs: [
+          'Municípios têm papel forte em creche e ensino fundamental; estados em ensino médio; União em financiamento, universidades federais, regras nacionais e programas de apoio. Parlamentares influenciam leis, orçamento e fiscalização.',
+          'Cobrar corretamente exige saber quem executa. Promessa educacional boa explica como o cargo pretendido pode agir dentro dessa divisão.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'guia-temas-saude',
+    title: 'Guia para avaliar propostas de saúde pública',
+    description:
+      'Como analisar promessas sobre SUS, filas, atenção básica, hospitais, medicamentos, vacinação, financiamento e gestão.',
+    updatedAt: '2026-04-28',
+    readingTime: '10 min',
+    intro:
+      'Saúde pública envolve urgência emocional e complexidade administrativa. Filas, hospitais, medicamentos e vacinação afetam a vida diretamente. Para avaliar propostas, é preciso diferenciar financiamento, gestão, atenção básica, média complexidade, alta complexidade e responsabilidade de cada esfera de governo.',
+    sections: [
+      {
+        title: 'Atenção básica costuma ser a porta de entrada',
+        paragraphs: [
+          'Postos, equipes de saúde da família, prevenção, acompanhamento de doenças crônicas e vacinação reduzem pressão sobre hospitais. Promessas focadas apenas em grandes obras podem ignorar a base do sistema.',
+          'Ao avaliar proposta, veja se ela fortalece atendimento próximo da população ou apenas promete inaugurações visíveis. Saúde eficiente combina prevenção e tratamento.',
+        ],
+      },
+      {
+        title: 'Fila precisa de diagnóstico',
+        paragraphs: [
+          'Fila pode ocorrer por falta de especialista, equipamento, regulação, leito, transporte, gestão de agenda ou financiamento. Proposta séria identifica gargalo específico.',
+          'Prometer “zerar fila” sem dizer qual fila, em quanto tempo, com qual equipe e orçamento é frágil. O eleitor deve pedir indicador: consultas, exames, cirurgias, medicamentos ou regulação?',
+        ],
+      },
+      {
+        title: 'Hospital não resolve tudo sozinho',
+        paragraphs: [
+          'Hospitais são essenciais, mas custosos. Sem atenção básica, regulação e rede regional, hospital vira solução sobrecarregada. Construir unidade sem equipe e custeio pode criar prédio sem atendimento adequado.',
+          'Boa proposta de saúde explica funcionamento da rede: prevenção, encaminhamento, exames, especialistas, urgência e continuidade do cuidado.',
+        ],
+      },
+      {
+        title: 'Parlamentar influencia orçamento e fiscalização',
+        paragraphs: [
+          'Deputados e senadores não administram diretamente postos ou hospitais locais, mas votam leis, orçamento, pisos, programas nacionais e podem fiscalizar políticas públicas. Também podem destinar emendas, que precisam ser acompanhadas até a entrega.',
+          'Ao avaliar parlamentar, veja se recursos anunciados chegaram, se foram executados e se houve melhora concreta para usuários do sistema.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'guia-temas-meio-ambiente',
+    title: 'Guia para avaliar propostas de meio ambiente e clima',
+    description:
+      'Critérios para analisar discurso ambiental, agropecuária, fiscalização, energia, saneamento, clima e desenvolvimento sustentável.',
+    updatedAt: '2026-04-28',
+    readingTime: '10 min',
+    intro:
+      'Meio ambiente não é tema isolado: envolve saúde, agricultura, energia, cidades, saneamento, economia, povos tradicionais, clima e comércio internacional. Avaliar propostas ambientais exige sair da oposição simplista entre preservar e desenvolver.',
+    sections: [
+      {
+        title: 'Veja se há metas verificáveis',
+        paragraphs: [
+          'Prometer proteger o meio ambiente é fácil. Proposta séria fala em redução de desmatamento, recuperação de áreas, fiscalização, saneamento, adaptação climática, energia limpa ou gestão de resíduos com indicadores.',
+          'Sem meta, prazo e órgão responsável, o discurso ambiental vira sinalização para agradar públicos diferentes sem compromisso real.',
+        ],
+      },
+      {
+        title: 'Fiscalização e desenvolvimento precisam aparecer juntos',
+        paragraphs: [
+          'Atividade econômica depende de segurança jurídica e regras claras. Fiscalização fraca favorece ilegalidade e prejudica produtores que cumprem a lei. Ao mesmo tempo, política ambiental precisa considerar emprego, renda e transição produtiva.',
+          'Avalie se o candidato apresenta instrumentos concretos: monitoramento, crédito, assistência técnica, regularização, punição a ilegalidades e incentivo a práticas sustentáveis.',
+        ],
+      },
+      {
+        title: 'Clima afeta cidade, campo e orçamento',
+        paragraphs: [
+          'Eventos extremos, enchentes, secas e ondas de calor já impactam infraestrutura, saúde, agricultura e gasto público. Política climática não é apenas pauta internacional; é planejamento de risco.',
+          'Bons mandatos conectam clima a defesa civil, saneamento, habitação, drenagem, seguro rural, energia e proteção de populações vulneráveis.',
+        ],
+      },
+      {
+        title: 'Compare discurso com votos e alianças',
+        paragraphs: [
+          'Um parlamentar pode falar em sustentabilidade e votar contra fiscalização ambiental; outro pode defender agro e apoiar regularização responsável. O detalhe está nos projetos, emendas e votações concretas.',
+          'Use fontes oficiais para verificar se o discurso ambiental ou produtivo aparece em decisões reais, não apenas em campanha.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'guia-temas-economia-impostos',
+    title: 'Guia para avaliar propostas de economia, impostos e emprego',
+    description:
+      'Como analisar promessas sobre crescimento, carga tributária, responsabilidade fiscal, emprego, renda e serviços públicos.',
+    updatedAt: '2026-04-28',
+    readingTime: '11 min',
+    intro:
+      'Economia é um dos campos mais usados em campanha, mas também um dos mais cheios de frases vagas. “Gerar emprego”, “baixar impostos” e “controlar gastos” são objetivos populares. O ponto é entender como o candidato pretende chegar lá e quem ganha ou perde com cada escolha.',
+    sections: [
+      {
+        title: 'Crescimento precisa de mecanismo',
+        paragraphs: [
+          'Prometer crescimento não explica política econômica. O candidato fala em investimento público, crédito, reforma tributária, qualificação, inovação, infraestrutura, segurança jurídica, comércio exterior ou redução de burocracia?',
+          'Cada mecanismo tem custo, prazo e grupo afetado. Proposta econômica séria mostra caminho, não apenas desejo.',
+        ],
+      },
+      {
+        title: 'Baixar imposto exige dizer qual imposto e qual compensação',
+        paragraphs: [
+          'Impostos financiam serviços públicos. Reduzir carga pode ser desejável em muitos casos, mas é preciso dizer qual tributo, para quem, com qual impacto e como compensar perda de receita ou cortar gasto.',
+          'Promessa genérica de cortar imposto sem plano pode virar déficit, redução de serviço ou benefício concentrado. Avalie distribuição: quem paga menos e quem deixa de receber política pública?',
+        ],
+      },
+      {
+        title: 'Responsabilidade fiscal não é só corte',
+        paragraphs: [
+          'Cuidar das contas públicas envolve receita, despesa, qualidade do gasto, dívida, investimento e prioridade. Cortar gasto ruim é diferente de desmontar serviço essencial; aumentar arrecadação eficiente é diferente de elevar carga de forma injusta.',
+          'Boa proposta fiscal explica escolhas. Política séria reconhece que orçamento é disputa de prioridades, não mágica.',
+        ],
+      },
+      {
+        title: 'Emprego depende de ambiente e qualificação',
+        paragraphs: [
+          'Emprego não nasce apenas por decreto. Depende de crescimento, investimento, educação, infraestrutura, tecnologia, crédito, segurança jurídica e demanda. Políticas públicas podem ajudar, mas precisam combinar instrumentos.',
+          'Ao avaliar promessa de emprego, procure setor, público-alvo, fonte de financiamento, prazo e indicador. A diferença entre slogan e plano está nesses detalhes.',
+        ],
+      },
+    ],
+  },
 ];
 
 export function getGuideBySlug(slug: string) {
   return GUIDE_ARTICLES.find((article) => article.slug === slug) ?? null;
+}
+
+export function getGuideCategory(article: GuideArticle) {
+  return GUIDE_CATEGORIES.find((category) => category.slugs.includes(article.slug)) ?? GUIDE_CATEGORIES[0];
+}
+
+export function getGuideCardStyle(index: number) {
+  return GUIDE_CARD_STYLES[index % GUIDE_CARD_STYLES.length];
+}
+
+export function getGuideWordCount(article: GuideArticle) {
+  const text = [
+    article.title,
+    article.description,
+    article.intro,
+    ...article.sections.flatMap((section) => [section.title, ...section.paragraphs]),
+  ].join(' ');
+
+  return text.trim().split(/\s+/).filter(Boolean).length;
 }
