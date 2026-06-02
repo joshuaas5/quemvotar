@@ -187,6 +187,24 @@ export default async function PartidoDetailPage({
             </div>
           </section>
 
+          <section className="bg-white border-4 border-black p-6 md:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-body space-y-4">
+            <h2 className="font-headline font-black text-2xl md:text-3xl uppercase">Como interpretar este partido</h2>
+            <p className="font-medium leading-relaxed">
+              Esta página resume a presença do {partido.nome} ({partido.sigla}) no Congresso Nacional, incluindo tamanho da bancada, lideranças localizadas e caminhos para fontes oficiais. A composição parlamentar pode mudar por migrações partidárias, licenças, suplências e atualizações das casas legislativas.
+            </p>
+            <p className="font-medium leading-relaxed">
+              Campo político e família partidária são classificações aproximadas para navegação. Elas devem ser lidas junto com votos, projetos, atuação das lideranças e informações oficiais do partido.
+            </p>
+            <div className="flex flex-wrap gap-4 pt-2">
+              <Link href="/metodologia" className="font-headline font-black uppercase border-b-4 border-black">
+                Entender metodologia
+              </Link>
+              <Link href="/politica-editorial" className="font-headline font-black uppercase border-b-4 border-black">
+                Política editorial
+              </Link>
+            </div>
+          </section>
+
           {partido.blocosSenado.length > 0 ? (
             <section className="bg-white border-4 border-black p-6 md:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
               <h2 className="font-headline font-black text-2xl md:text-3xl uppercase mb-4">Blocos no Senado</h2>

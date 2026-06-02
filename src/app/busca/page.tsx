@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   description:
     "Pesquise deputados e senadores por nome, partido ou UF com dados oficiais da Câmara e do Senado.",
   alternates: { canonical: "https://www.quemvotar.com.br/busca" },
+  robots: { index: false, follow: true },
 };
 
 function getInitials(nome: string) {

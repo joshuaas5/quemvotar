@@ -4,6 +4,7 @@ import Hero from "@/components/Hero";
 import Highlights from "@/components/Highlights";
 import QuizBand from "@/components/QuizBand";
 import StatsDashboard from "@/components/StatsDashboard";
+import EditorialGuide from "@/components/EditorialGuide";
 import Footer from "@/components/Footer";
 import { buildWebSiteSchema } from "@/lib/jsonld";
 
@@ -67,6 +68,7 @@ export default function Home() {
         <Hero />
         <QuizBand />
         <Highlights />
+        <EditorialGuide />
         <StatsDashboard />
       </main>
 

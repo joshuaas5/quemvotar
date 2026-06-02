@@ -1,5 +1,5 @@
 export default function AdSenseAutoAds() {
-  const client = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
+  const client = process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? 'ca-pub-4642150915962893';
   if (!client) return null;
 
   return (

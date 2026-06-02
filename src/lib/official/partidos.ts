@@ -6,7 +6,6 @@ import { buildPartyBadgeDataUrl, getPartyMeta, getSpectrumLabel } from '@/lib/pa
 import { getPartyLogoBySigla } from '@/lib/party-logos';
 import { normalizeRemoteImageUrl, upgradeCamaraPhotoUrl } from '@/lib/utils/profile-image';
 import { getMemoryCache, setMemoryCache } from '@/lib/utils/memory-cache';
-import { PARTIDOS_FALLBACK } from '@/lib/fallback-data';
 
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
 const SENADO_API_ROOT = 'https://legis.senado.leg.br/dadosabertos';
@@ -369,8 +368,7 @@ export const fetchPartidosResumo = cache(async (): Promise<PartidoResumo[]> => {
     return resultado as PartidoResumo[];
   } catch (error) {
     console.error('[fetchPartidosResumo] Falha ao carregar partidos:', error);
-    console.warn('[fetchPartidosResumo] Usando dados fallback para build');
-    return PARTIDOS_FALLBACK as PartidoResumo[];
+    return [];
   }
 });
 

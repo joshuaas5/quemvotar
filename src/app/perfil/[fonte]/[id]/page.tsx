@@ -105,6 +105,35 @@ function renderSobreSection(perfil: PerfilDetalhadoPublico) {
   );
 }
 
+function renderInterpretacaoSection(perfil: PerfilDetalhadoPublico) {
+  const nome = perfil.nome_urna;
+  const uf = perfil.uf ? ` por ${perfil.uf}` : '';
+
+  return (
+    <section className="bg-white border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+      <h2 className="font-headline font-black text-2xl sm:text-3xl uppercase mb-4">
+        Como interpretar este perfil
+      </h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 font-body">
+        <p className="font-medium leading-relaxed">
+          Esta página reúne dados públicos sobre {nome}, {perfil.cargo.toLowerCase()}{uf}, atualmente vinculado ao partido {perfil.partido}. Use as informações como ponto de partida para conferir atuação parlamentar, presença institucional, partido, despesas, projetos e fontes oficiais disponíveis.
+        </p>
+        <p className="font-medium leading-relaxed">
+          Nenhum indicador isolado define a qualidade de um mandato. Para uma análise mais responsável, compare nota pública, histórico de votações, autorias, atuação em comissões, contexto partidário e os links de origem exibidos ao final da página.
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-4 mt-5">
+        <Link href="/metodologia" className="font-headline font-black uppercase border-b-4 border-black">
+          Entender metodologia
+        </Link>
+        <Link href="/politica-editorial" className="font-headline font-black uppercase border-b-4 border-black">
+          Política editorial
+        </Link>
+      </div>
+    </section>
+  );
+}
+
 /* ── section: themed voting ──────────────────────────────────────── */
 
 function renderTemaSection(temasVotacao: PerfilItemLista[]) {
@@ -662,7 +691,15 @@ export async function generateMetadata(
   { params }: { params: Promise<{ fonte: string; id: string }> }
 ) {
   const { fonte, id } = await params;
-  const result = await getPerfilBasico(fonte as any, id);
+
+  if (fonte !== 'camara' && fonte !== 'senado') {
+    return {
+      title: 'Perfil não encontrado | QuemVotar',
+      description: 'Não foi possível localizar o perfil na base de dados.',
+    };
+  }
+
+  const result = await getPerfilBasico(fonte, id);
 
   if (!result) {
     return {
@@ -868,6 +905,8 @@ export default async function PerfilPage({
               </div>
             </div>
           </section>
+
+          {renderInterpretacaoSection(perfil)}
 
           {/* ENRICHED DATA — streams via Suspense */}
           <Suspense

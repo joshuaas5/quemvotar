@@ -13,6 +13,18 @@ export default function Footer() {
       </div>
 
       <div className="flex flex-wrap justify-center gap-6 font-body font-bold uppercase text-sm">
+        <Link href="/sobre" className="text-black no-underline hover:text-[#ffd709] transition-colors duration-75 cursor-pointer">
+          Sobre
+        </Link>
+        <Link href="/metodologia" className="text-black no-underline hover:text-[#ffd709] transition-colors duration-75 cursor-pointer">
+          Metodologia
+        </Link>
+        <Link href="/politica-editorial" className="text-black no-underline hover:text-[#ffd709] transition-colors duration-75 cursor-pointer">
+          Política Editorial
+        </Link>
+        <Link href="/guias" className="text-black no-underline hover:text-[#ffd709] transition-colors duration-75 cursor-pointer">
+          Guias
+        </Link>
         <Link href="/privacy" className="text-black no-underline hover:text-[#ffd709] transition-colors duration-75 cursor-pointer">
           Privacidade
         </Link>

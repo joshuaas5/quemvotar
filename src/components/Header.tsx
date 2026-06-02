@@ -11,6 +11,8 @@ const NAV_LINKS = [
   { href: '/ranking', label: 'Ranking' },
   { href: '/match', label: 'Match' },
   { href: '/partidos', label: 'Partidos' },
+  { href: '/guias', label: 'Guias' },
+  { href: '/sobre', label: 'Sobre' },
   { href: '/favoritos', label: 'Favoritos' },
   { href: '/#dados', label: 'Panorama' },
 ];
@@ -36,7 +38,7 @@ export default function Header() {
           </span>
         </Link>
 
-        <div className="hidden md:flex gap-8 items-center font-headline font-black uppercase tracking-tighter">
+        <div className="hidden md:flex gap-4 xl:gap-6 items-center font-headline font-black uppercase tracking-tighter">
           {NAV_LINKS.map(({ href, label }) => {
             const isActive = pathname === href || (href !== '/' && pathname.startsWith(href) && href !== '/#dados');
             return (

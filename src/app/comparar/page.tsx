@@ -13,13 +13,13 @@ import {
   getPerfilEnriquecido,
   getPerfilHref,
 } from '@/lib/api';
-import { getPartyLogoBySigla } from '@/lib/party-logos';
 
 export const metadata: Metadata = {
   title: 'Comparar Parlamentares',
   description:
     'Compare lado a lado dois deputados ou senadores: notas, presença, gastos, governismo e alinhamento político.',
   alternates: { canonical: 'https://www.quemvotar.com.br/comparar' },
+  robots: { index: false, follow: true },
 };
 
 function formatScore(value?: number | null) {

@@ -4,6 +4,7 @@ import { ToastProvider } from "@/components/Toast";
 import { NavigationProvider } from "@/components/NavigationProvider";
 import NavigationOverlay from "@/components/NavigationOverlay";
 import BackToTop from "@/components/BackToTop";
+import AdSenseAutoAds from "@/components/AdSenseAutoAds";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -119,6 +120,8 @@ export default function RootLayout({
             <BackToTop />
           </ToastProvider>
         </NavigationProvider>
+
+        <AdSenseAutoAds />
 
         {gaId && (
           <>

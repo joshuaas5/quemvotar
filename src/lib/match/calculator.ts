@@ -1,7 +1,13 @@
-import { getPartyMeta } from '@/lib/party-meta';
-import { getPartyThemePosition } from './party-themes';
+import { getPartyThemePosition, type ThemeKey } from './party-themes';
 import { buscarVotosDeputadoPorTema } from './camara-votes';
 import { voteToPosition } from './voting-record';
+
+const THEME_KEYS: ThemeKey[] = ['pvt', 'agr', 'impostos', 'drogas', 'armas', 'cotas', 'abor', 'religiao', 'clt', 'meio_amb'];
+
+function getPositionForTheme(party: string, theme: string): number {
+  if (!THEME_KEYS.includes(theme as ThemeKey)) return 3;
+  return getPartyThemePosition(party, theme as ThemeKey);
+}
 
 export type UserAnswer = {
   score: number;
@@ -60,7 +66,7 @@ async function getPoliticianPosition(
   }
 
   // FASE 1: Fallback para posicao partidaria + variacao individual
-  const partyPosition = getPartyThemePosition(politicianParty, theme as any);
+  const partyPosition = getPositionForTheme(politicianParty, theme);
   const deviation = getPoliticianDeviation(politicianId, theme);
   return Math.max(1, Math.min(5, partyPosition + deviation));
 }
@@ -141,7 +147,7 @@ export function calculateMatchScoreDetailed(
     totalWeight += userAns.weight;
 
     // Posicao partidaria no tema (1-5) + variacao individual
-    const partyPosition = getPartyThemePosition(politicianParty, topic as any);
+    const partyPosition = getPositionForTheme(politicianParty, topic);
     const deviation = getPoliticianDeviation(politicianId, topic);
     const polAnswer = Math.max(1, Math.min(5, partyPosition + deviation));
 

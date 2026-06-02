@@ -3,7 +3,6 @@ import type { PerfilDetalhadoPublico, PerfilItemLista, PerfilPublico } from './t
 import { improveProfilePhotoUrl } from '@/lib/utils/profile-image';
 import { decodeMojibake } from '@/lib/utils/string';
 import { getMemoryCache, setMemoryCache } from '@/lib/utils/memory-cache';
-import { DEPUTADOS_FALLBACK, PARTIDOS_FALLBACK } from '@/lib/fallback-data';
 
 const CAMARA_API_ROOT = 'https://dadosabertos.camara.leg.br/api/v2';
 const AUTORIAS_AMOSTRA_ANALISADA = 8;
@@ -313,8 +312,7 @@ export const fetchDeputados = cache(async (): Promise<PerfilPublico[]> => {
     return result;
   } catch (error) {
     console.error('[fetchDeputados] Falha ao carregar deputados:', error);
-    console.warn('[fetchDeputados] Usando dados fallback para build');
-    return DEPUTADOS_FALLBACK;
+    return [];
   }
 });
 

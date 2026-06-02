@@ -35,8 +35,12 @@ export function useFavoritos() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setFavoritos(loadFavoritos());
-    setLoaded(true);
+    const handle = window.requestAnimationFrame(() => {
+      setFavoritos(loadFavoritos());
+      setLoaded(true);
+    });
+
+    return () => window.cancelAnimationFrame(handle);
   }, []);
 
   const isFavorito = useCallback(

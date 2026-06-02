@@ -6,7 +6,7 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ShareButtons from '@/components/ShareButtons';
-import { getParlamentares, getPartidos, getPerfilHref } from '@/lib/api';
+import { getParlamentares, getPerfilHref } from '@/lib/api';
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
 
 export const revalidate = 1800;
@@ -50,7 +50,7 @@ export default async function UfPage({ params }: { params: Promise<{ sigla: stri
     notFound();
   }
 
-  const [parlamentares, partidos] = await Promise.all([getParlamentares(), getPartidos()]);
+  const parlamentares = await getParlamentares();
   const daUf = parlamentares.filter((p) => p.uf?.toLowerCase() === uf);
 
   if (daUf.length === 0) {
@@ -105,6 +105,26 @@ export default async function UfPage({ params }: { params: Promise<{ sigla: stri
             <div className="bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-center">
               <p className="font-headline font-black text-3xl md:text-4xl">{partidosUf.length}</p>
               <p className="font-label font-bold uppercase text-xs opacity-70 mt-1">Partidos</p>
+            </div>
+          </section>
+
+          <section className="bg-white border-4 border-black p-6 md:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-body space-y-4">
+            <h2 className="font-headline font-black text-2xl md:text-3xl uppercase">
+              Como usar este guia estadual
+            </h2>
+            <p className="font-medium leading-relaxed">
+              Esta página organiza os parlamentares que representam {nomeUf} no Congresso Nacional. O objetivo é facilitar a consulta por UF, partido e casa legislativa antes de comparar perfis individuais.
+            </p>
+            <p className="font-medium leading-relaxed">
+              A lista não é ranking eleitoral nem recomendação de voto. Para avaliar cada representante, abra o perfil completo e confira dados de mandato, fontes oficiais, histórico disponível, partido e critérios metodológicos.
+            </p>
+            <div className="flex flex-wrap gap-4 pt-2">
+              <LoadingLink href="/metodologia" className="font-headline font-black uppercase border-b-4 border-black">
+                Entender metodologia
+              </LoadingLink>
+              <LoadingLink href="/comparar" className="font-headline font-black uppercase border-b-4 border-black">
+                Comparar parlamentares
+              </LoadingLink>
             </div>
           </section>
 

@@ -31,6 +31,23 @@ export interface VotacaoNominal {
   votos: VotoDeputado[];
 }
 
+interface CamaraVotacaoResponseItem {
+  id: string;
+  data: string;
+  descricao: string;
+  proposicoesAfetadas?: VotacaoNominal['proposicoesAfetadas'];
+}
+
+interface CamaraVotoResponseItem {
+  deputado_?: {
+    id?: number;
+    nome?: string;
+    siglaPartido?: string;
+    siglaUf?: string;
+  };
+  tipoVoto?: VoteValue;
+}
+
 /**
  * Busca proposicoes por tipo, numero e ano.
  */
@@ -85,10 +102,10 @@ export async function buscarVotacoesProposicao(
     );
     if (!resp.ok) return [];
 
-    const data = await resp.json();
+    const data = await resp.json() as { dados?: CamaraVotacaoResponseItem[] };
     const votacoes = data.dados ?? [];
 
-    const result: VotacaoNominal[] = votacoes.map((v: any) => ({
+    const result: VotacaoNominal[] = votacoes.map((v) => ({
       id: v.id,
       data: v.data,
       descricao: v.descricao,
@@ -120,14 +137,14 @@ export async function buscarVotosVotacao(
     );
     if (!resp.ok) return [];
 
-    const data = await resp.json();
+    const data = await resp.json() as { dados?: CamaraVotoResponseItem[] };
     const votos = data.dados ?? [];
 
-    const result: VotoDeputado[] = votos.map((v: any) => ({
-      deputadoId: v.deputado_?.id,
-      nome: v.deputado_?.nome,
-      partido: v.deputado_?.siglaPartido,
-      uf: v.deputado_?.siglaUf,
+    const result: VotoDeputado[] = votos.map((v) => ({
+      deputadoId: v.deputado_?.id ?? 0,
+      nome: v.deputado_?.nome ?? '',
+      partido: v.deputado_?.siglaPartido ?? '',
+      uf: v.deputado_?.siglaUf ?? '',
       voto: v.tipoVoto || null,
     }));
 

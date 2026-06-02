@@ -11,7 +11,7 @@ export function decodeMojibake(str: string | null | undefined): string {
       return decodeURIComponent(escape(str));
     }
     return str;
-  } catch (e) {
+  } catch {
     return str
       .replace(/â€¢/g, '•')
       .replace(/â€"/g, '—')
@@ -35,8 +35,8 @@ export function decodeMojibake(str: string | null | undefined): string {
 /**
  * Aplica decodeMojibake a todos os campos string de um objeto.
  */
-export function decodeObjMojibake<T extends Record<string, any>>(obj: T): T {
-  const result = { ...obj } as Record<string, any>;
+export function decodeObjMojibake<T extends Record<string, unknown>>(obj: T): T {
+  const result = { ...obj } as Record<string, unknown>;
   for (const key of Object.keys(result)) {
     const val = result[key];
     if (typeof val === 'string') {
