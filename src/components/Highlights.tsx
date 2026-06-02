@@ -47,14 +47,14 @@ export default async function Highlights() {
               return (
                 <article
                   key={`${candidato.fonte}-${candidato.id}`}
-                  className="bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(255,255,255,0.18)] sm:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.18)] flex flex-col hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[8px_8px_0px_0px_rgba(255,215,9,1)] sm:hover:shadow-[12px_12px_0px_0px_rgba(255,215,9,1)] active:scale-[0.97] active:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.18)] active:translate-x-0 active:translate-y-0 transition-all duration-150 group"
+                  className="bg-white text-black border-4 border-black shadow-[4px_4px_0px_0px_rgba(255,255,255,0.18)] sm:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.18)] flex flex-col hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[8px_8px_0px_0px_rgba(255,215,9,1)] sm:hover:shadow-[12px_12px_0px_0px_rgba(255,215,9,1)] active:scale-[0.97] active:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.18)] active:translate-x-0 active:translate-y-0 transition-all duration-150 group"
                 >
                   <div className={`${config.bgClass} ${config.textClass} p-4 font-headline font-black uppercase flex justify-between items-center`}>
                     <span>{getCasaBadge(candidato)}</span>
                     <Icon name="verified" className="w-5 h-5" />
                   </div>
 
-                  <div className="aspect-square bg-gray-100 grayscale hover:grayscale-0 transition-all border-b-4 border-black overflow-hidden relative flex items-center justify-center">
+                  <div className="aspect-square bg-gray-100 transition-all border-b-4 border-black overflow-hidden relative flex items-center justify-center">
                     {candidato.foto_url ? (
                       <Image
                         src={candidato.foto_url}
