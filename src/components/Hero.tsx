@@ -25,7 +25,7 @@ export default function Hero() {
         <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_330px] gap-8 lg:gap-12 p-6 sm:p-10 lg:p-14">
           <div className="text-left">
             <p className="inline-block bg-[#9BF6FF] text-black font-label font-black text-xs sm:text-sm uppercase px-3 py-1 mb-5 border-2 border-black">
-              Política sem névoa
+              Clareza na política
             </p>
             <h1 className="font-headline font-black text-4xl sm:text-6xl md:text-8xl leading-none tracking-tighter mb-5 sm:mb-6 uppercase">
               NÃO ELEJA <br /> NO <span className="bg-primary-container px-2 sm:px-4 text-on-primary-fixed">ESCURO</span>. <br /> VOTE COM DADOS.
