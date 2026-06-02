@@ -345,7 +345,7 @@ function renderTopCards(perfil: PerfilDetalhadoPublico, partido: PartidoResumo |
       bg: 'bg-[#9bf6ff]',
     },
     {
-      title: 'Alinhamento',
+      title: 'Alinhamento com governo',
       emoji: '🤝',
       value: enriched?.governismo ? formatPercent(enriched.governismo.percentualFavoravel) : (loadingEnrichedData ? '…' : '-'),
       helper: enriched?.governismo
@@ -717,7 +717,7 @@ export async function generateMetadata(
 
   return {
     title: `${perfil.nome_urna} (${sigla}${estado}) - ${cargo} | QuemVotar`,
-    description: `Acompanhe o mandato oficial de ${perfil.nomeCompleto || perfil.nome_urna}. Veja gastos, presença em plenário, alinhamento político e projetos com dados do ${perfil.casa}.`,
+    description: `Acompanhe o mandato oficial de ${perfil.nomeCompleto || perfil.nome_urna}. Veja gastos, presença em plenário, alinhamento com governo e projetos com dados do ${perfil.casa}.`,
     alternates: { canonical: canonicalUrl },
     openGraph: {
       title: `${perfil.nome_urna} - Ficha do ${cargo}`,
@@ -872,7 +872,7 @@ export default async function PerfilPage({
                     {perfil.nome_urna}
                   </h1>
                   <p className="font-body font-bold text-sm sm:text-lg mt-3 sm:mt-4 max-w-3xl">
-                    {perfil.biografia ? perfil.biografia : "O que mais importa para decidir voto vem primeiro: nota pública, presença, alinhamento, partido e temas em que mais vota."}
+                    {perfil.biografia ? perfil.biografia : "O que mais importa para decidir voto vem primeiro: nota pública, presença, alinhamento com governo, partido e temas em que mais vota."}
                   </p>
                 </div>
 

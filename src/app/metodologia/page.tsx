@@ -46,7 +46,7 @@ export default function MetodologiaPage() {
             <div>
               <h2 className="font-headline font-black text-xl md:text-2xl uppercase mb-3">3. Rankings e indicadores</h2>
               <p className="leading-relaxed">
-                Indicadores como nota pública, presença e alinhamento são apresentados como sinais auxiliares de análise. Eles não substituem leitura de projetos, votos nominais, histórico do mandato e contexto político. Sempre que uma nota vier de uma fonte externa, o site indica o caminho para conferência.
+                Indicadores como nota pública, presença e alinhamento com governo são apresentados como sinais auxiliares de análise. Eles não substituem leitura de projetos, votos nominais, histórico do mandato e contexto político. Sempre que uma nota vier de uma fonte externa, o site indica o caminho para conferência.
               </p>
             </div>
 

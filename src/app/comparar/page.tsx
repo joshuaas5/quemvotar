@@ -18,7 +18,7 @@ import {
 export const metadata: Metadata = {
   title: 'Comparar Parlamentares',
   description:
-    'Compare lado a lado dois deputados ou senadores: notas, presença, gastos, governismo e alinhamento político.',
+    'Compare lado a lado dois deputados ou senadores: notas, presença, gastos e alinhamento com governo.',
   alternates: { canonical: 'https://www.quemvotar.com.br/comparar' },
   robots: { index: false, follow: true },
 };
@@ -138,7 +138,7 @@ export default async function CompararPage({
             <PageHero
               eyebrow="Análise lado a lado"
               title="Comparar Parlamentares"
-              description="Lado a lado: notas, presença, gastos, partido e alinhamento político."
+              description="Lado a lado: notas, presença, gastos, partido e alinhamento com governo."
               accent="orange"
               stat={{ value: '2 perfis', label: `${pA.nome_urna} versus ${pB.nome_urna}.` }}
             />
@@ -270,7 +270,7 @@ export default async function CompararPage({
                 }
               />
               <CompareRow
-                label="Alinhamento"
+                label="Alinhamento com governo"
                 left={
                   <div className="flex flex-col items-end">
                     <span className="font-headline font-black text-3xl">{formatPercent(enriA.governismo?.percentualFavoravel)}</span>

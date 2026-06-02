@@ -44,7 +44,7 @@ export default function CompararClient({ parlamentares }: CompararClientProps) {
       <PageHero
         eyebrow="Escolha dois perfis"
         title="Comparar Parlamentares"
-        description="Escolha dois parlamentares e compare lado a lado: notas, presença, gastos e alinhamento político."
+        description="Escolha dois parlamentares e compare lado a lado: notas, presença, gastos e alinhamento com governo."
         accent="orange"
         stat={{ value: parlamentares.length.toLocaleString('pt-BR'), label: 'Perfis disponíveis para comparação.' }}
       />
