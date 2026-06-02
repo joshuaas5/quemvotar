@@ -16,9 +16,12 @@ export default async function Highlights() {
   const candidatos = await getHighlights();
 
   return (
-    <section id="candidatos" className="bg-surface-container-low py-12 sm:py-20 px-4 sm:px-6 border-y-4 border-black">
+    <section id="candidatos" className="qv-dark-panel py-12 sm:py-20 px-4 sm:px-6 border-y-4 border-black">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-10 sm:mb-16">
+        <div className="mb-10 sm:mb-16 bg-white text-black border-4 border-black p-6 md:p-8 shadow-[8px_8px_0px_0px_rgba(255,215,9,1)] max-w-4xl">
+          <p className="inline-block bg-[#FFB3D9] border-2 border-black px-3 py-1 font-label font-black uppercase text-xs mb-4">
+            Perfis oficiais
+          </p>
           <h2 className="font-headline font-black text-3xl sm:text-5xl uppercase tracking-tighter mb-2">
             PARLAMENTARES EM EXERCÍCIO
           </h2>
@@ -44,7 +47,7 @@ export default async function Highlights() {
               return (
                 <article
                   key={`${candidato.fonte}-${candidato.id}`}
-                  className="bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sm:hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] active:scale-[0.97] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0 active:translate-y-0 transition-all duration-150 group"
+                  className="bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(255,255,255,0.18)] sm:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.18)] flex flex-col hover:-translate-y-2 hover:-translate-x-2 hover:shadow-[8px_8px_0px_0px_rgba(255,215,9,1)] sm:hover:shadow-[12px_12px_0px_0px_rgba(255,215,9,1)] active:scale-[0.97] active:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.18)] active:translate-x-0 active:translate-y-0 transition-all duration-150 group"
                 >
                   <div className={`${config.bgClass} ${config.textClass} p-4 font-headline font-black uppercase flex justify-between items-center`}>
                     <span>{getCasaBadge(candidato)}</span>

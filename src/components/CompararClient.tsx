@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import Icon from './Icon';
+import PageHero from '@/components/PageHero';
 import { PoliticoPicker } from '@/components/PoliticoPicker';
 import { useToast } from '@/components/Toast';
 import type { PerfilPublico } from '@/lib/api';
@@ -41,14 +41,13 @@ export default function CompararClient({ parlamentares }: CompararClientProps) {
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
-      <div className="bg-white border-4 border-black p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
-        <h1 className="font-headline font-black text-3xl md:text-5xl uppercase mb-3">
-          Comparar Parlamentares
-        </h1>
-        <p className="font-body font-bold text-base md:text-lg opacity-80 max-w-2xl mx-auto">
-          Escolha dois parlamentares e compare lado a lado: notas, presença, gastos e alinhamento político.
-        </p>
-      </div>
+      <PageHero
+        eyebrow="Escolha dois perfis"
+        title="Comparar Parlamentares"
+        description="Escolha dois parlamentares e compare lado a lado: notas, presença, gastos e alinhamento político."
+        accent="orange"
+        stat={{ value: parlamentares.length.toLocaleString('pt-BR'), label: 'Perfis disponíveis para comparação.' }}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <PoliticoPicker

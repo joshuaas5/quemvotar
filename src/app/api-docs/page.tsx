@@ -46,7 +46,7 @@ export default async function ApiDocsPage() {
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="flex-grow bg-surface-container py-16 px-6">
+      <main className="flex-grow qv-grid-bg py-16 px-6">
         <div className="max-w-6xl mx-auto space-y-10">
           <PageHero
             eyebrow="Fontes verificáveis"

@@ -5,6 +5,7 @@ import LoadingLink from '@/components/LoadingLink';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import PageHero from '@/components/PageHero';
 import { getParlamentares, getPerfilHref, getRankingParlamentares, type PerfilPublico } from '@/lib/api';
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
 
@@ -95,17 +96,18 @@ export default async function RankingPage({
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="flex-grow bg-surface-container py-10 md:py-16 px-4 md:px-6">
+      <main className="flex-grow qv-grid-bg py-10 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto space-y-8 md:space-y-10">
           <Breadcrumbs items={[{ label: 'Ranking' }]} />
-          <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <h1 className="font-headline font-black text-3xl md:text-5xl uppercase mb-3 md:mb-4">Ranking dos Parlamentares 🏆</h1>
-            <p className="font-body font-bold text-sm md:text-lg uppercase opacity-80">
-              Nota pública de desempenho legislativo com referência ao Ranking dos Políticos.
-            </p>
-          </section>
+          <PageHero
+            eyebrow="Desempenho público"
+            title="Ranking dos Parlamentares"
+            description="Nota pública de desempenho legislativo com referência ao Ranking dos Políticos."
+            accent="yellow"
+            stat={{ value: resultados.length.toLocaleString('pt-BR'), label: 'Parlamentares no recorte atual de filtros.' }}
+          />
 
-          <form className="bg-white border-4 border-black p-4 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
+          <form className="bg-[#FFD709] border-4 border-black p-4 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
             <input
               type="text"
               name="q"

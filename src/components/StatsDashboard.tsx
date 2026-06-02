@@ -33,16 +33,20 @@ export default async function StatsDashboard() {
     .slice(0, 6);
 
   return (
-    <section id="dados" className="py-16 sm:py-24 px-4 sm:px-6 max-w-7xl mx-auto space-y-8 sm:space-y-10">
-      <div className="text-center space-y-3">
-        <h2 className="font-headline font-black text-3xl sm:text-5xl uppercase">📊 Panorama do Congresso</h2>
-        <p className="font-body font-bold uppercase text-xs sm:text-sm opacity-70">
-          Distribuição por partido e quadro oficial de lideranças políticas.
+    <section id="dados" className="qv-grid-bg py-16 sm:py-24 px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto space-y-8 sm:space-y-10">
+      <div className="qv-dark-panel border-4 border-black p-6 md:p-10 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]">
+        <p className="inline-block bg-[#C8FF8C] text-black border-2 border-black px-3 py-1 font-label font-black uppercase text-xs mb-4">
+          Base de consulta
+        </p>
+        <h2 className="font-headline font-black text-3xl sm:text-5xl md:text-6xl uppercase leading-none mb-3">Panorama do Congresso</h2>
+        <p className="font-body font-bold uppercase text-sm sm:text-lg opacity-90 max-w-4xl">
+          Distribuição por partido, quadro oficial de lideranças políticas e atalhos para investigar bancadas.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-6 sm:gap-8">
-        <section className="bg-white border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+        <section className="bg-[#FFF7C7] border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
           <div className="flex flex-col sm:flex-row items-start sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
             <div>
               <h3 className="font-headline font-black text-2xl sm:text-3xl uppercase">🏛️ Partidos com mais cadeiras</h3>
@@ -97,7 +101,7 @@ export default async function StatsDashboard() {
           </div>
         </section>
 
-        <section className="bg-white border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-5 sm:space-y-6">
+        <section className="bg-[#D7F6FF] border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-5 sm:space-y-6">
           <div>
             <h3 className="font-headline font-black text-2xl sm:text-3xl uppercase">📈 Base Atual</h3>
             <p className="font-body font-bold uppercase text-xs opacity-70 mt-2">
@@ -176,6 +180,7 @@ export default async function StatsDashboard() {
           })}
         </div>
       </section>
+      </div>
     </section>
   );
 }

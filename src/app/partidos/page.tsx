@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Breadcrumbs from '@/components/Breadcrumbs';
+import PageHero from '@/components/PageHero';
 import { getLiderancas, getPartidos, getParlamentares, getPerfilHref } from '@/lib/api';
 import { getPartyVisualEmoji } from '@/lib/party-logos';
 
@@ -57,16 +58,16 @@ export default async function PartidosPage() {
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="flex-grow bg-surface-container py-10 md:py-16 px-4 md:px-6">
+      <main className="flex-grow qv-grid-bg py-10 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto space-y-8 md:space-y-10">
           <Breadcrumbs items={[{ label: 'Partidos' }]} />
-          <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <h1 className="font-headline font-black text-3xl md:text-5xl uppercase mb-3 md:mb-4">Partidos e liderancas 🧩</h1>
-            <p className="font-body font-bold text-sm md:text-lg uppercase opacity-80">
-              Retrato dos partidos com assento no Congresso, incluindo presidencia nacional,
-              campo politico aproximado e lideranca nas casas.
-            </p>
-          </section>
+          <PageHero
+            eyebrow="Mapa partidário"
+            title="Partidos e Lideranças"
+            description="Retrato dos partidos com assento no Congresso, incluindo presidência nacional, campo político aproximado e liderança nas casas."
+            accent="green"
+            stat={{ value: partidos.length.toLocaleString('pt-BR'), label: 'Partidos com dados públicos disponíveis no recorte atual.' }}
+          />
 
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
             {partidos.map((partido) => (

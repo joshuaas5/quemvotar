@@ -16,46 +16,80 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative overflow-hidden pt-12 sm:pt-20 pb-16 sm:pb-24 px-4 sm:px-6 max-w-7xl mx-auto flex flex-col items-center text-center">
-      <h1 className="font-headline font-black text-4xl sm:text-6xl md:text-8xl leading-none tracking-tighter mb-4 sm:mb-6 text-on-background uppercase">
-        NÃO ELEJA <br /> NO <span className="bg-primary-container px-2 sm:px-4 text-on-primary-fixed">ESCURO</span>. <br /> VOTE COM DADOS.
-      </h1>
-      <p className="font-body font-bold text-base sm:text-xl md:text-2xl max-w-3xl mb-8 sm:mb-12 uppercase">
-        Consulte deputados, senadores, partidos, lideranças e notas públicas com base em dados
-        oficiais e referências auditáveis.
-      </p>
+    <section className="qv-grid-bg relative overflow-hidden py-10 sm:py-16 px-4 sm:px-6">
+      <div className="relative max-w-7xl mx-auto border-4 border-black qv-dark-panel shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+        <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#FFD709] border-4 border-black rotate-12" />
+        <div className="absolute right-16 bottom-10 w-28 h-28 bg-[#FF4D8D] border-4 border-black -rotate-12 hidden md:block" />
+        <div className="absolute left-8 bottom-8 w-24 h-24 bg-[#9BF6FF] border-4 border-black rotate-45 hidden lg:block" />
 
-      <form
-        onSubmit={handleSearch}
-        className="w-full max-w-4xl flex flex-col sm:flex-row gap-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-4 border-black"
-      >
-        <div className="flex-grow flex items-center bg-white px-4 sm:px-6 py-3 sm:py-4">
-          <Icon name="search" className="w-6 h-6 sm:w-10 sm:h-10 mr-3 sm:mr-4 shrink-0" />
-          <input
-            className="w-full border-none focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 text-base sm:text-xl font-headline font-bold uppercase placeholder-black/30"
-            placeholder="Pesquise um parlamentar, partido ou UF..."
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
+        <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_330px] gap-8 lg:gap-12 p-6 sm:p-10 lg:p-14">
+          <div className="text-left">
+            <p className="inline-block bg-[#9BF6FF] text-black font-label font-black text-xs sm:text-sm uppercase px-3 py-1 mb-5 border-2 border-black">
+              Política sem névoa
+            </p>
+            <h1 className="font-headline font-black text-4xl sm:text-6xl md:text-8xl leading-none tracking-tighter mb-5 sm:mb-6 uppercase">
+              NÃO ELEJA <br /> NO <span className="bg-primary-container px-2 sm:px-4 text-on-primary-fixed">ESCURO</span>. <br /> VOTE COM DADOS.
+            </h1>
+            <p className="font-body font-bold text-base sm:text-xl md:text-2xl max-w-4xl mb-8 sm:mb-10 uppercase opacity-90 leading-relaxed">
+              Consulte deputados, senadores, partidos, lideranças e notas públicas com base em dados oficiais, guias editoriais e referências auditáveis.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-10">
+              <div className="bg-white text-black border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(255,215,9,1)]">
+                <p className="font-headline font-black text-3xl uppercase">Guias</p>
+                <p className="font-label font-bold uppercase text-xs">contexto antes do voto</p>
+              </div>
+              <div className="bg-[#9BF6FF] text-black border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(255,255,255,1)]">
+                <p className="font-headline font-black text-3xl uppercase">Dados</p>
+                <p className="font-label font-bold uppercase text-xs">fontes verificáveis</p>
+              </div>
+              <div className="bg-[#FFB3D9] text-black border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(255,255,255,1)]">
+                <p className="font-headline font-black text-3xl uppercase">Match</p>
+                <p className="font-label font-bold uppercase text-xs">comparação explicada</p>
+              </div>
+            </div>
+          </div>
+
+          <aside className="bg-white text-black border-4 border-black p-5 sm:p-6 shadow-[8px_8px_0px_0px_rgba(255,215,9,1)] h-max lg:mt-8">
+            <p className="font-label font-black uppercase text-xs opacity-70 mb-2">Comece por aqui</p>
+            <h2 className="font-headline font-black text-3xl sm:text-4xl uppercase leading-none mb-4">
+              Busque uma pessoa, partido ou UF
+            </h2>
+            <form
+              onSubmit={handleSearch}
+              className="flex flex-col gap-0 border-4 border-black shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]"
+            >
+              <div className="flex items-center bg-white px-4 py-3 border-b-4 border-black">
+                <Icon name="search" className="w-6 h-6 mr-3 shrink-0" />
+                <input
+                  className="w-full border-none focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 text-base font-headline font-bold uppercase placeholder-black/30"
+                  placeholder="Nome, partido ou UF"
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                />
+              </div>
+              <button
+                type="submit"
+                className="bg-primary-container text-on-primary-fixed font-headline font-black text-lg px-8 py-4 border-black hover:bg-black hover:text-white transition-colors uppercase cursor-pointer"
+              >
+                Buscar dados
+              </button>
+            </form>
+          </aside>
         </div>
-        <button
-          type="submit"
-          className="bg-primary-container text-on-primary-fixed font-headline font-black text-lg sm:text-2xl px-8 sm:px-12 py-3 sm:py-4 border-t-4 sm:border-t-0 sm:border-l-4 border-black hover:bg-on-primary-fixed hover:text-primary-container transition-colors uppercase cursor-pointer"
-        >
-          Buscar
-        </button>
-      </form>
 
-      <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4 font-label font-bold text-xs sm:text-sm uppercase">
-        <span className="flex items-center gap-2 bg-on-background text-white px-3 py-1">
-          <Icon name="verified" className="w-4 h-4 shrink-0" /> Dados oficiais da
-          Câmara e do Senado
-        </span>
-        <span className="flex items-center gap-2 bg-on-background text-white px-3 py-1">
-          <Icon name="database" className="w-4 h-4 shrink-0" /> Fontes externas
-          auditáveis
-        </span>
+        <div className="relative border-t-4 border-black bg-white text-black px-6 sm:px-10 py-4 flex flex-col sm:flex-row gap-3 sm:gap-4 font-label font-bold text-xs sm:text-sm uppercase">
+          <span className="flex items-center gap-2 bg-black text-white border-2 border-black px-3 py-1 w-max">
+            <Icon name="verified" className="w-4 h-4 shrink-0" /> Câmara e Senado
+          </span>
+          <span className="flex items-center gap-2 bg-[#C8FF8C] text-black border-2 border-black px-3 py-1 w-max">
+            <Icon name="database" className="w-4 h-4 shrink-0" /> Fontes auditáveis
+          </span>
+          <span className="flex items-center gap-2 bg-[#FFD709] text-black border-2 border-black px-3 py-1 w-max">
+            Conteúdo editorial próprio
+          </span>
+        </div>
       </div>
     </section>
   );

@@ -796,7 +796,7 @@ export default async function PerfilPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify([jsonLd, breadcrumbSchema]) }}
       />
 
-      <main className="flex-grow bg-surface-container py-6 sm:py-12 px-4 sm:px-6">
+      <main className="flex-grow qv-grid-bg py-6 sm:py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto space-y-6 sm:space-y-10">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <Breadcrumbs

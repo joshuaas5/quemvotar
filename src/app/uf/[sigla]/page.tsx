@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ShareButtons from '@/components/ShareButtons';
+import PageHero from '@/components/PageHero';
 import { getParlamentares, getPerfilHref } from '@/lib/api';
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
 
@@ -65,28 +66,25 @@ export default async function UfPage({ params }: { params: Promise<{ sigla: stri
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="flex-grow bg-surface-container py-10 md:py-16 px-4 md:px-6">
+      <main className="flex-grow qv-grid-bg py-10 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto space-y-8 md:space-y-10">
           <Breadcrumbs
             items={[{ label: nomeUf }]}
           />
 
-          <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <h1 className="font-headline font-black text-3xl md:text-5xl uppercase mb-3 md:mb-4">
-                  Guia Eleitoral - {nomeUf}
-                </h1>
-                <p className="font-body font-bold text-sm md:text-lg uppercase opacity-80">
-                  Deputados federais e senadores que representam o estado.
-                </p>
-              </div>
-              <ShareButtons
-                title={`Guia Eleitoral - ${nomeUf} | QuemVotar`}
-                description={`Veja os parlamentares do ${nomeUf} e compare antes de votar.`}
-                path={`/uf/${uf}`}
-              />
-            </div>
+          <section className="space-y-4">
+            <PageHero
+              eyebrow="Guia estadual"
+              title={`Guia Eleitoral - ${nomeUf}`}
+              description="Deputados federais e senadores que representam o estado."
+              accent="green"
+              stat={{ value: daUf.length.toLocaleString('pt-BR'), label: 'Parlamentares encontrados para esta UF.' }}
+            />
+            <ShareButtons
+              title={`Guia Eleitoral - ${nomeUf} | QuemVotar`}
+              description={`Veja os parlamentares do ${nomeUf} e compare antes de votar.`}
+              path={`/uf/${uf}`}
+            />
           </section>
 
           <section className="grid grid-cols-2 md:grid-cols-4 gap-4">

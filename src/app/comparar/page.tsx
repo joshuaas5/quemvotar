@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ShareButtons from '@/components/ShareButtons';
 import CompararClient from '@/components/CompararClient';
+import PageHero from '@/components/PageHero';
 import {
   getParlamentares,
   getPerfilBasico,
@@ -95,7 +96,7 @@ export default async function CompararPage({
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <main className="flex-grow bg-surface-container py-10 md:py-16 px-4 md:px-6">
+        <main className="flex-grow qv-grid-bg py-10 md:py-16 px-4 md:px-6">
           <div className="max-w-5xl mx-auto">
             <Breadcrumbs items={[{ label: 'Comparar' }]} />
             <CompararClient parlamentares={parlamentares} />
@@ -129,19 +130,18 @@ export default async function CompararPage({
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="flex-grow bg-surface-container py-6 sm:py-12 px-4 sm:px-6">
+      <main className="flex-grow qv-grid-bg py-6 sm:py-12 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto space-y-6 sm:space-y-10">
           <Breadcrumbs items={[{ label: 'Comparar' }]} />
 
-          <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="font-headline font-black text-3xl md:text-5xl uppercase mb-2">
-                Comparar Parlamentares
-              </h1>
-              <p className="font-body font-bold text-sm md:text-lg uppercase opacity-80">
-                Lado a lado: notas, presença, gastos e alinhamento.
-              </p>
-            </div>
+          <section className="space-y-4">
+            <PageHero
+              eyebrow="Análise lado a lado"
+              title="Comparar Parlamentares"
+              description="Lado a lado: notas, presença, gastos, partido e alinhamento político."
+              accent="orange"
+              stat={{ value: '2 perfis', label: `${pA.nome_urna} versus ${pB.nome_urna}.` }}
+            />
             <ShareButtons
               title={`Compare: ${pA.nome_urna} x ${pB.nome_urna} | QuemVotar`}
               description="Veja a comparação lado a lado entre dois parlamentares."

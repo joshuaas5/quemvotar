@@ -4,6 +4,7 @@ import Icon from '@/components/Icon';
 import LoadingLink from '@/components/LoadingLink';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
+import PageHero from '@/components/PageHero';
 import {
   getCasaBadge,
   getFonteBadge,
@@ -42,14 +43,15 @@ export default async function BuscaPage({
     <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="flex-grow bg-surface-container py-10 md:py-16 px-4 md:px-6">
-        <div className="max-w-5xl mx-auto">
-          <h1 className="font-headline font-black text-3xl md:text-5xl uppercase mb-6 md:mb-8">
-            Resultados para: <span className="bg-primary-container px-2">{q || 'Busca'}</span>
-          </h1>
-          <p className="font-body font-bold uppercase text-xs md:text-sm opacity-70 mb-8 md:mb-10">
-            O buscador retorna perfis diretamente das APIs oficiais da Camara e do Senado.
-          </p>
+      <main className="flex-grow qv-grid-bg py-10 md:py-16 px-4 md:px-6">
+        <div className="max-w-5xl mx-auto space-y-8 md:space-y-10">
+          <PageHero
+            eyebrow="Busca oficial"
+            title={`Resultados para: ${q || 'Busca'}`}
+            description="O buscador retorna perfis diretamente das APIs oficiais da Câmara e do Senado."
+            accent="cyan"
+            stat={{ value: resultados.length.toLocaleString('pt-BR'), label: 'Perfis encontrados para esta consulta.' }}
+          />
 
           {resultados.length === 0 ? (
             <div className="bg-white border-4 border-black p-8 md:p-12 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
@@ -120,7 +122,7 @@ export default async function BuscaPage({
             </div>
           )}
 
-          <div className="mt-10 md:mt-12 text-center">
+          <div className="text-center">
             <LoadingLink
               href="/"
               className="inline-block font-headline font-black uppercase text-lg md:text-xl border-b-4 border-black hover:text-primary-container transition-colors"
