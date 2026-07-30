@@ -13,6 +13,7 @@ import type { PartidoResumo, PerfilDetalhadoPublico, PerfilItemLista } from '@/l
 import { buildBreadcrumbSchema } from '@/lib/jsonld';
 import { isProfileEligibleForIndexing } from '@/lib/seo/indexability';
 import { buildProfileMetaDescription, getAvailableProfileDataAreas } from '@/lib/seo/profile-content';
+import { buildProfileResearchBrief } from '@/lib/seo/profile-brief';
 
 export const revalidate = 1800;
 
@@ -612,6 +613,31 @@ function renderGastosPanel(despesas: PerfilItemLista[]) {
   );
 }
 
+function renderProfileResearchBrief(perfil: PerfilDetalhadoPublico, enriched: PerfilEnriquecido) {
+  const brief = buildProfileResearchBrief(perfil, enriched);
+
+  return (
+    <section className="border-4 border-black bg-[#FFF4C2] p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:p-8 sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+      <p className="mb-3 inline-block border-2 border-black bg-black px-2 py-1 font-label text-xs font-black uppercase text-white">
+        {'Leitura guiada'}
+      </p>
+      <h2 className="font-headline text-2xl font-black uppercase sm:text-3xl">{'O que investigar neste perfil'}</h2>
+      <p className="mt-4 font-body text-base font-semibold leading-relaxed sm:text-lg">{brief.intro}</p>
+      <p className="mt-3 font-body text-base leading-relaxed">{brief.snapshot}</p>
+      <div className="mt-6 border-t-2 border-black pt-5">
+        <h3 className="font-headline text-lg font-black uppercase">{'Perguntas que ajudam'}</h3>
+        <ul className="mt-3 grid gap-3 font-body sm:grid-cols-2">
+          {brief.questions.map((question) => (
+            <li key={question} className="border-2 border-black bg-white p-3 font-medium leading-relaxed">
+              {question}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
 /* ── Async: enriched data (loads via Suspense) ───────────────────── */
 
 async function EnrichedProfile({
@@ -626,6 +652,7 @@ async function EnrichedProfile({
   return (
     <>
       {renderTopCards(perfil, partido, enriched)}
+      {renderProfileResearchBrief(perfil, enriched)}
       {renderCampoPoliticoSection(perfil, partido, enriched)}
       {renderTemaSection(enriched.temasVotacao)}
 
