@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { calculateMatchScoreDetailedAsync, type UserAnswersMap } from '@/lib/match/calculator';
+import { calculateMatchScoreWithEvidenceAsync, type MatchEvidence, type UserAnswersMap } from '@/lib/match/calculator';
 
 export const runtime = 'nodejs';
 
@@ -23,7 +23,7 @@ async function processBatch(
   rankings: Record<string, number>,
   batchSize = 50,
 ) {
-  const results: Array<{ id: string; score: number; rankingNota: number | null }> = [];
+  const results: Array<{ id: string; score: number; rankingNota: number | null; evidence: MatchEvidence }> = [];
 
   for (let i = 0; i < items.length; i += batchSize) {
     const batch = items.slice(i, i + batchSize);
@@ -32,15 +32,15 @@ async function processBatch(
         const rankingKey = `${pol.nome_urna}|${pol.partido}|${pol.uf ?? ''}|${pol.fonte}`;
         const rankingNota = rankings[rankingKey] ?? null;
         try {
-          const score = await calculateMatchScoreDetailedAsync(
+          const result = await calculateMatchScoreWithEvidenceAsync(
             answers,
             pol.idOrigem || pol.nome_urna,
             pol.partido || '',
             rankingNota,
           );
-          return { id: pol.id, score, rankingNota };
+          return { id: pol.id, ...result, rankingNota };
         } catch {
-          return { id: pol.id, score: 0, rankingNota };
+          return { id: pol.id, score: 0, rankingNota, evidence: { temasComVotosPublicos: 0, temasComReferenciaPartidaria: 0 } };
         }
       }),
     );

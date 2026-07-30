@@ -16,19 +16,10 @@ export type UserAnswer = {
 
 export type UserAnswersMap = Record<string, UserAnswer>;
 
-/**
- * Variacao individual do parlamentar dentro do partido.
- * Baseado em hash deterministico do ID + tema.
- * Range: -0.4 a +0.4 (pequena variacao para diferenciar individuos do mesmo partido)
- */
-function getPoliticianDeviation(polId: string, questionId: string): number {
-  const hashStr = polId + questionId;
-  let hash = 0;
-  for (let i = 0; i < hashStr.length; i++) {
-    hash = (Math.imul(31, hash) + hashStr.charCodeAt(i)) | 0;
-  }
-  return ((Math.abs(hash) % 100) / 100) * 0.8 - 0.4;
-}
+export type MatchEvidence = {
+  temasComVotosPublicos: number;
+  temasComReferenciaPartidaria: number;
+};
 
 /**
  * Calcula a posicao de um parlamentar em um tema.
@@ -36,14 +27,14 @@ function getPoliticianDeviation(polId: string, questionId: string): number {
  * ALGORITMO HIBRIDO:
  * 1. Tenta buscar votacoes REAIS do deputado na Camara (FASE 2 - parcial)
  * 2. Se nao encontrar, usa posicao PARTIDARIA por tema (FASE 1 - atual)
- * 3. Aplica variacao individual (±0.4) para diferenciar deputados do mesmo partido
- * 4. Ranking dos Politicos ajusta pontuacao final
+ * 3. Guarda a origem de cada tema para exibicao transparente no resultado.
+ * 4. Exibe o Ranking dos Politicos separadamente, sem alterar a afinidade.
  */
 async function getPoliticianPosition(
   politicianId: string,
   politicianParty: string,
   theme: string,
-): Promise<number> {
+): Promise<{ position: number; source: 'voto_publico' | 'referencia_partidaria' }> {
   // FASE 2: Tentar buscar votos reais (apenas para deputados da Camara)
   const numericId = parseInt(politicianId, 10);
   if (!Number.isNaN(numericId) && numericId > 0) {
@@ -57,7 +48,7 @@ async function getPoliticianPosition(
 
         if (posicoes.length > 0) {
           const media = posicoes.reduce((a, b) => a + b, 0) / posicoes.length;
-          return Math.max(1, Math.min(5, media));
+          return { position: Math.max(1, Math.min(5, media)), source: 'voto_publico' };
         }
       }
     } catch {
@@ -65,10 +56,9 @@ async function getPoliticianPosition(
     }
   }
 
-  // FASE 1: Fallback para posicao partidaria + variacao individual
+  // FASE 1: fallback para a referencia partidaria, sem variacao inventada.
   const partyPosition = getPositionForTheme(politicianParty, theme);
-  const deviation = getPoliticianDeviation(politicianId, theme);
-  return Math.max(1, Math.min(5, partyPosition + deviation));
+  return { position: partyPosition, source: 'referencia_partidaria' };
 }
 
 /**
@@ -76,14 +66,14 @@ async function getPoliticianPosition(
  *
  * Usa votos reais quando disponiveis, fallback partidario quando nao.
  */
-export async function calculateMatchScoreDetailedAsync(
+export async function calculateMatchScoreWithEvidenceAsync(
   userAnswers: UserAnswersMap,
   politicianId: string,
   politicianParty: string,
-  politicianRanking?: number | null,
-): Promise<number> {
+  _politicianRanking?: number | null,
+): Promise<{ score: number; evidence: MatchEvidence }> {
   const topics = Object.keys(userAnswers);
-  if (topics.length === 0) return 0;
+  if (topics.length === 0) return { score: 0, evidence: { temasComVotosPublicos: 0, temasComReferenciaPartidaria: 0 } };
 
   let totalWeight = 0;
   let earnedPoints = 0;
@@ -100,27 +90,38 @@ export async function calculateMatchScoreDetailedAsync(
 
     totalWeight += userAns.weight;
 
-    const polAnswer = positions[index];
+    const polAnswer = positions[index].position;
     const distance = Math.abs(userAns.score - polAnswer);
     const normalizedPoints = Math.max(0, MAX_DIST - distance);
     earnedPoints += normalizedPoints * userAns.weight;
   });
 
-  if (totalWeight === 0) return 0;
-  let score = (earnedPoints / (totalWeight * MAX_DIST)) * 100;
+  const evidence = positions.reduce<MatchEvidence>((summary, position) => {
+    if (position.source === 'voto_publico') summary.temasComVotosPublicos += 1;
+    else summary.temasComReferenciaPartidaria += 1;
+    return summary;
+  }, { temasComVotosPublicos: 0, temasComReferenciaPartidaria: 0 });
 
-  // Ajuste leve pelo ranking: deputados com melhor ranking ganham ate 5% a mais
-  if (politicianRanking != null && !Number.isNaN(politicianRanking)) {
-    const rankingBonus = (politicianRanking / 10) * 5;
-    score = Math.min(100, score + rankingBonus);
-  }
+  if (totalWeight === 0) return { score: 0, evidence };
+  const score = (earnedPoints / (totalWeight * MAX_DIST)) * 100;
+
 
   // Protecao contra NaN
-  if (Number.isNaN(score)) return 0;
+  if (Number.isNaN(score)) return { score: 0, evidence };
 
-  return score;
+  return { score, evidence };
 }
 
+export async function calculateMatchScoreDetailedAsync(
+  userAnswers: UserAnswersMap,
+  politicianId: string,
+  politicianParty: string,
+  politicianRanking?: number | null,
+): Promise<number> {
+  const result = await calculateMatchScoreWithEvidenceAsync(userAnswers, politicianId, politicianParty, politicianRanking);
+  return result.score;
+
+}
 /**
  * Calcula o match entre usuario e parlamentar (VERSAO SINCRONA - fallback).
  *
@@ -129,7 +130,7 @@ export async function calculateMatchScoreDetailedAsync(
  */
 export function calculateMatchScoreDetailed(
   userAnswers: UserAnswersMap,
-  politicianId: string,
+  _politicianId: string,
   politicianParty: string,
   politicianRanking?: number | null,
 ): number {
@@ -146,10 +147,9 @@ export function calculateMatchScoreDetailed(
 
     totalWeight += userAns.weight;
 
-    // Posicao partidaria no tema (1-5) + variacao individual
+    // Fallback sincrono: referencia partidaria sem diferenca inventada.
     const partyPosition = getPositionForTheme(politicianParty, topic);
-    const deviation = getPoliticianDeviation(politicianId, topic);
-    const polAnswer = Math.max(1, Math.min(5, partyPosition + deviation));
+    const polAnswer = partyPosition;
 
     const distance = Math.abs(userAns.score - polAnswer);
     const normalizedPoints = Math.max(0, MAX_DIST - distance);
@@ -157,13 +157,8 @@ export function calculateMatchScoreDetailed(
   });
 
   if (totalWeight === 0) return 0;
-  let score = (earnedPoints / (totalWeight * MAX_DIST)) * 100;
+  const score = (earnedPoints / (totalWeight * MAX_DIST)) * 100;
 
-  // Ajuste leve pelo ranking
-  if (politicianRanking != null && !Number.isNaN(politicianRanking)) {
-    const rankingBonus = (politicianRanking / 10) * 5;
-    score = Math.min(100, score + rankingBonus);
-  }
 
   if (Number.isNaN(score)) return 0;
 

@@ -6,7 +6,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Icon from '../Icon';
 import { MatchQuiz } from './MatchQuiz';
 import MatchShareCard from './MatchShareCard';
-import { calculateMatchScoreDetailed, calculateNolanChart, type UserAnswersMap } from '@/lib/match/calculator';
+import { calculateMatchScoreDetailed, calculateNolanChart, type MatchEvidence, type UserAnswersMap } from '@/lib/match/calculator';
 import { buildRankingLookupKey } from '@/lib/match/ranking-key';
 import type { PerfilPublico } from '@/lib/api';
 
@@ -134,6 +134,7 @@ export function MatchClient({
   const [ufFilter, setUfFilter] = useState('');
   const [casaFilter, setCasaFilter] = useState('');
   const [matchScores, setMatchScores] = useState<Record<string, number>>({});
+  const [matchEvidence, setMatchEvidence] = useState<Record<string, MatchEvidence>>({});
   const [isCalculating, setIsCalculating] = useState(false);
   const spectrumSectionRef = useRef<HTMLDivElement | null>(null);
 
@@ -159,6 +160,7 @@ export function MatchClient({
   useEffect(() => {
     if (!showResults) {
       setMatchScores({});
+      setMatchEvidence({});
       setIsCalculating(false);
       return;
     }
@@ -192,10 +194,13 @@ export function MatchClient({
 
         if (!cancelled && data.scores) {
           const map: Record<string, number> = {};
-          data.scores.forEach((s: { id: string; score: number }) => {
+          const evidenceMap: Record<string, MatchEvidence> = {};
+          data.scores.forEach((s: { id: string; score: number; evidence?: MatchEvidence }) => {
             map[s.id] = s.score;
+            if (s.evidence) evidenceMap[s.id] = s.evidence;
           });
           setMatchScores(map);
+          setMatchEvidence(evidenceMap);
         }
       } catch (err) {
         console.error('Erro ao buscar scores de match:', err);
@@ -257,14 +262,15 @@ export function MatchClient({
               rankingNota,
             );
 
-      return { ...pol, score, rankingNota };
+      const evidence = matchEvidence[pol.id] ?? { temasComVotosPublicos: 0, temasComReferenciaPartidaria: Object.keys(answers).length };
+      return { ...pol, score, rankingNota, evidence };
     });
 
     return {
       scored: scored.sort((a, b) => b.score - a.score),
       nolan,
     };
-  }, [answers, parlamentares, showResults, rankings, matchScores]);
+  }, [answers, parlamentares, showResults, rankings, matchScores, matchEvidence]);
 
   const answeredCount = Object.keys(answers).length;
 
@@ -276,7 +282,7 @@ export function MatchClient({
           <div className="bg-white border-4 border-black p-6 sm:p-8 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
             <h1 className="font-headline font-black text-3xl sm:text-5xl uppercase mb-3">Match Eleitoral</h1>
             <p className="font-body font-bold text-base sm:text-lg opacity-80 max-w-2xl mx-auto">
-              Responda {totalSteps} temas para descobrir quais parlamentares pensam mais parecido com você.
+              {'Responda aos '}{totalSteps}{' temas para explorar afinidades e conferir a origem dos dados em cada resultado.'}
             </p>
           </div>
 
@@ -472,23 +478,23 @@ export function MatchClient({
             <div className="min-w-0">
               <h2 className="font-headline font-black text-3xl sm:text-4xl uppercase leading-none">Seu resultado</h2>
               <p className="font-body font-bold mt-2 opacity-80 max-w-xl text-sm sm:text-base">
-                Cruzamos suas respostas com o espectro partidário e histórico de votações reais da Câmara dos Deputados de {parlamentares.length} parlamentares.
+                {'A afinidade compara suas respostas com votos publicos quando localizados e com referencias partidarias quando nao ha voto disponivel. A nota de ranking aparece separadamente e nao altera a afinidade.'}
               </p>
               {isCalculating && (
                 <p className="font-label font-bold uppercase text-xs text-yellow-900 mt-2 animate-pulse">
-                  Consultando votações nominais reais na Câmara dos Deputados...
+                  {'Consultando votos publicos e referencias partidarias...'}
                 </p>
               )}
               {!isCalculating && Object.keys(matchScores).length > 0 && (
                 <p className="font-label font-bold uppercase text-xs text-green-800 mt-2">
-                  Scores refinados com votações reais da Câmara.
+                  {'Cada resultado informa quantos temas usaram voto publico e quantos usaram referencia partidaria.'}
                 </p>
               )}
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
               <button
-                onClick={() => { setShowResults(false); setCurrentStep(0); setMatchScores({}); }}
+                onClick={() => { setShowResults(false); setCurrentStep(0); setMatchScores({}); setMatchEvidence({}); }}
                 className="bg-white border-4 border-black font-headline font-black px-5 py-3 sm:px-6 sm:py-4 uppercase text-base hover:bg-gray-100 w-full sm:w-auto text-center transition-all"
               >
                 Refazer quiz
@@ -595,6 +601,19 @@ export function MatchClient({
                         <p className="font-label font-bold text-xs uppercase opacity-70 mb-3 bg-gray-100 px-2 py-1 border-2 border-black w-full break-words">
                           {pol.partido} - {pol.uf}
                         </p>
+
+                        <div className="mb-3 flex w-full flex-wrap justify-center gap-1.5 font-label text-[10px] font-bold uppercase">
+                          <span className={`border-2 border-black px-2 py-1 ${pol.evidence.temasComVotosPublicos > 0 ? 'bg-[#9BF6FF]' : 'bg-gray-100'}`}>
+                            {pol.evidence.temasComVotosPublicos} {'tema(s) com voto publico'}
+                          </span>
+                          <span className={`border-2 border-black px-2 py-1 ${pol.evidence.temasComReferenciaPartidaria > 0 ? 'bg-[#FFF4C2]' : 'bg-gray-100'}`}>
+                            {pol.evidence.temasComReferenciaPartidaria} {'tema(s) com referencia partidaria'}
+                          </span>
+                        </div>
+                        <p className="mb-3 w-full text-center font-label text-[10px] font-bold uppercase opacity-70">
+                          {'A nota de ranking nao altera a afinidade'}
+                        </p>
+
 
                         <div className="mt-auto w-full bg-secondary-fixed border-4 border-black py-3">
                           <span className="font-headline font-black text-3xl">{pol.score.toFixed(1)}%</span>

@@ -109,4 +109,24 @@ describe('calculateMatchScoreDetailed', () => {
     const scorePL = calculateMatchScoreDetailed(answers, '123', 'PL', null);
     expect(scorePT).not.toBe(scorePL);
   });
+
+  it('nao inventa diferenca entre pessoas do mesmo partido', () => {
+    const answers = {
+      pvt: { score: 5, weight: 1 },
+      impostos: { score: 1, weight: 1 },
+    };
+    const primeiro = calculateMatchScoreDetailed(answers, '123', 'PT', null);
+    const segundo = calculateMatchScoreDetailed(answers, '987', 'PT', null);
+    expect(primeiro).toBe(segundo);
+  });
+
+  it('nao usa a nota de ranking para alterar afinidade', () => {
+    const answers = {
+      pvt: { score: 5, weight: 1 },
+      impostos: { score: 1, weight: 1 },
+    };
+    const semRanking = calculateMatchScoreDetailed(answers, '123', 'PT', null);
+    const comRanking = calculateMatchScoreDetailed(answers, '123', 'PT', 10);
+    expect(semRanking).toBe(comRanking);
+  });
 });
