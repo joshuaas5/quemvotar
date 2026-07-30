@@ -5,7 +5,7 @@ import Link from 'next/link';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Icon from '../Icon';
 import { MatchQuiz } from './MatchQuiz';
-import MatchShareCard from './MatchShareCard';
+import MatchShareCardResult from './MatchShareCardResult';
 import { calculateMatchScoreDetailed, calculateNolanChart, type MatchEvidence, type UserAnswersMap } from '@/lib/match/calculator';
 import { buildRankingLookupKey } from '@/lib/match/ranking-key';
 import type { PerfilPublico } from '@/lib/api';
@@ -368,7 +368,7 @@ export function MatchClient({
               ref={spectrumSectionRef}
               className="bg-white border-4 border-black p-6 sm:p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden scroll-mt-4"
             >
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 xl:gap-10 items-start">
                 {/* Info do perfil */}
                 <div className="min-w-0 space-y-6">
                   <div>
@@ -405,7 +405,8 @@ export function MatchClient({
                 </div>
 
                 {/* Diagrama de Nolan */}
-                <div className="relative w-full max-w-[340px] sm:max-w-[400px] mx-auto aspect-square flex items-center justify-center">
+                <div className="space-y-6">
+                  <div className="relative w-full max-w-[400px] sm:max-w-[500px] mx-auto aspect-square flex items-center justify-center">
                   <svg viewBox="0 0 360 360" className="w-full h-full border-4 border-black bg-white" preserveAspectRatio="xMidYMid meet">
                     {(() => {
                       const cx = 180;
@@ -468,40 +469,40 @@ export function MatchClient({
                       );
                     })()}
                   </svg>
+                  </div>
+                  <MatchShareCardResult nolan={results.nolan} topMatches={results.scored} />
                 </div>
               </div>
             </div>
           )}
 
           {/* Header dos resultados */}
-          <div className="flex flex-col md:flex-row md:justify-between items-stretch md:items-center gap-4 bg-primary-container border-4 border-black p-6 sm:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+          <div className="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4 bg-primary-container border-4 border-black p-6 sm:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
             <div className="min-w-0">
               <h2 className="font-headline font-black text-3xl sm:text-4xl uppercase leading-none">Seu resultado</h2>
               <p className="font-body font-bold mt-2 opacity-80 max-w-xl text-sm sm:text-base">
-                {'A afinidade compara suas respostas com votos publicos quando localizados e com referencias partidarias quando nao ha voto disponivel. A nota de ranking aparece separadamente e nao altera a afinidade.'}
+                {'A afinidade compara suas respostas com votos p\u00fablicos quando localizados e com refer\u00eancias partid\u00e1rias quando n\u00e3o h\u00e1 voto dispon\u00edvel. A nota de ranking aparece separadamente e n\u00e3o altera a afinidade.'}
               </p>
               {isCalculating && (
                 <p className="font-label font-bold uppercase text-xs text-yellow-900 mt-2 animate-pulse">
-                  {'Consultando votos publicos e referencias partidarias...'}
+                  {'Consultando votos p\u00fablicos e refer\u00eancias partid\u00e1rias...'}
                 </p>
               )}
               {!isCalculating && Object.keys(matchScores).length > 0 && (
                 <p className="font-label font-bold uppercase text-xs text-green-800 mt-2">
-                  {'Cada resultado informa quantos temas usaram voto publico e quantos usaram referencia partidaria.'}
+                  {'Cada resultado informa quantos temas usaram voto p\u00fablico e quantos usaram refer\u00eancia partid\u00e1ria.'}
                 </p>
               )}
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="shrink-0">
               <button
                 onClick={() => { setShowResults(false); setCurrentStep(0); setMatchScores({}); setMatchEvidence({}); }}
-                className="bg-white border-4 border-black font-headline font-black px-5 py-3 sm:px-6 sm:py-4 uppercase text-base hover:bg-gray-100 w-full sm:w-auto text-center transition-all"
+                className="bg-white border-4 border-black font-headline font-black px-5 py-3 sm:px-6 sm:py-4 uppercase text-base hover:bg-gray-100 text-center transition-all"
               >
                 Refazer quiz
               </button>
-              {results.nolan && (
-                <MatchShareCard nolan={results.nolan} topMatches={results.scored} />
-              )}
+              {/* Cartao de compartilhamento aparece junto ao perfil acima. */}
             </div>
           </div>
 
@@ -604,14 +605,14 @@ export function MatchClient({
 
                         <div className="mb-3 flex w-full flex-wrap justify-center gap-1.5 font-label text-[10px] font-bold uppercase">
                           <span className={`border-2 border-black px-2 py-1 ${pol.evidence.temasComVotosPublicos > 0 ? 'bg-[#9BF6FF]' : 'bg-gray-100'}`}>
-                            {pol.evidence.temasComVotosPublicos} {'tema(s) com voto publico'}
+                            {pol.evidence.temasComVotosPublicos} {'tema(s) com voto p\u00fablico'}
                           </span>
                           <span className={`border-2 border-black px-2 py-1 ${pol.evidence.temasComReferenciaPartidaria > 0 ? 'bg-[#FFF4C2]' : 'bg-gray-100'}`}>
-                            {pol.evidence.temasComReferenciaPartidaria} {'tema(s) com referencia partidaria'}
+                            {pol.evidence.temasComReferenciaPartidaria} {'tema(s) com refer\u00eancia partid\u00e1ria'}
                           </span>
                         </div>
                         <p className="mb-3 w-full text-center font-label text-[10px] font-bold uppercase opacity-70">
-                          {'A nota de ranking nao altera a afinidade'}
+                          {'A nota de ranking n\u00e3o altera a afinidade'}
                         </p>
 
 
