@@ -62,9 +62,11 @@ export default function PrivacyPage() {
             <section>
               <h2 className="font-headline font-black text-xl md:text-2xl uppercase mb-3">4. Cookies e Tecnologias Semelhantes</h2>
               <p className="leading-relaxed">
-                Utilizamos cookies para: (i) manter a sessao de navegacao; (ii) lembrar preferencias de visualizacao; (iii) coletar dados estatisticos anonimos; e (iv) personalizar anuncios. Cookies de terceiros (Google, AdSense) tambem podem ser utilizados. Voce pode desativar cookies nas configuracoes do seu navegador, mas isso pode afetar a funcionalidade do Site.
+                {'Usamos recursos opcionais para medir audi\u00eancia e, se voc\u00ea permitir, exibir publicidade. Eles s\u00f3 s\u00e3o carregados depois da sua escolha no aviso de cookies.'}
               </p>
-            </section>
+              <p className="mt-3 leading-relaxed">
+                {'Voc\u00ea pode revisar ou alterar a escolha a qualquer momento pelo link ?Prefer\u00eancias de cookies? no rodap\u00e9. A decis\u00e3o fica armazenada apenas neste navegador.'}
+              </p>
 
             <section>
               <h2 className="font-headline font-black text-xl md:text-2xl uppercase mb-3">5. Compartilhamento de Dados</h2>
@@ -127,7 +129,7 @@ export default function PrivacyPage() {
             </section>
 
             <p className="text-sm opacity-70 pt-4 border-t-2 border-black">
-              Ultima atualizacao: 28 de abril de 2026.
+              {'?ltima atualiza??o: 30 de julho de 2026.'}
             </p>
           </div>
         </div>

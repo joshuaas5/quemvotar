@@ -4,7 +4,7 @@ import { ToastProvider } from "@/components/Toast";
 import { NavigationProvider } from "@/components/NavigationProvider";
 import NavigationOverlay from "@/components/NavigationOverlay";
 import BackToTop from "@/components/BackToTop";
-import AdSenseAutoAds from "@/components/AdSenseAutoAds";
+import ConsentManager from "@/components/ConsentManager";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -121,43 +121,7 @@ export default function RootLayout({
           </ToastProvider>
         </NavigationProvider>
 
-        <AdSenseAutoAds />
-
-        {gaId && (
-          <>
-            <script
-              async
-              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-            />
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${gaId}', {
-                    page_title: document.title,
-                    page_location: window.location.href,
-                  });
-                `,
-              }}
-            />
-          </>
-        )}
-
-        {gtmId && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-                })(window,document,'script','dataLayer','${gtmId}');
-              `,
-            }}
-          />
-        )}
+        <ConsentManager adsenseClient={adsenseClient} gaId={gaId} gtmId={gtmId} />
       </body>
     </html>
   );

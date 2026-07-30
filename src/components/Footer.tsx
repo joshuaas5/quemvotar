@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Icon from './Icon';
+import { CookieSettingsButton } from './ConsentManager';
 
 export default function Footer() {
   return (
@@ -31,6 +32,7 @@ export default function Footer() {
         <Link href="/privacy" className="text-black no-underline hover:text-[#ffd709] transition-colors duration-75 cursor-pointer">
           Privacidade
         </Link>
+        <CookieSettingsButton />
         <Link href="/terms" className="text-black no-underline hover:text-[#ffd709] transition-colors duration-75 cursor-pointer">
           Termos de Uso
         </Link>
