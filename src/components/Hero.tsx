@@ -35,6 +35,24 @@ export default function Hero() {
               Consulte deputados, senadores, partidos, lideranças e notas públicas com base em dados oficiais, guias editoriais e referências auditáveis.
             </p>
 
+            <Link
+              href="/match"
+              className="group mb-8 sm:mb-10 flex max-w-4xl items-center justify-between gap-4 border-4 border-black bg-[#FF4D8D] p-4 text-black shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)]"
+            >
+              <div>
+                <p className="font-label font-black text-xs uppercase">Ferramenta principal</p>
+                <h2 className="font-headline text-2xl font-black uppercase leading-none sm:text-3xl">
+                  {'Comece pelo Match Eleitoral'}
+                </h2>
+                <p className="mt-2 font-body text-sm font-bold">
+                  {'10 perguntas para encontrar afinidades pol\u00edticas de forma transparente.'}
+                </p>
+              </div>
+              <span className="shrink-0 border-4 border-black bg-black px-4 py-3 font-headline font-black uppercase text-white group-hover:bg-white group-hover:text-black">
+                {'Fazer match '}&rarr;
+              </span>
+            </Link>
+
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-10">
               <div className="bg-white text-black border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(255,215,9,1)]">
                 <p className="font-headline font-black text-3xl uppercase">Guias</p>
@@ -52,10 +70,26 @@ export default function Hero() {
           </div>
 
           <aside className="bg-white text-black border-4 border-black p-5 sm:p-6 shadow-[8px_8px_0px_0px_rgba(255,215,9,1)] h-max lg:mt-8">
-            <p className="font-label font-black uppercase text-xs opacity-70 mb-2">Comece por aqui</p>
+            <p className="font-label font-black uppercase text-xs opacity-70 mb-2">Ferramenta principal</p>
             <h2 className="font-headline font-black text-3xl sm:text-4xl uppercase leading-none mb-4">
-              Busque uma pessoa, partido ou UF
+              {'Descubra seu match eleitoral'}
             </h2>
+            <p className="mb-4 font-body text-sm font-bold leading-relaxed">
+              {'Compare suas respostas com dados dispon\u00edveis de parlamentares. O resultado indica afinidade aproximada e n\u00e3o substitui sua an\u00e1lise.'}
+            </p>
+            <Link
+              href="/match"
+              className="mb-6 flex items-center justify-between gap-3 border-4 border-black bg-[#FF4D8D] px-4 py-4 font-headline font-black uppercase shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
+            >
+              <span className="flex items-center gap-2">
+                <Icon name="info" className="h-5 w-5" />
+                {'Fazer o match'}
+              </span>
+              <span aria-hidden="true">&rarr;</span>
+            </Link>
+            <p className="font-label font-black uppercase text-xs opacity-70 mb-2">
+              {'Ou consulte uma pessoa, partido ou UF'}
+            </p>
             <form
               onSubmit={handleSearch}
               className="flex flex-col gap-0 border-4 border-black shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]"

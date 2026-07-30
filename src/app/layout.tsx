@@ -54,9 +54,9 @@ export const metadata: Metadata = {
     description: defaultDescription,
     images: [
       {
-        url: `${siteUrl}/og-image.png`,
-        width: 1200,
-        height: 630,
+        url: `${siteUrl}/og-match-eleitoral.png`,
+        width: 1731,
+        height: 909,
         alt: "QuemVotar - Dados oficiais sobre políticos brasileiros",
       },
     ],
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: defaultTitle,
     description: defaultDescription,
-    images: [`${siteUrl}/og-image.png`],
+    images: [`${siteUrl}/og-match-eleitoral.png`],
   },
   robots: {
     index: true,

@@ -7,10 +7,10 @@ import Link from 'next/link';
 import Icon from './Icon';
 
 const NAV_LINKS = [
-  { href: '/parlamentares', label: 'Parlamentares' },
+  { href: '/match', label: 'Match' },
   { href: '/comparar', label: 'Comparar' },
   { href: '/ranking', label: 'Ranking' },
-  { href: '/match', label: 'Match' },
+  { href: '/parlamentares', label: 'Parlamentares' },
   { href: '/partidos', label: 'Partidos' },
   { href: '/guias', label: 'Guias' },
   { href: '/sobre', label: 'Sobre' },
@@ -54,10 +54,10 @@ export default function Header() {
 
         <div className="flex items-center gap-3">
           <Link
-            href="/comparar"
+            href="/match"
             className="hidden sm:block bg-primary-container text-black border-4 border-black px-6 py-2 font-headline font-black uppercase tracking-tighter hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-75 active:scale-95 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
           >
-            Comparar
+            Fazer match
           </Link>
 
           <button
