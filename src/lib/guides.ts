@@ -96,6 +96,8 @@ export const GUIDE_CATEGORIES: GuideCategory[] = [
     textClass: 'text-black',
     slugs: [
       'em-quem-votar',
+      'como-pesquisar-candidato-pelo-nome',
+      'checklist-antes-de-votar',
       'como-usar-match-eleitoral',
       'como-ler-votacoes-nominais',
       'guia-primeiro-voto',
@@ -1540,6 +1542,135 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         paragraphs: [
           'O cart\u00e3o de resultado pode ser divertido de compartilhar e abrir conversa com amigos e familiares. Mas ele n\u00e3o deve virar r\u00f3tulo para atacar algu\u00e9m ou prova de que uma pessoa \u00e9 melhor que outra. Compartilhe dizendo que o resultado mostra afinidade nas respostas, n\u00e3o uma recomenda\u00e7\u00e3o definitiva.',
           'Se o compartilhamento levar outra pessoa a pesquisar, checar uma fonte e pensar nas pr\u00f3prias prioridades, ele cumpriu seu melhor papel. Democracia melhora quando mais gente troca slogan por pergunta bem feita.',
+        ],
+      },
+    ],
+  },,
+  {
+    slug: 'como-pesquisar-candidato-pelo-nome',
+    title: 'Como pesquisar um candidato pelo nome antes de votar',
+    description:
+      'Um roteiro simples para sair do nome que aparece na tela e descobrir dados, mandato, partido, propostas, fontes e o que ainda precisa ser conferido.',
+    updatedAt: '2026-07-30',
+    readingTime: '7 min',
+    intro:
+      'Pesquisar um candidato pelo nome parece fácil, mas é justamente aí que muita gente para cedo demais. O primeiro resultado, um vídeo viral ou uma postagem de campanha não contam a história toda. Com algumas perguntas simples, você consegue transformar um nome conhecido em uma pesquisa mais justa e útil.',
+    sections: [
+      {
+        title: 'Confirme se você encontrou a pessoa certa',
+        paragraphs: [
+          'Comece pelo básico: nome completo ou nome de urna, cargo, estado e partido. Há nomes parecidos, apelidos iguais e pessoas que já ocuparam cargos diferentes. Conferir esses quatro pontos evita compartilhar informação de uma pessoa como se fosse de outra.',
+          'No QuemVotar, o perfil informa a Casa legislativa, a UF e a sigla partidária. Se a pesquisa for eleitoral, complete a checagem no TSE. Se for sobre um mandato em exercício, use também a página oficial da Câmara ou do Senado.',
+        ],
+      },
+      {
+        title: 'Entenda qual cargo a pessoa disputa ou exerce',
+        paragraphs: [
+          'Não cobre de um vereador o que depende de um senador, nem trate deputado federal e senador como se fizessem o mesmo trabalho. O cargo define quais leis a pessoa pode votar, quais comissões pode integrar e que tipo de problema consegue enfrentar diretamente.',
+          'Antes de avaliar promessas, pergunte: isso é responsabilidade desse cargo? A resposta ajuda a separar uma proposta possível de uma frase feita para ganhar atenção. Quando a promessa depende de prefeitura, governo estadual, Congresso e Justiça ao mesmo tempo, vale procurar o papel exato de cada um.',
+        ],
+      },
+      {
+        title: 'Olhe o partido junto com a pessoa',
+        paragraphs: [
+          'Candidato não atua sozinho. Partido influencia candidatura, alianças, liderança, orientação de voto e espaço nas comissões. Isso não quer dizer que toda pessoa vota igual à bancada, mas ignorar a sigla deixa um pedaço importante da história de fora.',
+          'Abra a página do partido, veja a bancada atual e procure entender como ele se apresenta. Depois volte ao perfil individual: onde há dados de votos, projetos e comissões, compare se a atuação parece coerente com o que a pessoa diz defender.',
+        ],
+      },
+      {
+        title: 'Troque frases vagas por provas',
+        paragraphs: [
+          'Frases como “luta pelo povo”, “defende a família” ou “combate a corrupção” podem significar coisas muito diferentes. Em vez de discutir só o slogan, peça exemplos: qual projeto, qual voto, qual fiscalização, qual proposta, qual resultado ou qual fonte confirma a afirmação?',
+          'Nem toda atuação relevante vira uma lei aprovada. Mesmo assim, uma explicação séria deixa rastro: uma proposição, uma votação, uma audiência, uma relatoria, uma emenda, uma prestação de contas ou uma fonte institucional. Sem esse rastro, trate a fala como promessa, não como fato.',
+        ],
+      },
+      {
+        title: 'Veja o que os dados mostram e o que não mostram',
+        paragraphs: [
+          'Presença, gastos, autoria de propostas e participação em votações ajudam a montar um retrato, mas nenhum número decide sozinho se alguém merece seu voto. Gasto alto não prova irregularidade; gasto baixo não prova bom mandato; muitos projetos não garantem impacto; ausência precisa de contexto.',
+          'Use os dados para criar perguntas melhores. Há despesas com finalidade clara? Os temas das propostas importam para você? Há registros de voto para assuntos relevantes? O perfil mostra uma fonte para você conferir? A melhor pesquisa aceita que algumas respostas podem continuar abertas.',
+        ],
+      },
+      {
+        title: 'Compare poucos nomes com a mesma régua',
+        paragraphs: [
+          'Escolha de dois a cinco nomes e anote as mesmas perguntas para todos. Por exemplo: quais são minhas três prioridades, que evidência encontro para cada uma, qual partido cerca essa pessoa e que informação ainda falta? A comparação fica muito mais honesta quando a régua não muda conforme a simpatia.',
+          'Se você não sabe por onde começar, faça o Match Eleitoral e use o resultado apenas para abrir uma lista inicial. Depois, pesquise os nomes um por um. Afinidade em respostas é uma pista; a decisão melhora quando você confere o perfil e as fontes públicas.',
+        ],
+      },
+      {
+        title: 'Compartilhe a fonte, não só a conclusão',
+        paragraphs: [
+          'Quando encontrar algo importante, compartilhe o link do dado, não apenas um print com uma frase. Assim quem recebe consegue verificar por conta própria, ver a data e entender o contexto. Isso diminui boatos e torna a conversa política menos baseada em torcida.',
+          'Mudar de opinião depois de pesquisar não é incoerência. É exatamente o que acontece quando uma escolha deixa de ser impulso e passa a ter informação por trás. O objetivo não é achar um candidato perfeito: é escolher com mais consciência e menos manipulação.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'checklist-antes-de-votar',
+    title: 'Checklist antes de votar: 8 perguntas para não decidir no impulso',
+    description:
+      'Uma lista direta para organizar sua escolha eleitoral em poucos minutos, fugir da propaganda e saber o que conferir antes de decidir.',
+    updatedAt: '2026-07-30',
+    readingTime: '6 min',
+    intro:
+      'Não existe escolha política sem valores pessoais, mas existe diferença entre votar por convicção e votar no impulso. Este checklist serve para dar uma pausa antes de decidir. Você não precisa virar especialista: basta responder com sinceridade, comparar alguns nomes e conferir o que for importante para você.',
+    sections: [
+      {
+        title: '1. Quais problemas pesam mais na minha vida?',
+        paragraphs: [
+          'Escreva três prioridades reais. Pode ser emprego, preço dos alimentos, segurança, escola, saúde, moradia, transporte, meio ambiente, direitos, impostos ou outro tema que afeta sua família. Sem essa etapa, é fácil deixar a campanha escolher por você qual assunto deve importar.',
+          'Não precisa procurar um candidato que pense igual em tudo. O ponto é saber em que você não abre mão e onde aceita diferenças. Essa clareza impede que uma fala emocionante apague questões que você considera essenciais.',
+        ],
+      },
+      {
+        title: '2. Estou olhando para o cargo certo?',
+        paragraphs: [
+          'Antes de cobrar uma solução, confirme se ela depende do cargo disputado. Deputados e senadores fazem leis, fiscalizam e participam do orçamento federal. Prefeitos, governadores, vereadores, ministros e tribunais têm responsabilidades diferentes.',
+          'Promessa impossível para o cargo não vira boa ideia porque foi bem apresentada. Perguntar “isso está nas mãos dessa pessoa?” é uma das formas mais simples de reconhecer propaganda que parece prática, mas não explica como funcionaria.',
+        ],
+      },
+      {
+        title: '3. O que é fala e o que tem prova?',
+        paragraphs: [
+          'Todo candidato pode dizer que trabalha muito, combate privilégios ou defende uma causa. Procure o que sustenta a frase: projeto, voto, fiscalização, prestação de contas, atuação em comissão, proposta detalhada ou fonte oficial.',
+          'Uma imagem, um corte de vídeo e uma lista sem link não bastam para concluir algo sério. Quanto maior a acusação ou promessa, maior deve ser sua vontade de abrir a fonte original.',
+        ],
+      },
+      {
+        title: '4. Conheço o partido e as alianças?',
+        paragraphs: [
+          'A pessoa importa, mas o partido também. A sigla organiza candidatura, bancada, lideranças e muitas votações. Pesquise o partido sem transformar isso em atalho: ele ajuda a entender o contexto, enquanto o histórico individual mostra como aquela pessoa atua.',
+          'Se houver federação, coligação ou mudança recente de partido, veja a data e o motivo informado. Política tem negociações e mudanças legítimas, mas o eleitor tem direito de perguntar se existe coerência entre discurso, alianças e decisões.',
+        ],
+      },
+      {
+        title: '5. Comparei mais de um nome?',
+        paragraphs: [
+          'Escolher o primeiro nome conhecido é confortável, mas pode esconder opções melhores para suas prioridades. Compare pelo menos dois nomes usando a mesma lista de perguntas. Assim você percebe diferenças que a campanha costuma deixar de lado.',
+          'Evite comparar apenas seguidores, curtidas ou quantidade de vídeos. Popularidade mostra alcance; não mostra sozinha preparo, compromisso, resultado ou coerência. Dados e fontes podem ser menos chamativos, mas ajudam muito mais na hora de decidir.',
+        ],
+      },
+      {
+        title: '6. Eu sei o que ainda não sei?',
+        paragraphs: [
+          'Uma pesquisa responsável não precisa fingir certeza total. Anote o que não conseguiu confirmar: uma despesa, uma proposta, uma posição antiga, uma informação sobre partido ou um vídeo sem contexto. Falta de dado não é prova a favor nem contra.',
+          'Quando não houver resposta, procure a fonte primária ou reconheça a dúvida. Essa postura protege você de narrativas que usam silêncio, dado incompleto ou erro de interpretação como se fossem prova definitiva.',
+        ],
+      },
+      {
+        title: '7. Fiz uma pausa antes de compartilhar?',
+        paragraphs: [
+          'Conteúdo político é feito para provocar reação rápida: medo, indignação, orgulho ou raiva. Antes de encaminhar, pare alguns minutos e pergunte de onde veio, quando foi publicado, se a fala está completa e se outra fonte confiável confirma.',
+          'Compartilhar algo falso porque “parecia verdade” ainda espalha dano. A pausa não é censura nem fraqueza; é cuidado com quem vai receber a informação e com a qualidade da conversa pública.',
+        ],
+      },
+      {
+        title: '8. Minha escolha cabe em uma frase honesta?',
+        paragraphs: [
+          'Tente completar: “Estou considerando esta pessoa porque ela se aproxima das minhas prioridades em X, Y e Z, e conferi A e B.” Se a frase só fala de ódio ao outro lado ou de fama, talvez falte pesquisa.',
+          'Você pode usar o Match Eleitoral, a busca por nome e a comparação do QuemVotar para organizar esse caminho. O resultado mais importante não é receber uma resposta pronta: é conseguir explicar a própria decisão sem depender de boato ou torcida.',
         ],
       },
     ],
