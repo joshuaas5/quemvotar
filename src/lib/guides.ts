@@ -1545,7 +1545,7 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
         ],
       },
     ],
-  },,
+  },
   {
     slug: 'como-pesquisar-candidato-pelo-nome',
     title: 'Como pesquisar um candidato pelo nome antes de votar',
