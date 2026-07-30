@@ -56,3 +56,4 @@ describe('profile indexability', () => {
 
     expect(isProfileEligibleForIndexing(profile)).toBe(true);
   });
+});
