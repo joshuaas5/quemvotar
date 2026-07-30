@@ -7,13 +7,9 @@ import Link from 'next/link';
 import Icon from './Icon';
 
 const NAV_LINKS = [
-  { href: '/match', label: 'Match' },
+  { href: '/parlamentares', label: 'Buscar pol\u00edticos' },
   { href: '/comparar', label: 'Comparar' },
-  { href: '/ranking', label: 'Ranking' },
-  { href: '/parlamentares', label: 'Parlamentares' },
-  { href: '/partidos', label: 'Partidos' },
   { href: '/guias', label: 'Guias' },
-  { href: '/sobre', label: 'Sobre' },
 ];
 
 export default function Header() {
@@ -110,11 +106,11 @@ export default function Header() {
 
             <div className="mt-auto p-5">
               <Link
-                href="/comparar"
+                href="/match"
                 onClick={() => setOpen(false)}
                 className="block w-full bg-primary-container text-center text-black border-4 border-black px-6 py-3 font-headline font-black uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
               >
-                Comparar parlamentares
+                Fazer o Match
               </Link>
             </div>
           </aside>

@@ -2,67 +2,63 @@ import Link from 'next/link';
 
 const ITEMS = [
   {
-    href: '/sobre',
-    title: 'Por que o QuemVotar existe',
-    description:
-      'Organizamos dados públicos para ajudar o eleitor a conferir mandatos, partidos e fontes antes de formar opinião.',
+    href: '/guias',
+    title: 'Entenda sem juridiqu\u00eas',
+    description: 'Guias r\u00e1pidos para entender votos, partidos e promessas sem precisar ser especialista.',
     className: 'bg-[#FFD709]',
   },
   {
-    href: '/metodologia',
-    title: 'Como os dados são tratados',
-    description:
-      'Explicamos de onde vêm notas, presença, votações e classificações aproximadas, incluindo limites de cada fonte.',
+    href: '/comparar',
+    title: 'Compare dois pol\u00edticos',
+    description: 'Coloque dois nomes lado a lado e veja o que est\u00e1 dispon\u00edvel sobre cada um.',
     className: 'bg-[#9BF6FF]',
   },
   {
-    href: '/politica-editorial',
-    title: 'Como corrigimos informações',
-    description:
-      'Pedidos de correção são avaliados com base em fonte verificável e contexto, sem preencher lacunas com dados artificiais.',
+    href: '/metodologia',
+    title: 'De onde v\u00eam os dados',
+    description: 'Mostramos as fontes para voc\u00ea conferir quando quiser.',
     className: 'bg-[#FFB3D9]',
   },
   {
-    href: '/guias',
-    title: 'Guias para decidir melhor',
-    description:
-      'Artigos permanentes explicam como ler votações, comparar parlamentares, conferir fontes e avaliar mandatos.',
+    href: '/contact',
+    title: 'Viu algo errado?',
+    description: 'Avise a gente. Uma corre\u00e7\u00e3o com fonte ajuda todo mundo a votar melhor.',
     className: 'bg-[#C8FF8C]',
   },
 ];
 
 export default function EditorialGuide() {
   return (
-    <section className="qv-grid-bg py-12 sm:py-20 px-4 sm:px-6">
-      <div className="max-w-7xl mx-auto space-y-8 sm:space-y-10">
-      <div className="qv-dark-panel border-4 border-black p-6 md:p-10 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden">
-        <div className="absolute -right-10 -top-10 w-32 h-32 bg-[#FFD709] border-4 border-black rotate-12" />
-        <div className="relative">
-          <p className="inline-block bg-[#9BF6FF] text-black border-2 border-black px-3 py-1 font-label font-black uppercase text-xs mb-4">
-            Base editorial
-          </p>
-          <h2 className="font-headline font-black text-3xl sm:text-5xl md:text-6xl uppercase tracking-tighter mb-3 max-w-4xl">
-            Transparência antes da opinião
-          </h2>
-          <p className="font-body font-bold text-base sm:text-xl uppercase opacity-90 max-w-5xl leading-relaxed">
-            O QuemVotar não recomenda candidatos. A plataforma organiza dados oficiais, mostra caminhos de conferência e explica limitações para que cada pessoa faça a própria análise.
-          </p>
+    <section className="qv-grid-bg px-4 py-12 sm:px-6 sm:py-20">
+      <div className="mx-auto max-w-7xl space-y-8 sm:space-y-10">
+        <div className="relative overflow-hidden border-4 border-black qv-dark-panel p-6 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] md:p-10">
+          <div className="absolute -right-10 -top-10 h-32 w-32 rotate-12 border-4 border-black bg-[#FFD709]" />
+          <div className="relative">
+            <p className="mb-4 inline-block border-2 border-black bg-[#9BF6FF] px-3 py-1 font-label text-xs font-black uppercase text-black">
+              {'Sem enrola\u00e7\u00e3o'}
+            </p>
+            <h2 className="max-w-4xl font-headline text-3xl font-black uppercase tracking-tighter sm:text-5xl md:text-6xl">
+              {'Voc\u00ea decide. A gente ajuda a conferir.'}
+            </h2>
+            <p className="mt-4 max-w-4xl font-body text-base font-semibold leading-relaxed sm:text-xl">
+              {'Aqui voc\u00ea encontra o que cada pol\u00edtico fez, votou e gastou — com caminhos para conferir por conta pr\u00f3pria.'}
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8">
-        {ITEMS.map((item) => (
-          <article key={item.href} className={`${item.className} border-4 border-black p-5 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] qv-lift-card`}>
-            <h3 className="font-headline font-black text-2xl md:text-3xl uppercase leading-tight mb-3">
-              {item.title}
-            </h3>
-            <p className="font-body font-medium mb-5 leading-relaxed">{item.description}</p>
-            <Link href={item.href} className="font-headline font-black uppercase border-b-4 border-black">
-              Ler mais
-            </Link>
-          </article>
-        ))}
-      </div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4 md:gap-8">
+          {ITEMS.map((item) => (
+            <article key={item.href} className={item.className + ' qv-lift-card border-4 border-black p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:p-6'}>
+              <h3 className="mb-3 font-headline text-2xl font-black uppercase leading-tight md:text-3xl">
+                {item.title}
+              </h3>
+              <p className="mb-5 font-body leading-relaxed">{item.description}</p>
+              <Link href={item.href} className="font-headline font-black uppercase underline decoration-4 underline-offset-4">
+                {'Abrir'}
+              </Link>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -20,13 +20,13 @@ export default async function Highlights() {
       <div className="max-w-7xl mx-auto">
         <div className="mb-10 sm:mb-16 bg-white text-black border-4 border-black p-6 md:p-8 shadow-[8px_8px_0px_0px_rgba(255,215,9,1)] max-w-4xl">
           <p className="inline-block bg-[#FFB3D9] border-2 border-black px-3 py-1 font-label font-black uppercase text-xs mb-4">
-            Perfis oficiais
+            Políticos em exercício
           </p>
           <h2 className="font-headline font-black text-3xl sm:text-5xl uppercase tracking-tighter mb-2">
-            PARLAMENTARES EM EXERCÍCIO
+            ENCONTRE QUEM VOCÊ PROCURA
           </h2>
           <p className="font-body font-bold text-base sm:text-xl uppercase opacity-70">
-            Perfis em destaque nesta visita.
+            Busque por nome, partido ou estado. Abaixo, alguns perfis para começar.
           </p>
         </div>
 
@@ -77,15 +77,14 @@ export default async function Highlights() {
                       {candidato.nome_urna}
                     </h3>
                     <p className="font-body font-medium mb-6 text-sm flex-grow">
-                      Consulte a nota no ranking, histórico de votações, assiduidade e principais
-                      temas defendidos.
+                      Veja o que estiver disponível nas fontes oficiais: votos, gastos, mandatos e atuação parlamentar.
                     </p>
 
                     <LoadingLink
                       href={getPerfilHref(candidato)}
                       className="inline-block mt-auto bg-black text-white px-6 py-3 font-headline font-black text-lg uppercase border-2 border-black hover:bg-white hover:text-black active:bg-black active:text-white active:scale-[0.97] transition-all text-center"
                     >
-                      Ver perfil completo
+                      Ver perfil
                     </LoadingLink>
                   </div>
                 </article>

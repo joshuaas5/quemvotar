@@ -9,121 +9,72 @@ export default function Hero() {
   const [query, setQuery] = useState('');
   const router = useRouter();
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSearch = (event: React.FormEvent) => {
+    event.preventDefault();
     if (query.trim()) {
-      router.push(`/busca?q=${encodeURIComponent(query.trim())}`);
+      router.push('/busca?q=' + encodeURIComponent(query.trim()));
     }
   };
 
   return (
-    <section className="qv-grid-bg relative overflow-hidden py-10 sm:py-16 px-4 sm:px-6">
-      <div className="relative max-w-7xl mx-auto border-4 border-black qv-dark-panel shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
-        <div className="absolute -right-10 -top-10 w-40 h-40 bg-[#FFD709] border-4 border-black rotate-12" />
-        <div className="absolute right-16 bottom-10 w-28 h-28 bg-[#FF4D8D] border-4 border-black -rotate-12 hidden md:block" />
-        <div className="absolute left-8 bottom-8 w-24 h-24 bg-[#9BF6FF] border-4 border-black rotate-45 hidden lg:block" />
+    <section className="qv-grid-bg relative overflow-hidden px-4 py-8 sm:px-6 sm:py-14">
+      <div className="relative mx-auto max-w-6xl overflow-hidden border-4 border-black qv-dark-panel shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]">
+        <div className="absolute -right-10 -top-10 h-40 w-40 rotate-12 border-4 border-black bg-[#FFD709]" />
+        <div className="absolute -bottom-12 -left-10 hidden h-32 w-32 rotate-45 border-4 border-black bg-[#9BF6FF] sm:block" />
 
-        <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_330px] gap-8 lg:gap-12 p-6 sm:p-10 lg:p-14">
-          <div className="text-left">
-            <p className="inline-block bg-[#9BF6FF] text-black font-label font-black text-xs sm:text-sm uppercase px-3 py-1 mb-5 border-2 border-black">
-              Clareza na política
-            </p>
-            <h1 className="font-headline font-black text-4xl sm:text-6xl md:text-8xl leading-none tracking-tighter mb-5 sm:mb-6 uppercase">
-              NÃO ELEJA <br /> NO <span className="bg-primary-container px-2 sm:px-4 text-on-primary-fixed">ESCURO</span>. <br /> VOTE COM DADOS.
-            </h1>
-            <p className="font-body font-bold text-base sm:text-xl md:text-2xl max-w-4xl mb-8 sm:mb-10 uppercase opacity-90 leading-relaxed">
-              Consulte deputados, senadores, partidos, lideranças e notas públicas com base em dados oficiais, guias editoriais e referências auditáveis.
-            </p>
+        <div className="relative px-5 py-10 text-center sm:px-10 sm:py-14 lg:px-16">
+          <p className="mb-5 inline-block border-2 border-black bg-[#9BF6FF] px-3 py-1 font-label text-xs font-black uppercase text-black sm:text-sm">
+            {'Seu voto. Sua escolha.'}
+          </p>
+          <h1 className="mx-auto max-w-5xl font-headline text-4xl font-black uppercase leading-[0.92] tracking-tighter sm:text-6xl md:text-7xl">
+            {'Descubra quem combina '}<span className="bg-primary-container px-2 text-on-primary-fixed sm:px-3">{'com o seu voto'}</span>
+          </h1>
+          <p className="mx-auto mt-6 max-w-3xl font-body text-base font-semibold leading-relaxed sm:text-xl">
+            {'Responda 10 perguntas r\u00e1pidas e veja quais parlamentares t\u00eam mais afinidade com voc\u00ea. \u00c9 gr\u00e1tis e n\u00e3o precisa criar conta.'}
+          </p>
 
-            <Link
-              href="/match"
-              className="group mb-8 sm:mb-10 flex max-w-4xl items-center justify-between gap-4 border-4 border-black bg-[#FF4D8D] p-4 text-black shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)]"
-            >
-              <div>
-                {/* Convite principal */}
-                <h2 className="font-headline text-2xl font-black uppercase leading-none sm:text-3xl">
-                  {'Comece pelo Match Eleitoral'}
-                </h2>
-                <p className="mt-2 font-body text-sm font-bold">
-                  {'10 perguntas para encontrar afinidades pol\u00edticas de forma transparente.'}
-                </p>
-              </div>
-              <span className="shrink-0 border-4 border-black bg-black px-4 py-3 font-headline font-black uppercase text-white group-hover:bg-white group-hover:text-black">
-                {'Fazer match '}&rarr;
-              </span>
-            </Link>
+          <Link
+            href="/match"
+            className="group mx-auto mt-8 flex w-full max-w-2xl items-center justify-between gap-4 border-4 border-black bg-[#FF4D8D] p-4 text-black shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)] sm:px-6 sm:py-5"
+          >
+            <span className="text-left">
+              <span className="block font-headline text-2xl font-black uppercase leading-none sm:text-4xl">{'Fazer o Match'}</span>
+              <span className="mt-1 block font-body text-sm font-bold sm:text-base">{'Comece agora e compartilhe o seu resultado.'}</span>
+            </span>
+            <span aria-hidden="true" className="shrink-0 border-4 border-black bg-black px-4 py-3 font-headline text-2xl font-black text-white group-hover:bg-white group-hover:text-black">
+              {'\u2192'}
+            </span>
+          </Link>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8 sm:mb-10">
-              <div className="bg-white text-black border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(255,215,9,1)]">
-                <p className="font-headline font-black text-3xl uppercase">Guias</p>
-                <p className="font-label font-bold uppercase text-xs">contexto antes do voto</p>
-              </div>
-              <div className="bg-[#9BF6FF] text-black border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(255,255,255,1)]">
-                <p className="font-headline font-black text-3xl uppercase">Dados</p>
-                <p className="font-label font-bold uppercase text-xs">fontes verificáveis</p>
-              </div>
-              <Link href="/comparar" className="bg-[#FFB3D9] text-black border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(255,255,255,1)] hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-all">
-                <p className="font-headline font-black text-3xl uppercase">Comparar</p>
-                <p className="font-label font-bold uppercase text-xs">dois perfis lado a lado</p>
-              </Link>
-            </div>
+          <div className="mx-auto mt-6 grid max-w-2xl grid-cols-3 gap-2 text-black sm:gap-3">
+            <div className="border-2 border-black bg-white px-2 py-3 font-label text-xs font-black uppercase sm:text-sm">{'10 perguntas'}</div>
+            <div className="border-2 border-black bg-[#C8FF8C] px-2 py-3 font-label text-xs font-black uppercase sm:text-sm">{'Gr\u00e1tis'}</div>
+            <div className="border-2 border-black bg-[#FFD709] px-2 py-3 font-label text-xs font-black uppercase sm:text-sm">{'Sem cadastro'}</div>
           </div>
-
-          <aside className="bg-white text-black border-4 border-black p-5 sm:p-6 shadow-[8px_8px_0px_0px_rgba(255,215,9,1)] h-max lg:mt-8">
-            {/* Resultado do match em destaque */}
-            <h2 className="font-headline font-black text-3xl sm:text-4xl uppercase leading-none mb-4">
-              {'Descubra seu match eleitoral'}
-            </h2>
-            <p className="mb-4 font-body text-sm font-bold leading-relaxed">
-              {'Compare suas respostas com dados dispon\u00edveis de parlamentares. O resultado indica afinidade aproximada e n\u00e3o substitui sua an\u00e1lise.'}
-            </p>
-            <Link
-              href="/match"
-              className="mb-6 flex items-center justify-between gap-3 border-4 border-black bg-[#FF4D8D] px-4 py-4 font-headline font-black uppercase shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none"
-            >
-              <span className="flex items-center gap-2">
-                <Icon name="info" className="h-5 w-5" />
-                {'Fazer o match'}
-              </span>
-              <span aria-hidden="true">&rarr;</span>
-            </Link>
-            <p className="font-label font-black uppercase text-xs opacity-70 mb-2">
-              {'Ou consulte uma pessoa, partido ou UF'}
-            </p>
-            <form
-              onSubmit={handleSearch}
-              className="flex flex-col gap-0 border-4 border-black shadow-[5px_5px_0px_0px_rgba(0,0,0,1)]"
-            >
-              <div className="flex items-center bg-white px-4 py-3 border-b-4 border-black">
-                <Icon name="search" className="w-6 h-6 mr-3 shrink-0" />
-                <input
-                  className="w-full border-none focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 text-base font-headline font-bold uppercase placeholder-black/30"
-                  placeholder="Nome, partido ou UF"
-                  type="text"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-              </div>
-              <button
-                type="submit"
-                className="bg-primary-container text-on-primary-fixed font-headline font-black text-lg px-8 py-4 border-black hover:bg-black hover:text-white transition-colors uppercase cursor-pointer"
-              >
-                Buscar dados
-              </button>
-            </form>
-          </aside>
         </div>
 
-        <div className="relative border-t-4 border-black bg-white text-black px-6 sm:px-10 py-4 flex flex-col sm:flex-row gap-3 sm:gap-4 font-label font-bold text-xs sm:text-sm uppercase">
-          <span className="flex items-center gap-2 bg-black text-white border-2 border-black px-3 py-1 w-max">
-            <Icon name="verified" className="w-4 h-4 shrink-0" /> Câmara e Senado
-          </span>
-          <span className="flex items-center gap-2 bg-[#C8FF8C] text-black border-2 border-black px-3 py-1 w-max">
-            <Icon name="database" className="w-4 h-4 shrink-0" /> Fontes auditáveis
-          </span>
-          <span className="flex items-center gap-2 bg-[#FFD709] text-black border-2 border-black px-3 py-1 w-max">
-            Conteúdo editorial próprio
-          </span>
+        <div className="relative border-t-4 border-black bg-white px-5 py-6 text-black sm:px-10">
+          <p className="text-center font-body text-sm font-bold sm:text-base">{'Quer encontrar algu\u00e9m espec\u00edfico?'}</p>
+          <form onSubmit={handleSearch} className="mx-auto mt-3 flex max-w-2xl flex-col overflow-hidden border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:flex-row">
+            <label htmlFor="hero-search" className="sr-only">{'Nome, partido ou estado'}</label>
+            <div className="flex flex-1 items-center gap-3 bg-white px-4 py-3">
+              <Icon name="search" className="h-5 w-5 shrink-0" />
+              <input
+                id="hero-search"
+                className="w-full border-none font-body font-semibold outline-none placeholder:text-black/45"
+                placeholder="Nome, partido ou estado"
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </div>
+            <button type="submit" className="cursor-pointer border-t-4 border-black bg-black px-6 py-3 font-headline text-lg font-black uppercase text-white transition-colors hover:bg-[#FFD709] hover:text-black sm:border-l-4 sm:border-t-0">
+              {'Buscar'}
+            </button>
+          </form>
+          <Link href="/comparar" className="mt-4 block text-center font-label text-sm font-black underline underline-offset-4">
+            {'Ou compare dois pol\u00edticos lado a lado'}
+          </Link>
         </div>
       </div>
     </section>
