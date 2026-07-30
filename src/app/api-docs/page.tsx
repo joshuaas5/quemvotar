@@ -8,7 +8,10 @@ export const metadata: Metadata = {
   title: 'APIs e Fontes Oficiais',
   description: 'Documentação das APIs e fontes de dados oficiais integradas ao QuemVotar: Câmara, Senado, TSE, CNJ e mais.',
   alternates: { canonical: 'https://www.quemvotar.com.br/api-docs' },
-  robots: { index: true, follow: true },
+  // This is a transparency page for people already using QuemVotar, not an
+  // organic landing page. Keeping it crawlable preserves its links while
+  // preventing an operational API catalogue from competing with editorial pages.
+  robots: { index: false, follow: true },
 };
 
 export const revalidate = 86400;

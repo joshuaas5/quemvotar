@@ -11,6 +11,7 @@ import { CardSkeleton, SectionSkeleton, ThemeSkeleton } from '@/components/Profi
 import { getPerfilBasico, getPerfilEnriquecido, getThemeVisual, type PerfilEnriquecido } from '@/lib/api';
 import type { PartidoResumo, PerfilDetalhadoPublico, PerfilItemLista } from '@/lib/official';
 import { buildBreadcrumbSchema } from '@/lib/jsonld';
+import { isProfileEligibleForIndexing } from '@/lib/seo/indexability';
 
 export const revalidate = 1800;
 
@@ -728,6 +729,9 @@ export async function generateMetadata(
       card: 'summary_large_image',
       images: perfil.foto_url ? [perfil.foto_url] : [],
     },
+    robots: isProfileEligibleForIndexing(perfil)
+      ? { index: true, follow: true }
+      : { index: false, follow: true },
   };
 }
 
