@@ -7,9 +7,13 @@ import Link from 'next/link';
 import Icon from './Icon';
 
 const NAV_LINKS = [
-  { href: '/parlamentares', label: 'Buscar pol\u00edticos' },
+  { href: '/match', label: 'Match' },
   { href: '/comparar', label: 'Comparar' },
+  { href: '/ranking', label: 'Ranking' },
+  { href: '/parlamentares', label: 'Buscar pol\u00edticos' },
+  { href: '/partidos', label: 'Partidos' },
   { href: '/guias', label: 'Guias' },
+  { href: '/sobre', label: 'Sobre' },
 ];
 
 export default function Header() {
@@ -33,7 +37,7 @@ export default function Header() {
           </span>
         </Link>
 
-        <div className="hidden md:flex gap-4 xl:gap-6 items-center font-headline font-black uppercase tracking-tighter">
+        <div className="hidden xl:flex gap-4 xl:gap-6 items-center font-headline font-black uppercase tracking-tighter">
           {NAV_LINKS.map(({ href, label }) => {
             const isActive = pathname === href || (href !== '/' && pathname.startsWith(href) && href !== '/#dados');
             return (
@@ -59,7 +63,7 @@ export default function Header() {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="md:hidden w-10 h-10 border-2 border-black flex items-center justify-center bg-white active:scale-95 cursor-pointer"
+            className="xl:hidden w-10 h-10 border-2 border-black flex items-center justify-center bg-white active:scale-95 cursor-pointer"
             aria-label="Abrir menu"
           >
             <Icon name="menu" className="w-6 h-6" />
@@ -68,7 +72,7 @@ export default function Header() {
       </nav>
 
       {open && (
-        <div className="fixed inset-0 z-[100] md:hidden">
+        <div className="fixed inset-0 z-[100] xl:hidden">
           <div
             className="absolute inset-0 bg-black/50"
             onClick={() => setOpen(false)}

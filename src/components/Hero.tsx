@@ -26,8 +26,9 @@ export default function Hero() {
           <p className="mb-5 inline-block border-2 border-black bg-[#9BF6FF] px-3 py-1 font-label text-xs font-black uppercase text-black sm:text-sm">
             {'Seu voto. Sua escolha.'}
           </p>
-          <h1 className="mx-auto max-w-5xl font-headline text-4xl font-black uppercase leading-[0.92] tracking-tighter sm:text-6xl md:text-7xl">
-            {'Descubra quem combina '}<span className="bg-primary-container px-2 text-on-primary-fixed sm:px-3">{'com o seu voto'}</span>
+          <h1 className="mx-auto max-w-5xl font-headline text-4xl font-black uppercase leading-[1.04] tracking-tighter sm:text-6xl md:text-7xl">
+            <span className="block">{'Descubra quem combina'}</span>
+            <span className="mt-1 inline-block bg-primary-container px-2 py-1 leading-none text-on-primary-fixed sm:px-3">{'com o seu voto'}</span>
           </h1>
           <p className="mx-auto mt-6 max-w-3xl font-body text-base font-semibold leading-relaxed sm:text-xl">
             {'Responda 10 perguntas r\u00e1pidas e veja quais parlamentares t\u00eam mais afinidade com voc\u00ea. \u00c9 gr\u00e1tis e n\u00e3o precisa criar conta.'}
