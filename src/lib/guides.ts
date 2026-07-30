@@ -95,6 +95,8 @@ export const GUIDE_CATEGORIES: GuideCategory[] = [
     colorClass: 'bg-[#FFB3D9]',
     textClass: 'text-black',
     slugs: [
+      'em-quem-votar',
+      'como-usar-match-eleitoral',
       'como-ler-votacoes-nominais',
       'guia-primeiro-voto',
       'como-montar-lista-criterios-voto',
@@ -1420,6 +1422,128 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
       },
     ],
   },
+  {
+    slug: 'em-quem-votar',
+    title: 'Em quem votar? Um m\u00e9todo simples para decidir seu voto',
+    description:
+      'Um passo a passo para sair da d\u00favida, comparar candidatos com calma e decidir em quem votar sem depender de propaganda ou torcida.',
+    updatedAt: '2026-07-30',
+    readingTime: '10 min',
+    intro:
+      'A pergunta em quem votar parece pedir um nome r\u00e1pido. Mas a resposta boa n\u00e3o come\u00e7a por um candidato: come\u00e7a pelo que voc\u00ea espera da pol\u00edtica e pelo cargo que estar\u00e1 em disputa. Este guia organiza uma decis\u00e3o que cabe na vida real, mesmo para quem tem pouco tempo, n\u00e3o acompanha not\u00edcias todos os dias e est\u00e1 cansado de promessa vazia.',
+    sections: [
+      {
+        title: 'Comece pelo cargo, n\u00e3o pelo rosto',
+        paragraphs: [
+          'Antes de pesquisar um nome, descubra qual cargo aquela pessoa quer ocupar e o que esse cargo realmente pode fazer. Um deputado federal vota leis nacionais, participa de comiss\u00f5es e fiscaliza o governo federal. Um senador tamb\u00e9m vota leis e tem atribui\u00e7\u00f5es pr\u00f3prias, como analisar indica\u00e7\u00f5es importantes. Prefeito, vereador, governador e presidente t\u00eam responsabilidades diferentes. Cobrar da pessoa errada \u00e9 o primeiro caminho para cair em promessa imposs\u00edvel.',
+          'Quando uma proposta parecer muito boa, fa\u00e7a uma pergunta simples: essa pessoa tem poder para realizar isso ou depende de outra esfera de governo? A resposta n\u00e3o precisa matar sua esperan\u00e7a; ela ajuda a separar compromisso poss\u00edvel de frase feita para campanha.',
+        ],
+      },
+      {
+        title: 'Escolha tr\u00eas prioridades que s\u00e3o suas',
+        paragraphs: [
+          'N\u00e3o existe candidato perfeito. Por isso, uma lista enorme de exig\u00eancias costuma terminar em paralisia. Escolha tr\u00eas assuntos que mexem de verdade com a sua vida, sua fam\u00edlia ou seu bairro: emprego, sa\u00fade, seguran\u00e7a, escola, moradia, custo de vida, meio ambiente, direitos ou transporte. A lista precisa ser sua, n\u00e3o a pauta mais barulhenta da semana.',
+          'Depois, anote o que voc\u00ea gostaria de ver em cada assunto. Em vez de escrever apenas sa\u00fade, escreva algo como reduzir a demora para consulta, fortalecer atendimento perto de casa ou melhorar acesso a rem\u00e9dios. Quanto mais clara for a sua pergunta, mais f\u00e1cil fica perceber quando uma resposta \u00e9 concreta.',
+        ],
+      },
+      {
+        title: 'Troque promessas por perguntas verific\u00e1veis',
+        paragraphs: [
+          'Promessa gen\u00e9rica \u00e9 f\u00e1cil de aplaudir e dif\u00edcil de cobrar. Uma proposta fica mais s\u00e9ria quando responde como ser\u00e1 feita, de onde vir\u00e1 o dinheiro, quem executa, em quanto tempo e qual resultado pode ser medido. Se essas respostas n\u00e3o aparecem, n\u00e3o significa automaticamente m\u00e1 inten\u00e7\u00e3o; significa que ainda falta informa\u00e7\u00e3o para decidir.',
+          'Use a mesma r\u00e9gua para todos. Pergunte qual problema a proposta resolve, quem ser\u00e1 beneficiado, o que pode dar errado e como a pessoa vai prestar contas. Esse cuidado protege voc\u00ea tanto de quem promete demais quanto de quem usa apenas medo e indigna\u00e7\u00e3o para convencer.',
+        ],
+      },
+      {
+        title: 'Use o Match como come\u00e7o, n\u00e3o como veredito',
+        paragraphs: [
+          'O Match Eleitoral do QuemVotar \u00e9 \u00fatil para transformar suas prioridades em uma primeira lista de nomes. Voc\u00ea responde a temas pol\u00edticos e recebe uma medida de afinidade. Isso pode revelar candidatos que voc\u00ea n\u00e3o conhecia e organizar uma pesquisa que antes parecia grande demais.',
+          'Mas afinidade n\u00e3o \u00e9 ordem de voto. O resultado n\u00e3o conhece sua hist\u00f3ria, sua cidade, seus limites pessoais nem todos os fatos da vida p\u00fablica de uma pessoa. Escolha alguns nomes que apareceram e abra os perfis. A pergunta seguinte \u00e9: o que a atua\u00e7\u00e3o, os votos, o partido e as fontes mostram sobre eles?',
+        ],
+      },
+      {
+        title: 'Pesquise candidato e partido juntos',
+        paragraphs: [
+          'No Congresso, pol\u00edtica n\u00e3o \u00e9 trabalho solit\u00e1rio. Partidos organizam bancadas, indicam lideran\u00e7as, negociam prioridades e orientam votos. Por isso, conhecer apenas a pessoa deixa uma parte importante de fora. Veja o partido, as alian\u00e7as, a forma como a bancada atua e se existe coer\u00eancia entre o discurso individual e as escolhas coletivas.',
+          'Isso n\u00e3o quer dizer que todo parlamentar vota igual ao partido ou que a sigla define tudo. Quer dizer apenas que partido \u00e9 dado relevante. Se um candidato se apresenta como independente, vale investigar em quais temas ele acompanha ou diverge da pr\u00f3pria bancada.',
+        ],
+      },
+      {
+        title: 'Compare provas, n\u00e3o torcida',
+        paragraphs: [
+          'Depois de reduzir a lista a dois ou tr\u00eas nomes, compare o que \u00e9 verific\u00e1vel: posi\u00e7\u00f5es em temas importantes, vota\u00e7\u00f5es registradas, presen\u00e7a, projetos, gastos quando houver dados e fontes oficiais. Uma fala de rede social pode mostrar comunica\u00e7\u00e3o; um registro p\u00fablico ajuda a mostrar atua\u00e7\u00e3o.',
+          'Evite procurar apenas material que confirma sua prefer\u00eancia inicial. Leia tamb\u00e9m uma cr\u00edtica bem fundamentada e procure a fonte original. Se um dado vier em print, v\u00eddeo curto ou lista sem link, trate como ponto de partida para checagem, n\u00e3o como prova final.',
+        ],
+      },
+      {
+        title: 'Decida e guarde o motivo da sua escolha',
+        paragraphs: [
+          'Quando chegar a uma decis\u00e3o, escreva em poucas linhas por que escolheu aquele nome ou partido. Pode ser algo simples: concordo com as prioridades, encontrei registros que sustentam a fala e aceito os pontos com que n\u00e3o concordo. Esse registro evita que seu voto vire apenas mem\u00f3ria de uma propaganda forte.',
+          'Depois da elei\u00e7\u00e3o, volte a essa anota\u00e7\u00e3o. Votar n\u00e3o termina na urna. Acompanhar um mandato, cobrar explica\u00e7\u00f5es e corrigir a pr\u00f3pria opini\u00e3o quando surgem fatos novos faz parte de uma escolha respons\u00e1vel.',
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'como-usar-match-eleitoral',
+    title: 'Match eleitoral: como usar o resultado sem terceirizar seu voto',
+    description:
+      'Entenda o que a afinidade do Match Eleitoral mede, o que ela n\u00e3o mede e como transformar o resultado em uma pesquisa melhor.',
+    updatedAt: '2026-07-30',
+    readingTime: '9 min',
+    intro:
+      'Um Match Eleitoral serve para organizar afinidades, n\u00e3o para escolher por voc\u00ea. Ele pode ser uma porta de entrada poderosa para pesquisa pol\u00edtica: em vez de come\u00e7ar por centenas de nomes, voc\u00ea parte das respostas que deu sobre temas importantes. O valor do resultado aparece quando ele \u00e9 usado com curiosidade, fontes e senso cr\u00edtico.',
+    sections: [
+      {
+        title: 'O que o resultado mede',
+        paragraphs: [
+          'O Match compara suas respostas sobre temas pol\u00edticos com as refer\u00eancias dispon\u00edveis para parlamentares. No QuemVotar, a afinidade pode usar votos p\u00fablicos quando eles s\u00e3o localizados e refer\u00eancias partid\u00e1rias quando n\u00e3o existe voto individual dispon\u00edvel para aquele tema. Por isso, o resultado mostra aproxima\u00e7\u00e3o entre respostas, e n\u00e3o uma verdade absoluta sobre uma pessoa.',
+          'A porcentagem \u00e9 uma medida de semelhan\u00e7a dentro das perguntas respondidas. Ela ajuda a comparar nomes sob a mesma r\u00e9gua. N\u00e3o significa que o parlamentar concorda com voc\u00ea em tudo, nem que o site recomenda votar nele.',
+        ],
+      },
+      {
+        title: 'O que o resultado n\u00e3o mede',
+        paragraphs: [
+          'Nenhum question\u00e1rio consegue resumir car\u00e1ter, capacidade de negociar, qualidade de equipe, rela\u00e7\u00e3o com eleitores, situa\u00e7\u00f5es locais ou todos os fatos de um mandato. Tamb\u00e9m n\u00e3o substitui checagem de processos, gastos, presen\u00e7a e promessas. Uma afinidade alta \u00e9 convite para olhar mais de perto, e n\u00e3o atalho para encerrar a pesquisa.',
+          'O Match tamb\u00e9m n\u00e3o transforma partido em destino. Partidos s\u00e3o relevantes para entender vota\u00e7\u00f5es e alian\u00e7as, mas pessoas podem divergir. Abra o perfil, confira os dados que existem e veja em quais temas aquela aproxima\u00e7\u00e3o aparece.',
+        ],
+      },
+      {
+        title: 'Responda pensando no que voc\u00ea realmente defende',
+        paragraphs: [
+          'Evite responder para chegar a um nome que voc\u00ea j\u00e1 gosta. O resultado fica mais \u00fatil quando voc\u00ea responde de acordo com suas convic\u00e7\u00f5es, mesmo que elas misturem posi\u00e7\u00f5es que n\u00e3o cabem em um r\u00f3tulo simples. Essa mistura \u00e9 normal e pode ser exatamente o que torna a ferramenta interessante.',
+          'Quando uma pergunta parecer dif\u00edcil, pare e leia com calma. Pense em consequ\u00eancias, n\u00e3o apenas no nome do tema. Se voc\u00ea mudar de ideia depois, refa\u00e7a o quiz. Revisar opini\u00e3o com mais informa\u00e7\u00e3o \u00e9 sinal de cuidado, n\u00e3o de fraqueza.',
+        ],
+      },
+      {
+        title: 'Leia a origem de cada afinidade',
+        paragraphs: [
+          'O resultado informa quantos temas usaram voto p\u00fablico e quantos usaram refer\u00eancia partid\u00e1ria. Essa diferen\u00e7a importa. Voto p\u00fablico aponta para um registro individual localizado; refer\u00eancia partid\u00e1ria ajuda a preencher uma lacuna quando esse registro n\u00e3o est\u00e1 dispon\u00edvel. Os dois tipos de informa\u00e7\u00e3o devem ser lidos com o contexto que merecem.',
+          'Um resultado transparente n\u00e3o finge ter certeza onde n\u00e3o tem. Se houver poucas refer\u00eancias para um nome, trate a afinidade como pista inicial. Se houver mais dados p\u00fablicos, use-os para aprofundar a compara\u00e7\u00e3o nos perfis e nas fontes oficiais.',
+        ],
+      },
+      {
+        title: 'Use os filtros para aproximar a pesquisa da sua realidade',
+        paragraphs: [
+          'Depois de ver os resultados, filtre por estado e por Casa legislativa quando isso fizer sentido para sua pesquisa. Procurar representantes do seu estado pode tornar a lista mais pr\u00f3xima do cotidiano, enquanto olhar deputados e senadores juntos ajuda a perceber diferen\u00e7as de cargo.',
+          'N\u00e3o use o filtro para eliminar informa\u00e7\u00e3o inc\u00f4moda. Ele serve para organizar. Vale guardar alguns nomes fora do seu estado quando voc\u00ea estiver estudando temas nacionais, partidos ou vota\u00e7\u00f5es que ajudam a entender melhor o cen\u00e1rio.',
+        ],
+      },
+      {
+        title: 'Abra os perfis antes de escolher',
+        paragraphs: [
+          'Selecione alguns dos nomes com maior afinidade e abra seus perfis. Veja o que est\u00e1 dispon\u00edvel sobre mandato, votos, despesas, autoria, comiss\u00f5es e fontes. Depois compare com as tr\u00eas prioridades que voc\u00ea definiu. Uma pessoa pode aparecer bem no quiz e ainda assim n\u00e3o ser a melhor escolha para o que voc\u00ea considera mais urgente.',
+          'A compara\u00e7\u00e3o fica melhor quando voc\u00ea usa a mesma pergunta para todos: o que esta pessoa fez, que evid\u00eancia existe, qual partido a cerca e o que ainda n\u00e3o sei? Essa \u00faltima pergunta \u00e9 importante porque evita confundir falta de dado com dado favor\u00e1vel.',
+        ],
+      },
+      {
+        title: 'Compartilhe com contexto',
+        paragraphs: [
+          'O cart\u00e3o de resultado pode ser divertido de compartilhar e abrir conversa com amigos e familiares. Mas ele n\u00e3o deve virar r\u00f3tulo para atacar algu\u00e9m ou prova de que uma pessoa \u00e9 melhor que outra. Compartilhe dizendo que o resultado mostra afinidade nas respostas, n\u00e3o uma recomenda\u00e7\u00e3o definitiva.',
+          'Se o compartilhamento levar outra pessoa a pesquisar, checar uma fonte e pensar nas pr\u00f3prias prioridades, ele cumpriu seu melhor papel. Democracia melhora quando mais gente troca slogan por pergunta bem feita.',
+        ],
+      },
+    ],
+  }
 ];
 const CORE_GUIDE_SOURCES: GuideSource[] = [
   {
