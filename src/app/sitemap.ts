@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
-import { getPartidosResumo } from '@/lib/official';
+import { fetchOfficialCongressProfiles, getPartidosResumo } from '@/lib/official';
 import { GUIDE_ARTICLES } from '@/lib/guides';
+import { isProfileEligibleForSitemap } from '@/lib/seo/indexability';
 
 export const revalidate = 86400;
 
@@ -22,7 +23,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/partidos`, lastModified: editorialLastModified, changeFrequency: 'weekly', priority: 0.7 },
   ];
 
-  const partidos = await getPartidosResumo().catch(() => []);
+  const [perfis, partidos] = await Promise.all([
+    fetchOfficialCongressProfiles().catch(() => []),
+    getPartidosResumo().catch(() => []),
+  ]);
+
+  const perfilRoutes: MetadataRoute.Sitemap = perfis.filter(isProfileEligibleForSitemap).map((perfil) => ({
+    url: `${baseUrl}/perfil/${perfil.fonte}/${perfil.idOrigem}`,
+    changeFrequency: 'monthly',
+    priority: 0.55,
+  }));
 
   const partidoRoutes: MetadataRoute.Sitemap = partidos.map((partido) => ({
     url: `${baseUrl}/partidos/${partido.sigla}`,
@@ -30,10 +40,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  const ufRoutes: MetadataRoute.Sitemap = [
-    'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA',
-    'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO',
-  ].map((uf) => ({
+  const ufSet = new Set(perfis.map((p) => p.uf).filter((uf): uf is string => Boolean(uf)));
+  const ufRoutes: MetadataRoute.Sitemap = Array.from(ufSet).map((uf) => ({
     url: `${baseUrl}/uf/${uf.toLowerCase()}`,
     changeFrequency: 'monthly',
     priority: 0.6,
@@ -46,7 +54,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.9,
   }));
 
-  // Perfis individuais continuam acessiveis por busca e pelos links internos.
-  // Eles voltam ao sitemap quando houver curadoria da versao detalhada de cada perfil.
-  return [...staticRoutes, ...guideRoutes, ...partidoRoutes, ...ufRoutes];
+  return [...staticRoutes, ...guideRoutes, ...perfilRoutes, ...partidoRoutes, ...ufRoutes];
 }
