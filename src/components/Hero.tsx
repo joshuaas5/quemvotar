@@ -40,7 +40,7 @@ export default function Hero() {
               className="group mb-8 sm:mb-10 flex max-w-4xl items-center justify-between gap-4 border-4 border-black bg-[#FF4D8D] p-4 text-black shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)]"
             >
               <div>
-                <p className="font-label font-black text-xs uppercase">Ferramenta principal</p>
+                {/* Convite principal */}
                 <h2 className="font-headline text-2xl font-black uppercase leading-none sm:text-3xl">
                   {'Comece pelo Match Eleitoral'}
                 </h2>
@@ -70,7 +70,7 @@ export default function Hero() {
           </div>
 
           <aside className="bg-white text-black border-4 border-black p-5 sm:p-6 shadow-[8px_8px_0px_0px_rgba(255,215,9,1)] h-max lg:mt-8">
-            <p className="font-label font-black uppercase text-xs opacity-70 mb-2">Ferramenta principal</p>
+            {/* Resultado do match em destaque */}
             <h2 className="font-headline font-black text-3xl sm:text-4xl uppercase leading-none mb-4">
               {'Descubra seu match eleitoral'}
             </h2>

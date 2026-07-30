@@ -65,7 +65,7 @@ export default function PrivacyPage() {
                 {'Usamos recursos opcionais para medir audi\u00eancia e, se voc\u00ea permitir, exibir publicidade. Eles s\u00f3 s\u00e3o carregados depois da sua escolha no aviso de cookies.'}
               </p>
               <p className="mt-3 leading-relaxed">
-                {'Voc\u00ea pode revisar ou alterar a escolha a qualquer momento pelo link ?Prefer\u00eancias de cookies? no rodap\u00e9. A decis\u00e3o fica armazenada apenas neste navegador.'}
+                {'Voc\u00ea pode revisar ou alterar a escolha a qualquer momento pelo link "Prefer\u00eancias de cookies" no rodap\u00e9. A decis\u00e3o fica armazenada apenas neste navegador.'}
               </p>
             </section>
 
@@ -130,7 +130,7 @@ export default function PrivacyPage() {
             </section>
 
             <p className="text-sm opacity-70 pt-4 border-t-2 border-black">
-              {'?ltima atualiza??o: 30 de julho de 2026.'}
+              {'\u00daltima atualiza\u00e7\u00e3o: 30 de julho de 2026.'}
             </p>
           </div>
         </div>

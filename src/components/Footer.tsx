@@ -48,18 +48,21 @@ export default function Footer() {
       <div className="flex gap-4">
         <Link
           href="/partidos"
+          aria-label="Ver partidos"
           className="w-10 h-10 border-2 border-black bg-on-background flex items-center justify-center text-white cursor-pointer hover:bg-secondary hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
         >
           <Icon name="groups" className="w-5 h-5" />
         </Link>
         <Link
           href="/ranking"
+          aria-label="Ver ranking"
           className="w-10 h-10 border-2 border-black bg-on-background flex items-center justify-center text-white cursor-pointer hover:bg-secondary hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
         >
           <Icon name="leaderboard" className="w-5 h-5" />
         </Link>
         <Link
           href="/parlamentares"
+          aria-label="Buscar parlamentares"
           className="w-10 h-10 border-2 border-black bg-on-background flex items-center justify-center text-white cursor-pointer hover:bg-secondary hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
         >
           <Icon name="search" className="w-5 h-5" />
