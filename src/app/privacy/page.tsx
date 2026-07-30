@@ -67,6 +67,7 @@ export default function PrivacyPage() {
               <p className="mt-3 leading-relaxed">
                 {'Voc\u00ea pode revisar ou alterar a escolha a qualquer momento pelo link ?Prefer\u00eancias de cookies? no rodap\u00e9. A decis\u00e3o fica armazenada apenas neste navegador.'}
               </p>
+            </section>
 
             <section>
               <h2 className="font-headline font-black text-xl md:text-2xl uppercase mb-3">5. Compartilhamento de Dados</h2>
