@@ -87,15 +87,21 @@ describe('profile-image utilities', () => {
   });
 
   describe('improveProfilePhotoUrl', () => {
-    it('prioritizes high-quality camera URL for camara source', () => {
+    it('uses the official Camera URL supplied by the data source', () => {
+      const official = 'http://www.camara.leg.br/internet/deputado/bandep/12345.jpg';
+      const result = improveProfilePhotoUrl('camara', '12345', official);
+      expect(result).toBe('https://www.camara.leg.br/internet/deputado/bandep/12345.jpg');
+    });
+
+    it('uses high-quality camera URL when the source did not supply a photo', () => {
       const result = improveProfilePhotoUrl('camara', '12345');
       expect(result).toContain('pagina_do_deputado');
     });
 
-    it('falls back to upgrading current URL when ID fails', () => {
+    it('keeps the official current URL when ID fails', () => {
       const current = 'https://www.camara.leg.br/internet/deputado/bandep/12345.jpg';
       const result = improveProfilePhotoUrl('camara', 'invalid', current);
-      expect(result).toContain('pagina_do_deputado');
+      expect(result).toBe(current);
     });
 
     it('uses senate URL for senado source', () => {

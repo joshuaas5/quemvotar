@@ -50,9 +50,9 @@ export function improveProfilePhotoUrl(
   currentUrl?: string | null,
 ): string {
   if (fonte === 'camara') {
-    const highQuality = getHighQualityCamaraPhotoUrl(idOrigem);
-    if (highQuality) return highQuality;
-    return upgradeCamaraPhotoUrl(currentUrl);
+    const officialUrl = toHttps(currentUrl ?? '');
+    if (officialUrl) return officialUrl;
+    return getHighQualityCamaraPhotoUrl(idOrigem);
   }
 
   const senadoHighQuality = getHighQualitySenadoPhotoUrl(idOrigem);
