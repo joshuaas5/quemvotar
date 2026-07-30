@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { GUIDE_ARTICLES, getGuideBySlug, getGuideCardStyle, getGuideCategory, getGuideReadingTime, getGuideWordCount } from '@/lib/guides';
+import { GUIDE_ARTICLES, getGuideBySlug, getGuideCardStyle, getGuideCategory, getGuideReadingTime, getGuideSources, getGuideWordCount } from '@/lib/guides';
 
 export function generateStaticParams() {
   return GUIDE_ARTICLES.map((article) => ({ slug: article.slug }));
@@ -50,6 +50,7 @@ export default async function GuiaPage({ params }: { params: Promise<{ slug: str
   const related = GUIDE_ARTICLES
     .filter((item) => item.slug !== article.slug && category.slugs.includes(item.slug))
     .slice(0, 3);
+  const sources = getGuideSources(article);
 
   const articleSchema = {
     '@context': 'https://schema.org',
@@ -57,6 +58,7 @@ export default async function GuiaPage({ params }: { params: Promise<{ slug: str
     headline: article.title,
     description: article.description,
     dateModified: article.updatedAt,
+    isAccessibleForFree: true,
     datePublished: article.updatedAt,
     author: {
       '@type': 'Organization',
@@ -117,6 +119,13 @@ export default async function GuiaPage({ params }: { params: Promise<{ slug: str
                 <p className="font-label font-bold uppercase text-xs mt-4 opacity-70">
                   Atualizado em {new Date(article.updatedAt).toLocaleDateString('pt-BR')}
                 </p>
+                <div className="mt-4 border-t-2 border-black pt-4 font-body text-sm leading-relaxed">
+                  <p className="font-bold">{'Produzido pela equipe editorial do QuemVotar.'}</p>
+                  <p className="mt-1">{'Para dados atuais ou sens\u00edveis, consulte as fontes oficiais indicadas neste guia.'}</p>
+                  <Link href="/politica-editorial" className="mt-3 inline-block font-headline font-black uppercase border-b-2 border-black">
+                    {'Pol\u00edtica editorial'}
+                  </Link>
+                </div>
               </aside>
             </div>
           </header>
@@ -159,6 +168,37 @@ export default async function GuiaPage({ params }: { params: Promise<{ slug: str
                     ))}
                   </div>
                 </section>
+              ))}
+            </div>
+          </section>
+
+          <section className="bg-white border-4 border-black p-6 md:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            <div className="max-w-3xl">
+              <h2 className="font-headline font-black text-3xl md:text-4xl uppercase leading-none">
+                {'Fontes para conferir'}
+              </h2>
+              <p className="mt-3 font-body text-base md:text-lg leading-relaxed">
+                {'Este guia organiza perguntas e crit\u00e9rios de leitura. Antes de decidir ou compartilhar um dado atual, confira o registro na fonte prim\u00e1ria correspondente.'}
+              </p>
+            </div>
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+              {sources.map((source) => (
+                <a
+                  key={source.href}
+                  href={source.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group border-4 border-black bg-[#F7F2DE] p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[7px_7px_0px_0px_rgba(0,0,0,1)]"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="font-headline font-black text-lg uppercase leading-tight">{source.label}</h3>
+                    <span aria-hidden="true" className="font-headline font-black text-xl">&rarr;</span>
+                  </div>
+                  <p className="mt-3 font-body text-sm leading-relaxed">{source.description}</p>
+                  <span className="mt-4 inline-block font-label font-black text-xs uppercase border-b-2 border-black">
+                    {'Abrir fonte'}
+                  </span>
+                </a>
               ))}
             </div>
           </section>

@@ -13,6 +13,12 @@ export interface GuideArticle {
   sections: GuideSection[];
 }
 
+
+export interface GuideSource {
+  label: string;
+  description: string;
+  href: string;
+}
 export interface GuideCategory {
   id: string;
   label: string;
@@ -1415,6 +1421,36 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     ],
   },
 ];
+const CORE_GUIDE_SOURCES: GuideSource[] = [
+  {
+    label: 'Dados Abertos da C\u00e2mara',
+    description: 'Deputados, vota\u00e7\u00f5es, proposi\u00e7\u00f5es, \u00f3rg\u00e3os e despesas parlamentares.',
+    href: 'https://dadosabertos.camara.leg.br/',
+  },
+  {
+    label: 'Dados Abertos do Senado',
+    description: 'Dados legislativos e administrativos publicados pelo Senado Federal.',
+    href: 'https://www12.senado.leg.br/dados-abertos/dados-abertos',
+  },
+  {
+    label: 'Portal de Dados Abertos do TSE',
+    description: 'Dados eleitorais, candidaturas, resultados e estat\u00edsticas oficiais.',
+    href: 'https://dadosabertos.tse.jus.br/',
+  },
+];
+
+/**
+ * These are starting points for verification, not a claim that every source
+ * supplied every sentence in an editorial guide.
+ */
+export function getGuideSources(article: GuideArticle): GuideSource[] {
+  const category = getGuideCategory(article);
+
+  if (category.id === 'congresso') return CORE_GUIDE_SOURCES.slice(0, 2);
+  if (category.id === 'checagem') return [CORE_GUIDE_SOURCES[2], ...CORE_GUIDE_SOURCES.slice(0, 2)];
+  return CORE_GUIDE_SOURCES;
+}
+
 
 export function getGuideBySlug(slug: string) {
   return GUIDE_ARTICLES.find((article) => article.slug === slug) ?? null;
