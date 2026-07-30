@@ -10,7 +10,7 @@ import { getParlamentares, getPerfilHref, getRankingParlamentares, type PerfilPu
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
 
 export const metadata: Metadata = {
-  title: "Ranking dos Parlamentares",
+  title: "Ranking de parlamentares",
   description:
     "Veja a nota pública de desempenho legislativo dos deputados e senadores com base no Ranking dos Políticos. Filtre por casa, UF e nome.",
   alternates: { canonical: "https://www.quemvotar.com.br/ranking" },
@@ -101,11 +101,38 @@ export default async function RankingPage({
           <Breadcrumbs items={[{ label: 'Ranking' }]} />
           <PageHero
             eyebrow="Desempenho público"
-            title="Ranking dos Parlamentares"
+            title="Ranking de parlamentares"
             description="Nota pública de desempenho legislativo com referência ao Ranking dos Políticos."
             accent="yellow"
             stat={{ value: resultados.length.toLocaleString('pt-BR'), label: 'Parlamentares no recorte atual de filtros.' }}
           />
+
+          <section className="bg-white border-4 border-black p-5 md:p-7 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+            <h2 className="font-headline font-black text-2xl md:text-3xl uppercase mb-3">
+              Como usar este ranking
+            </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 font-body">
+              <p className="font-medium leading-relaxed">
+                {'Esta p\u00e1gina mostra um recorte de '}{ranking.length.toLocaleString('pt-BR')}{' parlamentares com dados publicados pelo Ranking dos Pol\u00edticos. A nota \u00e9 calculada e atualizada pela fonte externa; o QuemVotar apenas organiza o acesso a ela.'}
+              </p>
+              <p className="font-medium leading-relaxed">
+                {'Ranking n\u00e3o \u00e9 recomenda\u00e7\u00e3o de voto. Compare a nota com o perfil, as vota\u00e7\u00f5es, as despesas, as autorias e os links oficiais antes de formar sua pr\u00f3pria conclus\u00e3o.'}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-4 mt-5">
+              <a
+                href="https://ranking.org.br/ranking"
+                target="_blank"
+                rel="noreferrer"
+                className="font-headline font-black uppercase border-b-4 border-black"
+              >
+                Consultar a fonte original
+              </a>
+              <LoadingLink href="/metodologia" className="font-headline font-black uppercase border-b-4 border-black">
+                Entender a metodologia do site
+              </LoadingLink>
+            </div>
+          </section>
 
           <form className="bg-[#FFD709] border-4 border-black p-4 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
             <input
@@ -135,6 +162,10 @@ export default async function RankingPage({
               Aplicar filtros
             </button>
           </form>
+
+          <p className="font-body font-medium text-sm">
+            Os filtros atuam somente nos {ranking.length.toLocaleString('pt-BR')} registros carregados neste recorte.
+          </p>
 
           <section className="flex flex-wrap items-center justify-between gap-4">
             <p className="font-headline font-black text-xl md:text-2xl uppercase">

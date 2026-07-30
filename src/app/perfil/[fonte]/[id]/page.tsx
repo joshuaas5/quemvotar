@@ -12,6 +12,7 @@ import { getPerfilBasico, getPerfilEnriquecido, getThemeVisual, type PerfilEnriq
 import type { PartidoResumo, PerfilDetalhadoPublico, PerfilItemLista } from '@/lib/official';
 import { buildBreadcrumbSchema } from '@/lib/jsonld';
 import { isProfileEligibleForIndexing } from '@/lib/seo/indexability';
+import { buildProfileMetaDescription, getAvailableProfileDataAreas } from '@/lib/seo/profile-content';
 
 export const revalidate = 1800;
 
@@ -110,11 +111,18 @@ function renderInterpretacaoSection(perfil: PerfilDetalhadoPublico) {
   const nome = perfil.nome_urna;
   const uf = perfil.uf ? ` por ${perfil.uf}` : '';
 
+  const availableAreas = getAvailableProfileDataAreas(perfil);
+  const availableData = availableAreas.length > 0
+    ? availableAreas.map((area) => area.label).join(', ')
+    : 'informa\u00e7\u00f5es cadastrais e fontes oficiais';
   return (
     <section className="bg-white border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
       <h2 className="font-headline font-black text-2xl sm:text-3xl uppercase mb-4">
         Como interpretar este perfil
       </h2>
+      <p className="font-label font-bold uppercase text-xs sm:text-sm mb-5">
+        {'Dados dispon\u00edveis nesta consulta: '}{availableData}.
+      </p>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 font-body">
         <p className="font-medium leading-relaxed">
           Esta página reúne dados públicos sobre {nome}, {perfil.cargo.toLowerCase()}{uf}, atualmente vinculado ao partido {perfil.partido}. Use as informações como ponto de partida para conferir atuação parlamentar, presença institucional, partido, despesas, projetos e fontes oficiais disponíveis.
@@ -713,10 +721,11 @@ export async function generateMetadata(
   const sigla = perfil.partido;
   const estado = perfil.uf ? `-${perfil.uf}` : '';
   const cargo = perfil.cargo;
+  const profileTitle = `${perfil.nome_urna}: ${cargo.toLowerCase()}${perfil.uf ? ` por ${perfil.uf}` : ''} - ${sigla}`;
 
   const canonicalUrl = `https://www.quemvotar.com.br/perfil/${fonte}/${id}`;
 
-  return {
+  const baseMetadata = {
     title: `${perfil.nome_urna} (${sigla}${estado}) - ${cargo} | QuemVotar`,
     description: `Acompanhe o mandato oficial de ${perfil.nomeCompleto || perfil.nome_urna}. Veja gastos, presença em plenário, alinhamento com governo e projetos com dados do ${perfil.casa}.`,
     alternates: { canonical: canonicalUrl },
@@ -732,6 +741,12 @@ export async function generateMetadata(
     robots: isProfileEligibleForIndexing(perfil)
       ? { index: true, follow: true }
       : { index: false, follow: true },
+  };
+
+  return {
+    ...baseMetadata,
+    description: buildProfileMetaDescription(perfil),
+    title: profileTitle,
   };
 }
 
