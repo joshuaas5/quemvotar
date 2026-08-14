@@ -41,7 +41,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Fase 3.3/3.4: partidos e UFs com conteudo editorial proprio voltam ao sitemap.
   const partidoRoutes: MetadataRoute.Sitemap = getAllPartidosEditorial().map((partido) => ({
-    url: `${baseUrl}/partidos/${partido.sigla}`,
+    // Siglas acentuadas (ex.: UNIÃO) precisam de percent-encoding para que
+    // crawlers nao enviem bytes crus e recebam 500.
+    url: `${baseUrl}/partidos/${encodeURIComponent(partido.sigla)}`,
     lastModified: new Date(partido.atualizadoEm),
     changeFrequency: 'monthly',
     priority: 0.65,
