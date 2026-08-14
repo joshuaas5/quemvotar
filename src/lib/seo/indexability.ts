@@ -1,4 +1,5 @@
 import type { PerfilDetalhadoPublico, PerfilPublico } from '@/lib/official';
+import { getPerfisAllowlistKeys } from '@/lib/perfis-editorial-utils';
 
 type ProfileCandidate = Pick<PerfilPublico, 'fonte' | 'idOrigem' | 'nome_urna' | 'partido' | 'uf' | 'fonteUrl'>;
 
@@ -40,9 +41,7 @@ export function isProfileEligibleForSitemap(profile: ProfileCandidate): boolean 
  * A lista comeca vazia de proposito: nenhuma pagina montada por template deve
  * ser indexada como conteudo editorial.
  */
-export const PROFILE_INDEX_ALLOWLIST: string[] = [
-  // Exemplo (apos a tarefa 3.6 do plano): 'camara/204379',
-];
+export const PROFILE_INDEX_ALLOWLIST: string[] = getPerfisAllowlistKeys();
 
 /**
  * A rendered profile needs at least one official reference and one meaningful

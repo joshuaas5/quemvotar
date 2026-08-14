@@ -3,6 +3,7 @@ import { getActiveGuides } from '@/lib/guides';
 import { EDITORIAL_ARTICLES } from '@/lib/editorial';
 import { getAllPartidosEditorial } from '@/lib/partidos-editorial-utils';
 import { UFS_EDITORIAL } from '@/lib/content/uf-editorial';
+import { getAllPerfisEditorial } from '@/lib/perfis-editorial-utils';
 
 export const revalidate = 86400;
 
@@ -53,9 +54,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
+  // Fase 3.6: perfis com texto editorial humano voltam ao sitemap (allowlist).
+  const perfilRoutes: MetadataRoute.Sitemap = getAllPerfisEditorial().map((perfil) => ({
+    url: `${baseUrl}/perfil/${perfil.fonte}/${perfil.idOrigem}`,
+    lastModified: new Date(perfil.atualizadoEm),
+    changeFrequency: 'monthly',
+    priority: 0.6,
+  }));
+
   // Fase 1 do plano de correcao AdSense: perfis de template (/perfil/*) e as
   // paginas de UF/partido sem conteudo editorial proprio saem do sitemap e
   // ficam com noindex. Voltao ao indice apenas quando receberem texto escrito
   // por humano (Fases 3.3/3.4/3.6).
-  return [...staticRoutes, ...guideRoutes, ...editorialRoutes, ...partidoRoutes, ...ufRoutes];
+  return [...staticRoutes, ...guideRoutes, ...editorialRoutes, ...partidoRoutes, ...ufRoutes, ...perfilRoutes];
 }

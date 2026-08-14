@@ -10,10 +10,12 @@ import BotaoFavoritar from '@/components/BotaoFavoritar';
 import { CardSkeleton, SectionSkeleton, ThemeSkeleton } from '@/components/ProfileSkeleton';
 import { getPerfilBasico, getPerfilEnriquecido, getThemeVisual, type PerfilEnriquecido } from '@/lib/api';
 import type { PartidoResumo, PerfilDetalhadoPublico, PerfilItemLista } from '@/lib/official';
-import { buildBreadcrumbSchema } from '@/lib/jsonld';
+import { buildArticleSchema, buildBreadcrumbSchema } from '@/lib/jsonld';
 import { isProfileEligibleForIndexing } from '@/lib/seo/indexability';
 import { buildProfileMetaDescription, getAvailableProfileDataAreas } from '@/lib/seo/profile-content';
 import { buildProfileResearchBrief } from '@/lib/seo/profile-brief';
+import { getPerfilEditorial } from '@/lib/perfis-editorial-utils';
+import { SITE } from '@/lib/site-config';
 
 export const revalidate = 1800;
 
@@ -751,6 +753,12 @@ export async function generateMetadata(
   const cargo = perfil.cargo;
   const profileTitle = `${perfil.nome_urna}: ${cargo.toLowerCase()}${perfil.uf ? ` por ${perfil.uf}` : ''} - ${sigla}`;
 
+  // Fase 3.6: perfil com texto editorial humano usa esse texto na descricao.
+  const editorial = getPerfilEditorial(fonte, id);
+  const editorialDescription = editorial
+    ? editorial.texto.join(' ').slice(0, 155).trim() + '…'
+    : null;
+
   const canonicalUrl = `https://www.quemvotar.com.br/perfil/${fonte}/${id}`;
 
   const baseMetadata = {
@@ -773,7 +781,7 @@ export async function generateMetadata(
 
   return {
     ...baseMetadata,
-    description: buildProfileMetaDescription(perfil),
+    description: editorialDescription ?? buildProfileMetaDescription(perfil),
     title: profileTitle,
   };
 }
@@ -799,6 +807,7 @@ export default async function PerfilPage({
 
   const { perfil, partido } = result;
   const cores = partido?.cores ?? ['#111827', '#d1d5db'];
+  const editorial = getPerfilEditorial(fonte, id);
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -952,6 +961,37 @@ export default async function PerfilPage({
               </div>
             </div>
           </section>
+
+          {editorial ? (
+            <section className="bg-white border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-body">
+              <p className="mb-3 inline-block border-2 border-black bg-black px-2 py-1 font-label text-xs font-black uppercase text-white">
+                Análise editorial
+              </p>
+              <p className="font-label font-bold uppercase text-xs opacity-60 mb-4">
+                Texto assinado pela equipe editorial do QuemVotar ({SITE.publisherName}) • Revisado em {new Date(editorial.atualizadoEm).toLocaleDateString('pt-BR')}
+              </p>
+              <div className="space-y-4">
+                {editorial.texto.map((paragraph) => (
+                  <p key={paragraph} className="leading-relaxed text-base md:text-lg">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+              <div className="mt-6 flex flex-wrap gap-4">
+                {editorial.fontes.map((fonte) => (
+                  <a
+                    key={fonte.href}
+                    href={fonte.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-headline font-black uppercase text-sm border-b-4 border-black w-max"
+                  >
+                    {fonte.label}
+                  </a>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           {renderInterpretacaoSection(perfil)}
 

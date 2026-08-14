@@ -25,6 +25,45 @@ export interface EditorialArticle {
 
 export const EDITORIAL_ARTICLES: EditorialArticle[] = [
   {
+    slug: 'clausula-de-barreira-o-que-muda-nos-partidos',
+    title: 'Cláusula de barreira: o que é e como ela muda o mapa partidário',
+    description:
+      'A regra que condiciona o funcionamento partidário ao desempenho eleitoral explica fusões, federações e o tamanho dos partidos. Entenda como funciona e o que observar em 2026.',
+    author: 'equipe-quemvotar',
+    publishedAt: '2026-08-14',
+    updatedAt: '2026-08-14',
+    intro:
+      'Fusões de partidos, federações e legendas que desaparecem têm uma explicação institucional comum: a cláusula de barreira, também chamada de cláusula de desempenho. Criada para reduzir a fragmentação partidária, ela condiciona o acesso a recursos e ao tempo de rádio e TV ao desempenho eleitoral. Entender a regra ajuda a ler o noticiário político e a avaliar alianças.',
+    sections: [
+      {
+        title: 'O que a regra exige',
+        paragraphs: [
+          'Pela Emenda Constitucional 97/2017, os partidos precisam alcançar percentuais crescentes de votos válidos para a Câmara dos Deputados, distribuídos em pelo menos nove estados, ou eleger pelo menos onze deputados federais em nove ou mais unidades da federação. Quem não atinge o desempenho perde o acesso ao fundo partidário e ao tempo de propaganda, mas não é extinto: pode continuar existindo e disputando eleições com estrutura reduzida.',
+          'O percentual cresce a cada eleição: 1,5% dos votos válidos em 2018, 2% em 2022, 2,5% em 2026 e 3% a partir de 2030. A exigência de distribuição regional — votos em pelo menos nove estados — impede que uma legenda se sustente apenas com uma base local concentrada.',
+        ],
+      },
+      {
+        title: 'Por que isso explica fusões e federações',
+        paragraphs: [
+          'Para sobreviver à barreira, partidos pequenos adotam três caminhos: fundir-se em uma legenda maior, formar federação com outros partidos (união obrigatória por pelo menos quatro anos) ou simplesmente perder acesso a recursos e seguir como legenda de fachada. Os últimos anos trouxeram exemplos dos três casos, e o próximo ciclo eleitoral tende a repetir o movimento.',
+          'Para o eleitor, o efeito prático é direto: o voto em um candidato fortalece o partido e, por tabela, a federação ou fusão da qual ele faz parte. Quem quer avaliar alianças precisa olhar não apenas o que o candidato diz, mas com quem a legenda precisa se unir para sobreviver — e o que essa união diz sobre o programa que será defendido.',
+        ],
+      },
+      {
+        title: 'O que observar em 2026',
+        paragraphs: [
+          'Com a exigência subindo para 2,5% em 2026, espera-se nova rodada de negociações entre legendas pequenas: federações podem ser reformuladas e fusões novas podem ser anunciadas antes do pleito. Esses arranjos são legítimos e regulados pela Justiça Eleitoral, mas mudam o sentido do voto proporcional.',
+          'Ao pesquisar candidatos, confira se o partido ou federação alcançou a barreira na eleição anterior e quais alianças estão em curso. O registro partidário no TSE e os dados abertos da Câmara permitem acompanhar bancadas e desempenho com fonte oficial.',
+        ],
+      },
+    ],
+    sources: [
+      { label: 'Portal do TSE', href: 'https://www.tse.jus.br/' },
+      { label: 'Dados abertos da Câmara', href: 'https://dadosabertos.camara.leg.br/' },
+      { label: 'Emenda Constitucional 97/2017', href: 'https://www.planalto.gov.br/ccivil_03/constituicao/emendas/emc/emc97.htm' },
+    ],
+  },
+  {
     slug: 'o-que-votacao-no-congresso-realmente-decide',
     title: 'O que uma vota\u00e7\u00e3o no Congresso realmente decide (e como acompanhar em ano eleitoral)',
     description:
