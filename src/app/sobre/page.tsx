@@ -9,7 +9,7 @@ import { SITE } from '@/lib/site-config';
 export const metadata: Metadata = {
   title: 'Sobre o QuemVotar',
   description:
-    'QuemVotar é um projeto editorial da Editora Vélos para organizar dados públicos sobre parlamentares brasileiros com transparência, independência e fontes verificáveis.',
+    'QuemVotar é um projeto editorial independente da Equipe QuemVotar, em Santa Catarina, para organizar dados públicos sobre parlamentares brasileiros com transparência, independência e fontes verificáveis.',
   alternates: { canonical: 'https://www.quemvotar.com.br/sobre' },
   robots: { index: true, follow: true },
 };

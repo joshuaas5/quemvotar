@@ -1,10 +1,9 @@
 /**
  * Identidade publica do QuemVotar (Fase 2 do plano de correcao AdSense).
  *
- * IMPORTANTE: este arquivo centraliza os dados de identificacao exigidos pelo
- * Google para conteudo YMYL. Nenhum campo pode conter informacao inventada.
- * Os campos marcados com TODO precisam ser confirmados pelo responsavel antes
- * da publicacao (o site so deve pedir revisao ao AdSense com estes dados reais).
+ * Este arquivo centraliza os dados de identificacao exigidos para conteudo
+ * YMYL. Projeto sem pessoa juridica: publicacao responsavel e a Equipe
+ * QuemVotar, em Santa Catarina (Brasil).
  */
 
 export const SITE = {
@@ -12,23 +11,25 @@ export const SITE = {
   domain: 'quemvotar.com.br',
   url: 'https://www.quemvotar.com.br',
 
-  /** Editora responsavel pelo site (confirmar razao social exata). */
-  publisherName: 'Editora V\u00e9los',
-  /** TODO: preencher CNPJ real da editora. */
+  /** Responsavel pela publicacao (sem pessoa juridica registrada). */
+  publisherName: 'Equipe QuemVotar',
+  /** Sem CNPJ: projeto editorial independente, sem pessoa juridica. */
   publisherCnpj: '',
 
-  /** TODO: preencher nome completo da pessoa responsavel pela publicacao. */
-  responsibleName: '',
-  /** TODO: preencher credencial verdadeira (formacao/experiencia). */
-  responsibleCredential: '',
-  /** TODO: preencher cidade e UF. */
-  responsibleCityUf: '',
+  /** Responsavel editorial: equipe do projeto (sem pessoa fisica declarada). */
+  responsibleName: 'Equipe Editorial do QuemVotar',
+  responsibleCredential:
+    'Projeto editorial independente de dados p\u00fablicos sobre o Congresso Nacional.',
+  responsibleCityUf: 'Santa Catarina, Brasil',
 
-  /** E-mail no dominio (exige caixa de correio ativa em quemvotar.com.br). */
-  contactEmail: 'contato@quemvotar.com.br',
+  /**
+   * E-mail de contato escolhido pela equipe. Atencao: para o AdSense, um
+   * endereco no dominio (ex.: contato@quemvotar.com.br) fortalece a identidade
+   * YMYL; o Gmail atual e aceitavel, mas mais fraco como sinal.
+   */
+  contactEmail: 'contatoquemvotar@gmail.com',
 
-  /** TODO: preencher endereco completo para a pagina de contato/sobre. */
-  address: '',
+  address: 'Santa Catarina, Brasil',
 
   /** Data de criacao do projeto (usada na linha do tempo do /sobre). */
   foundedAt: '2026',

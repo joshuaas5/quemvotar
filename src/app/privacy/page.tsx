@@ -97,7 +97,7 @@ export default function PrivacyPage() {
                 <li>Opor-se ao tratamento de dados em determinadas circunstancias.</li>
               </ul>
               <p className="leading-relaxed mt-3">
-                Para exercer seus direitos, entre em contato pelo e-mail: <strong>staterbills@gmail.com</strong>
+                Para exercer seus direitos, entre em contato pelo e-mail: <strong>contatoquemvotar@gmail.com</strong>
               </p>
             </section>
 
@@ -125,7 +125,7 @@ export default function PrivacyPage() {
             <section>
               <h2 className="font-headline font-black text-xl md:text-2xl uppercase mb-3">11. Contato</h2>
               <p className="leading-relaxed">
-                Para questoes sobre privacidade ou exercicio de direitos, entre em contato: <strong>staterbills@gmail.com</strong>
+                Para questoes sobre privacidade ou exercicio de direitos, entre em contato: <strong>contatoquemvotar@gmail.com</strong>
               </p>
             </section>
 
