@@ -1,0 +1,61 @@
+name: ETL Camara e Senado (agendado)
+
+# Fase 4 do plano de correcao AdSense: dados vivos.
+# Roda diariamente as 04:30 UTC (01:30 em Brasilia), com execucao manual
+# disponivel pela aba Actions. Falha no job gera alerta padrao do GitHub
+# (notificacao no e-mail/aba de notificacoes do repositorio).
+
+on:
+  schedule:
+    - cron: '30 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: etl-camara-senado
+  cancel-in-progress: false
+
+jobs:
+  etl:
+    name: Atualizar parlamentares (Camara + Senado)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Instalar dependencias
+        run: pip install -r scripts/requirements.txt
+
+      - name: Validar variaveis de ambiente
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_SERVICE_ROLE_KEY" ]; then
+            echo "::error::Faltam SUPABASE_URL e/ou SUPABASE_SERVICE_ROLE_KEY nos secrets do repositorio."
+            exit 1
+          fi
+
+      - name: Executar ETL
+        run: python scripts/etl_camara.py
+
+      - name: Registrar status em artifact (diagnostico)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: etl-log-${{ github.run_id }}
+          path: |
+            ./*.log
+          if-no-files-found: ignore
