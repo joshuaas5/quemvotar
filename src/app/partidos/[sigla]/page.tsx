@@ -9,6 +9,8 @@ import ShareButtons from '@/components/ShareButtons';
 import { getPartidoPorSigla } from '@/lib/api';
 import { getPartyVisualEmoji } from '@/lib/party-logos';
 import { buildOrganizationSchema, buildBreadcrumbSchema } from '@/lib/jsonld';
+import { getPartidoEditorialBySigla, getPartidoEditorialWordCount } from '@/lib/partidos-editorial-utils';
+import { SITE } from '@/lib/site-config';
 
 export const revalidate = 3600;
 
@@ -27,10 +29,14 @@ export async function generateMetadata(
 
   const canonicalUrl = `https://www.quemvotar.com.br/partidos/${partido.sigla}`;
 
+  // Fase 3.3: a pagina volta a ser indexavel quando recebe conteudo editorial proprio.
+  const hasEditorial = getPartidoEditorialBySigla(partido.sigla) !== null;
+
   return {
     title: `${partido.nome} (${partido.sigla}) | QuemVotar`,
     description: `Conheça o partido ${partido.nome} (${partido.sigla}): ${partido.totalParlamentares} parlamentares, bancada, lideranças e posicionamento político.`,
     alternates: { canonical: canonicalUrl },
+    robots: hasEditorial ? { index: true, follow: true } : { index: false, follow: true },
     openGraph: {
       title: `${partido.nome} (${partido.sigla})`,
       description: `Bancada, lideranças e posicionamento político do ${partido.nome}.`,
@@ -58,6 +64,7 @@ export default async function PartidoDetailPage({
   const cores = partido.cores ?? ['#111827', '#9ca3af'];
   const visual = getPartyVisualEmoji(partido.sigla);
   const canonicalUrl = `https://www.quemvotar.com.br/partidos/${partido.sigla}`;
+  const editorial = getPartidoEditorialBySigla(partido.sigla);
 
   const orgSchema = buildOrganizationSchema(
     partido.nome,
@@ -186,6 +193,72 @@ export default async function PartidoDetailPage({
               </div>
             </div>
           </section>
+
+          {editorial ? (
+            <>
+              <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-body space-y-6">
+                <p className="font-label font-black uppercase text-xs bg-black text-white px-3 py-1 w-max">
+                  Análise editorial • Atualizado em {new Date(editorial.atualizadoEm).toLocaleDateString('pt-BR')}
+                </p>
+                <h2 className="font-headline font-black text-2xl md:text-4xl uppercase leading-tight">
+                  {editorial.historia.titulo}
+                </h2>
+                {editorial.historia.paragrafos.map((paragraph) => (
+                  <p key={paragraph} className="leading-relaxed text-base md:text-lg">{paragraph}</p>
+                ))}
+              </section>
+
+              <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-body space-y-6">
+                <h2 className="font-headline font-black text-2xl md:text-4xl uppercase leading-tight">
+                  {editorial.ideologia.titulo}
+                </h2>
+                {editorial.ideologia.paragrafos.map((paragraph) => (
+                  <p key={paragraph} className="leading-relaxed text-base md:text-lg">{paragraph}</p>
+                ))}
+              </section>
+
+              <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-body space-y-6">
+                <h2 className="font-headline font-black text-2xl md:text-4xl uppercase leading-tight">
+                  {editorial.congresso.titulo}
+                </h2>
+                {editorial.congresso.paragrafos.map((paragraph) => (
+                  <p key={paragraph} className="leading-relaxed text-base md:text-lg">{paragraph}</p>
+                ))}
+              </section>
+
+              <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-body space-y-6">
+                <h2 className="font-headline font-black text-2xl md:text-4xl uppercase leading-tight">
+                  {editorial.controversias.titulo}
+                </h2>
+                {editorial.controversias.paragrafos.map((paragraph) => (
+                  <p key={paragraph} className="leading-relaxed text-base md:text-lg">{paragraph}</p>
+                ))}
+              </section>
+
+              {editorial.fontes.length > 0 ? (
+                <section className="bg-white border-4 border-black p-6 md:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+                  <h2 className="font-headline font-black text-2xl md:text-3xl uppercase mb-4">Fontes desta análise</h2>
+                  <div className="space-y-3">
+                    {editorial.fontes.map((fonte) => (
+                      <a
+                        key={fonte.href}
+                        href={fonte.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="block font-headline font-black uppercase border-b-4 border-black w-max max-w-full truncate"
+                      >
+                        {fonte.label}
+                      </a>
+                    ))}
+                  </div>
+                  <p className="mt-6 font-body text-sm leading-relaxed">
+                    Análise assinada pela equipe editorial do QuemVotar ({SITE.publisherName}). Este texto
+                    não representa recomendação de voto nem posição do partido.
+                  </p>
+                </section>
+              ) : null}
+            </>
+          ) : null}
 
           <section className="bg-white border-4 border-black p-6 md:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-body space-y-4">
             <h2 className="font-headline font-black text-2xl md:text-3xl uppercase">Como interpretar este partido</h2>

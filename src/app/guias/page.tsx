@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { GUIDE_ARTICLES, GUIDE_CATEGORIES, getGuideCardStyle, getGuideCategory, getGuideReadingTime, getGuideWordCount } from '@/lib/guides';
+import { getActiveGuides, GUIDE_CATEGORIES, getGuideCardStyle, getGuideCategory, getGuideReadingTime, getGuideWordCount } from '@/lib/guides';
 
 export const metadata: Metadata = {
   title: 'Guias do Eleitor',
@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 };
 
 export default function GuiasPage() {
-  const featured = GUIDE_ARTICLES[0];
-  const totalWords = GUIDE_ARTICLES.reduce((total, article) => total + getGuideWordCount(article), 0);
+  const featured = getActiveGuides()[0];
+  const totalWords = getActiveGuides().reduce((total, article) => total + getGuideWordCount(article), 0);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -43,7 +43,7 @@ export default function GuiasPage() {
 
               <div className="grid grid-cols-2 gap-3 md:gap-4 content-end">
                 <div className="bg-white text-black border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(255,215,9,1)]">
-                  <p className="font-headline font-black text-4xl">{GUIDE_ARTICLES.length}</p>
+                  <p className="font-headline font-black text-4xl">{getActiveGuides().length}</p>
                   <p className="font-label font-bold uppercase text-xs">guias publicados</p>
                 </div>
                 <div className="bg-[#9BF6FF] text-black border-4 border-black p-4 shadow-[5px_5px_0px_0px_rgba(255,255,255,1)]">
@@ -102,7 +102,7 @@ export default function GuiasPage() {
                 <p className="font-headline font-black text-3xl uppercase leading-none mb-3">{category.label}</p>
                 <p className="font-body font-bold text-sm leading-relaxed mb-4">{category.description}</p>
                 <p className="font-label font-black uppercase text-xs border-t-2 border-black pt-3">
-                  {category.slugs.filter((slug) => GUIDE_ARTICLES.some((article) => article.slug === slug)).length} guias nessa trilha
+                  {category.slugs.filter((slug) => getActiveGuides().some((article) => article.slug === slug)).length} guias nessa trilha
                 </p>
               </div>
             ))}
@@ -123,7 +123,7 @@ export default function GuiasPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
-              {GUIDE_ARTICLES.map((article, index) => {
+              {getActiveGuides().map((article, index) => {
                 const category = getGuideCategory(article);
                 const cardStyle = getGuideCardStyle(index);
 

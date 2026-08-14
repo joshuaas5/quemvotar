@@ -1,7 +1,6 @@
 import type { MetadataRoute } from 'next';
-import { fetchOfficialCongressProfiles, getPartidosResumo } from '@/lib/official';
-import { GUIDE_ARTICLES } from '@/lib/guides';
-import { isProfileEligibleForSitemap } from '@/lib/seo/indexability';
+import { getActiveGuides } from '@/lib/guides';
+import { EDITORIAL_ARTICLES } from '@/lib/editorial';
 
 export const revalidate = 86400;
 
@@ -23,36 +22,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/partidos`, lastModified: editorialLastModified, changeFrequency: 'weekly', priority: 0.7 },
   ];
 
-  const [perfis, partidos] = await Promise.all([
-    fetchOfficialCongressProfiles().catch(() => []),
-    getPartidosResumo().catch(() => []),
-  ]);
-
-  const perfilRoutes: MetadataRoute.Sitemap = perfis.filter(isProfileEligibleForSitemap).map((perfil) => ({
-    url: `${baseUrl}/perfil/${perfil.fonte}/${perfil.idOrigem}`,
-    changeFrequency: 'monthly',
-    priority: 0.55,
-  }));
-
-  const partidoRoutes: MetadataRoute.Sitemap = partidos.map((partido) => ({
-    url: `${baseUrl}/partidos/${partido.sigla}`,
-    changeFrequency: 'monthly',
-    priority: 0.6,
-  }));
-
-  const ufSet = new Set(perfis.map((p) => p.uf).filter((uf): uf is string => Boolean(uf)));
-  const ufRoutes: MetadataRoute.Sitemap = Array.from(ufSet).map((uf) => ({
-    url: `${baseUrl}/uf/${uf.toLowerCase()}`,
-    changeFrequency: 'monthly',
-    priority: 0.6,
-  }));
-
-  const guideRoutes: MetadataRoute.Sitemap = GUIDE_ARTICLES.map((article) => ({
+  const guideRoutes: MetadataRoute.Sitemap = getActiveGuides().map((article) => ({
     url: `${baseUrl}/guias/${article.slug}`,
     lastModified: new Date(article.updatedAt),
     changeFrequency: 'monthly',
     priority: 0.9,
   }));
 
-  return [...staticRoutes, ...guideRoutes, ...perfilRoutes, ...partidoRoutes, ...ufRoutes];
+  const editorialRoutes: MetadataRoute.Sitemap = EDITORIAL_ARTICLES.map((article) => ({
+    url: `${baseUrl}/editorial/${article.slug}`,
+    lastModified: new Date(article.publishedAt),
+    changeFrequency: 'weekly',
+    priority: 0.85,
+  }));
+
+  // Fase 1 do plano de correcao AdSense: perfis de template (/perfil/*) e as
+  // paginas de UF/partido sem conteudo editorial proprio saem do sitemap e
+  // ficam com noindex. Voltao ao indice apenas quando receberem texto escrito
+  // por humano (Fases 3.3/3.4/3.6).
+  return [...staticRoutes, ...guideRoutes, ...editorialRoutes];
 }

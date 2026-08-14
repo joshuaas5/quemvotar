@@ -51,3 +51,55 @@ export function buildBreadcrumbSchema(items: { name: string; url?: string }[]) {
     })),
   };
 }
+
+/**
+ * Schema Article com autor e publisher (Fase 2 do plano de correcao AdSense).
+ * Usado em guias e analises editoriais assinadas.
+ */
+export function buildArticleSchema(params: {
+  headline: string;
+  description: string;
+  url: string;
+  publishedAt: string;
+  updatedAt: string;
+  author?: { name: string; url: string } | null;
+  publisherName: string;
+  publisherUrl: string;
+  logoUrl?: string;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: params.headline,
+    description: params.description,
+    datePublished: params.publishedAt,
+    dateModified: params.updatedAt,
+    isAccessibleForFree: true,
+    ...(params.author
+      ? { author: { '@type': 'Person', name: params.author.name, url: params.author.url } }
+      : {}),
+    publisher: {
+      '@type': 'Organization',
+      name: params.publisherName,
+      url: params.publisherUrl,
+      ...(params.logoUrl ? { logo: params.logoUrl } : {}),
+    },
+    mainEntityOfPage: params.url,
+  };
+}
+
+/**
+ * Schema FAQPage (Fase 3.2 do plano). Usado nos guias com secao de perguntas
+ * frequentes, permitindo rich result no Google.
+ */
+export function buildFaqPageSchema(faq: { pergunta: string; resposta: string }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((item) => ({
+      '@type': 'Question',
+      name: item.pergunta,
+      acceptedAnswer: { '@type': 'Answer', text: item.resposta },
+    })),
+  };
+}

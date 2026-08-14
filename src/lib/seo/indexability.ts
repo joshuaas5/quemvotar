@@ -32,12 +32,34 @@ export function isProfileEligibleForSitemap(profile: ProfileCandidate): boolean 
 }
 
 /**
+ * Allowlist de perfis com conteudo editorial escrito por humano (Fase 3.6 do
+ * plano de correcao AdSense). Chaves no formato `${fonte}/${idOrigem}`.
+ *
+ * Enquanto um perfil nao receber texto proprio (400-600 palavras, assinado e
+ * revisado), ele permanece fora da lista e, portanto, fora do indice do Google.
+ * A lista comeca vazia de proposito: nenhuma pagina montada por template deve
+ * ser indexada como conteudo editorial.
+ */
+export const PROFILE_INDEX_ALLOWLIST: string[] = [
+  // Exemplo (apos a tarefa 3.6 do plano): 'camara/204379',
+];
+
+/**
  * A rendered profile needs at least one official reference and one meaningful
  * data block in addition to its identity. Sparse or unavailable source pages
  * remain accessible to visitors, but must not be indexed as standalone content.
+ *
+ * Desde a Fase 1 do plano de correcao, a indexacao tambem exige presenca na
+ * PROFILE_INDEX_ALLOWLIST: 100% dos perfis passavam no criterio anterior, o que
+ * fazia do sitemap um reflexo do template, nao do conteudo editorial.
  */
 export function isProfileEligibleForIndexing(profile: PerfilDetalhadoPublico): boolean {
   if (!isProfileEligibleForSitemap(profile)) {
+    return false;
+  }
+
+  const allowlistKey = `${profile.fonte}/${profile.idOrigem}`;
+  if (!PROFILE_INDEX_ALLOWLIST.includes(allowlistKey)) {
     return false;
   }
 

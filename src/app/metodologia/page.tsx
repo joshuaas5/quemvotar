@@ -81,7 +81,7 @@ export default function MetodologiaPage() {
             <div className="border-t-2 border-black pt-6">
               <h2 className="font-headline font-black text-xl md:text-2xl uppercase mb-3">Guias complementares</h2>
               <p className="leading-relaxed mb-4">
-                Para aplicar esses critérios na prática, consulte os guias editoriais sobre deputados, senadores, votações nominais, fontes oficiais e comparação de parlamentares.
+                Para aplicar esses critérios na prática, consulte os guias editoriais sobre deputados, senadores, leitura de votações, fontes oficiais e uso de dados públicos.
               </p>
               <Link href="/guias" className="font-headline font-black uppercase border-b-4 border-black">
                 Abrir guias do eleitor

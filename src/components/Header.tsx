@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { href: '/parlamentares', label: 'Buscar pol\u00edticos' },
   { href: '/partidos', label: 'Partidos' },
   { href: '/guias', label: 'Guias' },
+  { href: '/editorial', label: 'Análises' },
   { href: '/sobre', label: 'Sobre' },
 ];
 

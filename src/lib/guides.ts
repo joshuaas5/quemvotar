@@ -8,9 +8,38 @@ export interface GuideArticle {
   title: string;
   description: string;
   updatedAt: string;
-  readingTime: string;
+  /** Data ISO de publicacao original. */
+  publishedAt: string;
+  /** Data ISO da ultima revisao de fontes. */
+  reviewedAt: string;
+  /** Slug do autor em src/lib/authors.ts. */
+  author: string;
   intro: string;
   sections: GuideSection[];
+  /** Perguntas frequentes com marcacao FAQPage (Fase 3.2). */
+  faq?: GuideFaq[];
+  /** Tabelas comparativas proprias (Fase 3.2). */
+  tabelas?: GuideTabela[];
+  /** Exemplos reais nomeados, com fonte (Fase 3.2). */
+  exemplos?: GuideExemplo[];
+}
+
+
+export interface GuideTabela {
+  titulo: string;
+  cabecalho: string[];
+  linhas: string[][];
+}
+
+export interface GuideExemplo {
+  titulo: string;
+  paragrafos: string[];
+  fonte?: { label: string; href: string };
+}
+
+export interface GuideFaq {
+  pergunta: string;
+  resposta: string;
 }
 
 
@@ -127,8 +156,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como avaliar um deputado federal antes de votar',
     description:
       'Um guia prático para analisar atuação, presença, votações, gastos, partido e fontes oficiais de deputados federais.',
-    updatedAt: '2026-04-28',
-    readingTime: '6 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Avaliar um deputado federal exige mais do que lembrar uma fala viral ou uma promessa de campanha. O mandato combina votação em plenário, trabalho em comissões, apresentação de projetos, fiscalização do governo, uso de recursos públicos e relação com o partido. Este guia mostra como transformar esses sinais em uma análise mais responsável.',
     sections: [
@@ -167,8 +198,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como avaliar um senador antes de votar',
     description:
       'Entenda o que observar em um mandato de senador: votações, sabatinas, comissões, relatorias, partido e representação estadual.',
-    updatedAt: '2026-04-28',
-    readingTime: '5 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Senadores têm mandatos longos e influência relevante sobre leis nacionais, autoridades públicas, política fiscal, relações federativas e temas institucionais. Avaliar um senador exige atenção ao plenário, às comissões e ao papel de representação do estado.',
     sections: [
@@ -207,8 +240,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como ler votações nominais no Congresso',
     description:
       'Aprenda a interpretar votos nominais, orientações partidárias, abstenções, obstruções e limites dos dados de votação.',
-    updatedAt: '2026-04-28',
-    readingTime: '7 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Votações nominais são uma das formas mais objetivas de acompanhar parlamentares, porque registram posições individuais. Mesmo assim, elas precisam ser lidas com contexto: texto votado, destaques, orientação partidária, quórum, obstrução e efeito prático da decisão.',
     sections: [
@@ -247,8 +282,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como conferir fontes oficiais sobre políticos',
     description:
       'Um roteiro para verificar dados em Câmara, Senado, TSE, CNJ e páginas públicas antes de compartilhar informações políticas.',
-    updatedAt: '2026-04-28',
-    readingTime: '6 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'A melhor defesa contra desinformação política é saber voltar à fonte. Dados de mandato, candidatura, partido, votação, processo e despesa podem estar espalhados por órgãos diferentes. Este guia mostra um caminho prático para conferir informações antes de confiar ou compartilhar.',
     sections: [
@@ -287,8 +324,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como comparar parlamentares sem cair em atalhos ruins',
     description:
       'Veja critérios para comparar deputados e senadores de forma justa: casa, UF, partido, mandato, temas, votos e indicadores.',
-    updatedAt: '2026-04-28',
-    readingTime: '5 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Comparar parlamentares ajuda o eleitor a sair da impressão vaga e observar diferenças concretas. Mas uma comparação mal feita pode ser injusta ou enganosa. O segredo é comparar pessoas em contextos semelhantes e separar dados objetivos de preferências pessoais.',
     sections: [
@@ -327,8 +366,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Glossário básico do Congresso Nacional',
     description:
       'Entenda termos comuns da política brasileira: bancada, comissão, relator, quórum, destaque, obstrução, suplente e liderança.',
-    updatedAt: '2026-04-28',
-    readingTime: '8 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Muitos dados legislativos parecem confusos porque usam termos próprios do Congresso. Entender esse vocabulário ajuda a interpretar notícias, votações e perfis parlamentares com menos dependência de explicações partidárias ou recortes de rede social.',
     sections: [
@@ -374,8 +415,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Qual é a diferença entre deputado federal e senador?',
     description:
       'Entenda funções, mandato, forma de eleição, peso político e como comparar deputados e senadores sem misturar papéis diferentes.',
-    updatedAt: '2026-04-28',
-    readingTime: '9 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Deputados federais e senadores fazem parte do Congresso Nacional, mas não ocupam o mesmo papel. Eles votam leis, fiscalizam o governo e representam a população, porém atuam em casas diferentes, com mandatos diferentes e responsabilidades institucionais próprias. Entender essa diferença evita cobranças erradas e melhora a avaliação do voto.',
     sections: [
@@ -417,8 +460,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como funcionam as comissões da Câmara e do Senado',
     description:
       'Veja por que comissões, relatorias e audiências públicas são essenciais para entender a atuação real de um parlamentar.',
-    updatedAt: '2026-04-28',
-    readingTime: '10 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Muita gente acompanha apenas votações de plenário, mas uma parte decisiva do Congresso acontece nas comissões. É nelas que propostas são debatidas tecnicamente, relatórios são construídos, audiências públicas acontecem e matérias podem avançar ou travar antes de chegar ao público mais amplo.',
     sections: [
@@ -461,8 +506,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como ler projetos de lei sem se perder no juridiquês',
     description:
       'Aprenda a entender ementa, autoria, justificativa, parecer, substitutivo, emenda e tramitação de uma proposta legislativa.',
-    updatedAt: '2026-04-28',
-    readingTime: '11 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Projetos de lei costumam parecer documentos difíceis, mas boa parte da leitura pode ser organizada em perguntas simples: quem apresentou, o que muda, por que muda, qual texto está valendo agora, onde está tramitando e quem será afetado. Esse roteiro ajuda a ler propostas com menos dependência de interpretações prontas.',
     sections: [
@@ -505,8 +552,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como entender orçamento, emendas parlamentares e dinheiro público',
     description:
       'Um guia para diferenciar emendas, orçamento, gastos de gabinete, cota parlamentar e responsabilidade na destinação de recursos.',
-    updatedAt: '2026-04-28',
-    readingTime: '12 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Dinheiro público é um dos temas mais importantes para avaliar representantes, mas também um dos mais fáceis de confundir. Emenda parlamentar, orçamento federal, cota de exercício parlamentar, verba de gabinete e gasto de campanha são coisas diferentes. Misturar esses conceitos atrapalha a fiscalização cidadã.',
     sections: [
@@ -548,8 +597,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como acompanhar promessas de campanha depois da eleição',
     description:
       'Aprenda a transformar promessas eleitorais em critérios verificáveis durante o mandato, separando discurso, competência e resultado.',
-    updatedAt: '2026-04-28',
-    readingTime: '9 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Promessa de campanha costuma ser simples, direta e emocional. Mandato parlamentar é mais complexo: depende de competência legal, articulação, orçamento, maioria política e tempo. Acompanhar promessas exige transformar frases de campanha em indicadores verificáveis.',
     sections: [
@@ -588,8 +639,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como analisar rankings políticos sem terceirizar seu voto',
     description:
       'Entenda vantagens, riscos e perguntas essenciais antes de usar notas públicas, rankings e índices legislativos na decisão eleitoral.',
-    updatedAt: '2026-04-28',
-    readingTime: '10 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Rankings políticos podem ajudar a organizar muita informação, mas também podem induzir o eleitor a terceirizar julgamento. Uma nota resume critérios escolhidos por alguém. Para usar bem, é preciso entender o que entra na nota, o que fica de fora e se os critérios combinam com seus valores.',
     sections: [
@@ -628,8 +681,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como entender troca de partido e histórico partidário',
     description:
       'Veja quando mudança partidária é sinal de incoerência, estratégia, sobrevivência política ou reorganização legítima do sistema.',
-    updatedAt: '2026-04-28',
-    readingTime: '8 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Trocar de partido é comum na política brasileira, mas nem toda troca tem o mesmo significado. Algumas revelam mudança real de posição, outras refletem reorganização partidária, janela legal, fusões, federações, disputas internas ou busca por viabilidade eleitoral. O histórico partidário precisa ser lido com contexto.',
     sections: [
@@ -668,8 +723,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como evitar desinformação eleitoral no WhatsApp e nas redes',
     description:
       'Um guia prático para identificar recortes enganosos, prints sem fonte, vídeos fora de contexto e falsas acusações políticas.',
-    updatedAt: '2026-04-28',
-    readingTime: '12 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Desinformação eleitoral raramente aparece como mentira óbvia. Muitas vezes ela mistura dado real, recorte fora de contexto, título exagerado, print sem link e emoção moral. A melhor proteção é criar um ritual simples antes de compartilhar qualquer conteúdo político.',
     sections: [
@@ -709,8 +766,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como checar processos, condenações e acusações contra políticos',
     description:
       'Entenda diferença entre acusação, investigação, ação judicial, condenação, recurso, trânsito em julgado e inelegibilidade.',
-    updatedAt: '2026-04-28',
-    readingTime: '11 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Informações judiciais sobre políticos exigem cuidado. Uma investigação não é condenação; uma ação em andamento não é culpa provada; uma condenação pode estar sujeita a recurso; e inelegibilidade depende de regras específicas. Checar corretamente evita injustiça e evita propaganda enganosa.',
     sections: [
@@ -749,8 +808,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como usar portais de transparência para fiscalizar políticos',
     description:
       'Aprenda a navegar por portais públicos, entender filtros, datas, empenhos, pagamentos, fornecedores e limitações dos dados.',
-    updatedAt: '2026-04-28',
-    readingTime: '10 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Portais de transparência são ferramentas poderosas, mas nem sempre fáceis. Eles usam termos administrativos, filtros por data, campos técnicos e bases que podem ter atraso. Saber navegar evita conclusões precipitadas e melhora a fiscalização cidadã.',
     sections: [
@@ -789,8 +850,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Guia do primeiro voto: como decidir sem depender de propaganda',
     description:
       'Um roteiro para jovens eleitores organizarem valores, fontes, prioridades e comparação de candidatos antes da eleição.',
-    updatedAt: '2026-04-28',
-    readingTime: '9 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'O primeiro voto pode parecer uma mistura de pressão familiar, redes sociais, propaganda e medo de errar. A boa notícia é que voto consciente não exige saber tudo sobre política. Exige método: entender cargos, definir prioridades, conferir fontes e comparar opções com calma.',
     sections: [
@@ -829,8 +892,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como montar uma lista de critérios para escolher candidato',
     description:
       'Crie uma matriz simples para comparar candidatos por valores, histórico, propostas, viabilidade, ética e fontes públicas.',
-    updatedAt: '2026-04-28',
-    readingTime: '8 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Uma lista de critérios ajuda a transformar voto em decisão organizada. Em vez de depender apenas de simpatia, rejeição ou propaganda, você define o que importa e compara candidatos de forma mais clara. Não precisa ser uma planilha complexa: cinco critérios bem escolhidos já melhoram muito a decisão.',
     sections: [
@@ -869,8 +934,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como conversar sobre política em família sem virar guerra',
     description:
       'Estratégias para discutir voto, dados públicos e divergências políticas com menos briga e mais foco em evidências.',
-    updatedAt: '2026-04-28',
-    readingTime: '7 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Conversar sobre política em família pode ser difícil porque mistura identidade, memória, medo, religião, classe social, território e experiências pessoais. O objetivo não precisa ser convencer todo mundo. Às vezes, a vitória é só melhorar a qualidade da conversa e reduzir desinformação.',
     sections: [
@@ -909,8 +976,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como funciona o quociente eleitoral e por que seu voto pode eleger outro nome',
     description:
       'Entenda a regra do voto proporcional, cálculo de vagas, quociente eleitoral, sobras e por que partido importa na eleição para deputado.',
-    updatedAt: '2026-04-28',
-    readingTime: '11 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Na eleição para deputado federal, deputado estadual e vereador, nem sempre os mais votados individualmente ficam com todas as vagas. O Brasil usa sistema proporcional, em que o desempenho do partido ou federação influencia quem entra. Entender o quociente eleitoral ajuda a perceber por que escolher partido também faz parte do voto.',
     sections: [
@@ -949,8 +1018,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Federações, coligações e partidos: o que mudou e por que isso afeta seu voto',
     description:
       'Entenda diferenças entre partido, federação e coligação, e como alianças eleitorais podem mudar a leitura do candidato.',
-    updatedAt: '2026-04-28',
-    readingTime: '10 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Alianças partidárias parecem detalhe burocrático, mas afetam eleição, bancada, tempo de propaganda, distribuição de recursos e comportamento legislativo. Entender a diferença entre partido, federação e coligação ajuda a enxergar quem está junto antes e depois da votação.',
     sections: [
@@ -989,8 +1060,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'O que faz um suplente e por que ele importa no seu voto',
     description:
       'Entenda suplência na Câmara e no Senado, substituições, licenças, riscos e por que suplente também deve ser avaliado.',
-    updatedAt: '2026-04-28',
-    readingTime: '8 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Suplente costuma aparecer pouco na campanha, mas pode assumir mandato e votar decisões importantes. Em eleições majoritárias e proporcionais, a suplência funciona de formas diferentes. Ignorar suplentes é deixar parte da representação fora da análise.',
     sections: [
@@ -1029,8 +1102,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Voto de legenda: quando faz sentido votar só no partido?',
     description:
       'Entenda voto de legenda, diferenças entre votar em candidato e votar no partido, e os riscos de não conhecer a lista.',
-    updatedAt: '2026-04-28',
-    readingTime: '8 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Em eleições proporcionais, o eleitor pode votar diretamente em um candidato ou votar na legenda do partido. O voto de legenda fortalece a lista partidária sem escolher um nome específico. Pode ser uma decisão coerente, mas exige confiança no conjunto do partido.',
     sections: [
@@ -1069,8 +1144,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como ler pesquisas eleitorais sem cair em manchete fácil',
     description:
       'Aprenda a observar margem de erro, amostra, método, registro, data de campo, contratante e diferença entre tendência e certeza.',
-    updatedAt: '2026-04-28',
-    readingTime: '10 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Pesquisa eleitoral é fotografia de um momento, não profecia. Ela pode indicar tendências, medir cenários e mostrar mudanças de humor do eleitorado, mas precisa ser lida com método. Manchetes costumam simplificar demais números que dependem de amostra, data, pergunta e margem de erro.',
     sections: [
@@ -1109,8 +1186,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como avaliar político pelas redes sociais sem cair em performance',
     description:
       'Aprenda a separar comunicação eficiente, prestação de contas, propaganda, indignação encenada e desinformação nas redes.',
-    updatedAt: '2026-04-28',
-    readingTime: '9 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Redes sociais são vitrine obrigatória da política moderna. Elas podem aproximar eleitor e mandato, mas também premiam exagero, recorte, briga e simplificação. Avaliar político pelas redes exige separar comunicação de atuação concreta.',
     sections: [
@@ -1149,8 +1228,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como avaliar políticas públicas prometidas por políticos',
     description:
       'Um guia para analisar propostas de saúde, educação, segurança, economia e assistência sem cair em slogans impossíveis.',
-    updatedAt: '2026-04-28',
-    readingTime: '11 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Propostas políticas costumam ser vendidas como solução simples para problemas complexos. Avaliar política pública exige perguntar qual problema será resolvido, com qual instrumento, quanto custará, quem executará, quem será afetado e como o resultado será medido.',
     sections: [
@@ -1189,8 +1270,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como avaliar candidato à reeleição usando o mandato que ele já teve',
     description:
       'Veja como cobrar quem já ocupou cargo: promessas cumpridas, votos, entregas, ausências, alianças e prestação de contas.',
-    updatedAt: '2026-04-28',
-    readingTime: '9 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Candidato à reeleição não deve ser avaliado como promessa em branco. Ele já teve mandato, poder, recursos, equipe e oportunidades de agir. Isso torna a avaliação mais objetiva: o eleitor pode comparar discurso anterior, atuação real e nova campanha.',
     sections: [
@@ -1229,8 +1312,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Guia para avaliar propostas de segurança pública',
     description:
       'Critérios para analisar discurso sobre polícia, armas, prevenção, sistema prisional, investigação e redução de violência.',
-    updatedAt: '2026-04-28',
-    readingTime: '10 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Segurança pública é um dos temas mais emocionais da política. Medo, indignação e experiências pessoais pesam muito. Justamente por isso, propostas de segurança precisam ser avaliadas com cuidado: promessa dura não é automaticamente eficiente, e discurso técnico também precisa mostrar resultado.',
     sections: [
@@ -1269,8 +1354,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Guia para avaliar propostas de educação',
     description:
       'Como analisar promessas sobre escola, professores, alfabetização, ensino técnico, universidades, financiamento e resultados.',
-    updatedAt: '2026-04-28',
-    readingTime: '10 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Educação aparece em quase toda campanha, mas propostas variam muito em qualidade. Algumas focam infraestrutura, outras currículo, professores, alfabetização, tecnologia, ensino técnico ou universidade. O eleitor precisa entender qual problema educacional está sendo enfrentado e como medir avanço.',
     sections: [
@@ -1309,8 +1396,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Guia para avaliar propostas de saúde pública',
     description:
       'Como analisar promessas sobre SUS, filas, atenção básica, hospitais, medicamentos, vacinação, financiamento e gestão.',
-    updatedAt: '2026-04-28',
-    readingTime: '10 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Saúde pública envolve urgência emocional e complexidade administrativa. Filas, hospitais, medicamentos e vacinação afetam a vida diretamente. Para avaliar propostas, é preciso diferenciar financiamento, gestão, atenção básica, média complexidade, alta complexidade e responsabilidade de cada esfera de governo.',
     sections: [
@@ -1349,8 +1438,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Guia para avaliar propostas de meio ambiente e clima',
     description:
       'Critérios para analisar discurso ambiental, agropecuária, fiscalização, energia, saneamento, clima e desenvolvimento sustentável.',
-    updatedAt: '2026-04-28',
-    readingTime: '10 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Meio ambiente não é tema isolado: envolve saúde, agricultura, energia, cidades, saneamento, economia, povos tradicionais, clima e comércio internacional. Avaliar propostas ambientais exige sair da oposição simplista entre preservar e desenvolver.',
     sections: [
@@ -1389,8 +1480,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Guia para avaliar propostas de economia, impostos e emprego',
     description:
       'Como analisar promessas sobre crescimento, carga tributária, responsabilidade fiscal, emprego, renda e serviços públicos.',
-    updatedAt: '2026-04-28',
-    readingTime: '11 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-04-28',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Economia é um dos campos mais usados em campanha, mas também um dos mais cheios de frases vagas. “Gerar emprego”, “baixar impostos” e “controlar gastos” são objetivos populares. O ponto é entender como o candidato pretende chegar lá e quem ganha ou perde com cada escolha.',
     sections: [
@@ -1429,8 +1522,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Em quem votar? Um m\u00e9todo simples para decidir seu voto',
     description:
       'Um passo a passo para sair da d\u00favida, comparar candidatos com calma e decidir em quem votar sem depender de propaganda ou torcida.',
-    updatedAt: '2026-07-30',
-    readingTime: '10 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-07-30',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'A pergunta em quem votar parece pedir um nome r\u00e1pido. Mas a resposta boa n\u00e3o come\u00e7a por um candidato: come\u00e7a pelo que voc\u00ea espera da pol\u00edtica e pelo cargo que estar\u00e1 em disputa. Este guia organiza uma decis\u00e3o que cabe na vida real, mesmo para quem tem pouco tempo, n\u00e3o acompanha not\u00edcias todos os dias e est\u00e1 cansado de promessa vazia.',
     sections: [
@@ -1490,8 +1585,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Match eleitoral: como usar o resultado sem terceirizar seu voto',
     description:
       'Entenda o que a afinidade do Match Eleitoral mede, o que ela n\u00e3o mede e como transformar o resultado em uma pesquisa melhor.',
-    updatedAt: '2026-07-30',
-    readingTime: '9 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-07-30',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Um Match Eleitoral serve para organizar afinidades, n\u00e3o para escolher por voc\u00ea. Ele pode ser uma porta de entrada poderosa para pesquisa pol\u00edtica: em vez de come\u00e7ar por centenas de nomes, voc\u00ea parte das respostas que deu sobre temas importantes. O valor do resultado aparece quando ele \u00e9 usado com curiosidade, fontes e senso cr\u00edtico.',
     sections: [
@@ -1551,8 +1648,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Como pesquisar um candidato pelo nome antes de votar',
     description:
       'Um roteiro simples para sair do nome que aparece na tela e descobrir dados, mandato, partido, propostas, fontes e o que ainda precisa ser conferido.',
-    updatedAt: '2026-07-30',
-    readingTime: '7 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-07-30',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Pesquisar um candidato pelo nome parece fácil, mas é justamente aí que muita gente para cedo demais. O primeiro resultado, um vídeo viral ou uma postagem de campanha não contam a história toda. Com algumas perguntas simples, você consegue transformar um nome conhecido em uma pesquisa mais justa e útil.',
     sections: [
@@ -1612,8 +1711,10 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     title: 'Checklist antes de votar: 8 perguntas para não decidir no impulso',
     description:
       'Uma lista direta para organizar sua escolha eleitoral em poucos minutos, fugir da propaganda e saber o que conferir antes de decidir.',
-    updatedAt: '2026-07-30',
-    readingTime: '6 min',
+    updatedAt: '2026-08-14',
+    publishedAt: '2026-07-30',
+    reviewedAt: '2026-08-14',
+    author: 'equipe-quemvotar',
     intro:
       'Não existe escolha política sem valores pessoais, mas existe diferença entre votar por convicção e votar no impulso. Este checklist serve para dar uma pausa antes de decidir. Você não precisa virar especialista: basta responder com sinceridade, comparar alguns nomes e conferir o que for importante para você.',
     sections: [
@@ -1676,6 +1777,62 @@ export const GUIDE_ARTICLES: GuideArticle[] = [
     ],
   }
 ];
+/**
+ * Fase 1 do plano de correcao AdSense: o site passa de 36 para 18 guias.
+ * Os 18 removidos sao servidos com status 410 Gone (ver src/proxy.ts): o 410
+ * sinaliza remocao deliberada ao Google, diferente do 404. Manter artigo fraco
+ * publicado e pior do que nao ter artigo nenhum.
+ */
+export const ACTIVE_GUIDE_SLUGS: string[] = [
+  "em-quem-votar",
+  "como-avaliar-deputado-federal",
+  "como-avaliar-senador",
+  "diferenca-deputado-senador",
+  "como-funciona-quociente-eleitoral",
+  "como-checar-pesquisas-eleitorais",
+  "como-evitar-desinformacao-eleitoral",
+  "como-pesquisar-candidato-pelo-nome",
+  "como-checar-processos-e-condenacoes",
+  "como-funcionam-comissoes",
+  "como-ler-projetos-de-lei",
+  "como-entender-orcamento-emendas",
+  "como-conferir-fontes-oficiais",
+  "guia-temas-saude",
+  "guia-temas-educacao",
+  "guia-temas-seguranca-publica",
+  "guia-temas-meio-ambiente",
+  "guia-temas-economia-impostos"
+];
+
+export const REMOVED_GUIDE_SLUGS: string[] = [
+  "como-avaliar-politicas-publicas",
+  "como-acompanhar-promessas-campanha",
+  "como-analisar-rankings-politicos",
+  "como-avaliar-reeleicao",
+  "como-comparar-parlamentares",
+  "como-entender-historico-partidario",
+  "glossario-politico-congresso",
+  "como-ler-votacoes-nominais",
+  "federacoes-coligacoes-partidos",
+  "o-que-faz-suplente",
+  "voto-proporcional-legenda",
+  "como-montar-lista-criterios-voto",
+  "como-conversar-politica-familia",
+  "como-usar-portais-transparencia",
+  "como-avaliar-politico-redes-sociais",
+  "guia-primeiro-voto",
+  "como-usar-match-eleitoral",
+  "checklist-antes-de-votar"
+];
+
+export function isActiveGuideSlug(slug: string): boolean {
+  return ACTIVE_GUIDE_SLUGS.includes(slug);
+}
+
+export function getActiveGuides(): GuideArticle[] {
+  return GUIDE_ARTICLES.filter((article) => ACTIVE_GUIDE_SLUGS.includes(article.slug));
+}
+
 const CORE_GUIDE_SOURCES: GuideSource[] = [
   {
     label: 'Dados Abertos da C\u00e2mara',
@@ -1685,7 +1842,7 @@ const CORE_GUIDE_SOURCES: GuideSource[] = [
   {
     label: 'Dados Abertos do Senado',
     description: 'Dados legislativos e administrativos publicados pelo Senado Federal.',
-    href: 'https://www12.senado.leg.br/dados-abertos/dados-abertos',
+    href: 'https://www12.senado.leg.br/dados-abertos',
   },
   {
     label: 'Portal de Dados Abertos do TSE',

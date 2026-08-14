@@ -30,6 +30,9 @@ export async function generateMetadata({ params }: { params: Promise<{ sigla: st
     title: `Guia Eleitoral - ${nome}`,
     description: `Conheça os deputados federais e senadores do ${nome}. Dados oficiais de mandato, gastos, presença e ranking de desempenho.`,
     alternates: { canonical: `https://www.quemvotar.com.br/uf/${uf}` },
+    // Fase 1: pagina de UF sem conteudo editorial proprio nao entra no indice.
+    // Volta a ser indexavel na Fase 3.4, quando receber texto escrito por humano.
+    robots: { index: false, follow: true },
   };
 }
 

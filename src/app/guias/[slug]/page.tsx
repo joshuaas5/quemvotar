@@ -4,10 +4,14 @@ import { notFound } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { GUIDE_ARTICLES, getGuideBySlug, getGuideCardStyle, getGuideCategory, getGuideReadingTime, getGuideSources, getGuideWordCount } from '@/lib/guides';
+import { getActiveGuides, getGuideBySlug, getGuideCardStyle, getGuideCategory, getGuideReadingTime, getGuideSources, getGuideWordCount } from '@/lib/guides';
+import { getGuiaExtraBySlug, getGuiaExtraWordCount } from '@/lib/guides-extra-utils';
+import { getAuthorBySlug } from '@/lib/authors';
+import { SITE } from '@/lib/site-config';
+import { buildArticleSchema, buildFaqPageSchema } from '@/lib/jsonld';
 
 export function generateStaticParams() {
-  return GUIDE_ARTICLES.map((article) => ({ slug: article.slug }));
+  return getActiveGuides().map((article) => ({ slug: article.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -22,6 +26,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   const canonical = `https://www.quemvotar.com.br/guias/${article.slug}`;
+  const author = getAuthorBySlug(article.author);
 
   return {
     title: article.title,
@@ -33,6 +38,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       url: canonical,
       type: 'article',
     },
+    // Fase 2: artigo assinado e revisado entra no indice; o restante do site
+    // segue as regras de indexacao por pagina (perfis, UF e partidos noindex).
+    robots: { index: true, follow: true },
+    authors: author ? [{ url: `https://www.quemvotar.com.br/autores/${author.slug}` }] : undefined,
   };
 }
 
@@ -45,39 +54,66 @@ export default async function GuiaPage({ params }: { params: Promise<{ slug: str
   }
 
   const category = getGuideCategory(article);
-  const currentIndex = GUIDE_ARTICLES.findIndex((item) => item.slug === article.slug);
+  const currentIndex = getActiveGuides().findIndex((item) => item.slug === article.slug);
   const accent = getGuideCardStyle(Math.max(0, currentIndex));
-  const related = GUIDE_ARTICLES
+  const related = getActiveGuides()
     .filter((item) => item.slug !== article.slug && category.slugs.includes(item.slug))
     .slice(0, 3);
   const sources = getGuideSources(article);
+  const author = getAuthorBySlug(article.author);
 
-  const articleSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
+  // Fase 3.2: merge do conteudo de expansao (novas secoes, exemplos, tabelas e FAQ).
+  const extra = getGuiaExtraBySlug(article.slug);
+  const sections = [
+    ...article.sections,
+    ...(extra?.novasSections ?? []).map((section) => ({
+      title: section.titulo,
+      paragraphs: section.paragrafos,
+    })),
+  ];
+  const exemplos = [...(article.exemplos ?? []), ...(extra?.exemplos ?? [])].map((exemplo) => ({
+    titulo: exemplo.titulo,
+    paragrafos: exemplo.paragrafos,
+    fonte: exemplo.fonte,
+  }));
+  const tabelas = [...(article.tabelas ?? []), ...(extra?.tabelas ?? [])].map((tabela) => ({
+    titulo: tabela.titulo,
+    cabecalho: tabela.cabecalho,
+    linhas: tabela.linhas,
+  }));
+  const faq = [...(article.faq ?? []), ...(extra?.faq ?? [])].map((item) => ({
+    pergunta: item.pergunta,
+    resposta: item.resposta,
+  }));
+  const extraWords = getGuiaExtraWordCount(extra);
+  const wordCount = getGuideWordCount(article) + extraWords;
+
+  const mergedReadingTime = (() => {
+    const minutes = Math.max(2, Math.ceil(wordCount / 225));
+    return `${minutes} min`;
+  })();
+
+  const articleSchema = buildArticleSchema({
     headline: article.title,
     description: article.description,
-    dateModified: article.updatedAt,
-    isAccessibleForFree: true,
-    datePublished: article.updatedAt,
-    author: {
-      '@type': 'Organization',
-      name: 'QuemVotar',
-      url: 'https://www.quemvotar.com.br/sobre',
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'QuemVotar',
-      url: 'https://www.quemvotar.com.br',
-    },
-    mainEntityOfPage: `https://www.quemvotar.com.br/guias/${article.slug}`,
-  };
+    url: `https://www.quemvotar.com.br/guias/${article.slug}`,
+    publishedAt: article.publishedAt,
+    updatedAt: article.updatedAt,
+    author: author ? { name: author.name, url: `https://www.quemvotar.com.br/autores/${author.slug}` } : null,
+    publisherName: SITE.publisherName || SITE.name,
+    publisherUrl: SITE.url,
+    logoUrl: `${SITE.url}/icon.png`,
+  });
+
+  const faqSchema = faq.length > 0 ? buildFaqPageSchema(faq) : null;
+
+  const schemas = faqSchema ? [articleSchema, faqSchema] : [articleSchema];
 
   return (
     <div className="min-h-screen flex flex-col">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
       />
       <Header />
       <main className="flex-grow bg-[#F7F2DE] py-10 md:py-16 px-4 md:px-6 overflow-hidden">
@@ -104,23 +140,36 @@ export default async function GuiaPage({ params }: { params: Promise<{ slug: str
                 <p className="font-headline font-black text-3xl uppercase mb-4">Dados do guia</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="border-2 border-black p-3 bg-[#FFD709]">
-                    <p className="font-headline font-black text-2xl">{getGuideReadingTime(article)}</p>
+                    <p className="font-headline font-black text-2xl">{mergedReadingTime}</p>
                     <p className="font-label font-bold uppercase text-[10px]">leitura</p>
                   </div>
                   <div className="border-2 border-black p-3 bg-[#9BF6FF]">
-                    <p className="font-headline font-black text-2xl">{article.sections.length}</p>
+                    <p className="font-headline font-black text-2xl">{sections.length}</p>
                     <p className="font-label font-bold uppercase text-[10px]">capítulos</p>
                   </div>
                   <div className="border-2 border-black p-3 bg-[#C8FF8C] col-span-2">
-                    <p className="font-headline font-black text-2xl">{getGuideWordCount(article).toLocaleString('pt-BR')}</p>
+                    <p className="font-headline font-black text-2xl">{wordCount.toLocaleString('pt-BR')}</p>
                     <p className="font-label font-bold uppercase text-[10px]">palavras aproximadas</p>
                   </div>
                 </div>
                 <p className="font-label font-bold uppercase text-xs mt-4 opacity-70">
+                  Publicado em {new Date(article.publishedAt).toLocaleDateString('pt-BR')}
+                </p>
+                <p className="font-label font-bold uppercase text-xs mt-1 opacity-70">
                   Atualizado em {new Date(article.updatedAt).toLocaleDateString('pt-BR')}
                 </p>
+                <p className="font-label font-bold uppercase text-xs mt-1 opacity-70">
+                  Revisão de fontes: {new Date(article.reviewedAt).toLocaleDateString('pt-BR')}
+                </p>
                 <div className="mt-4 border-t-2 border-black pt-4 font-body text-sm leading-relaxed">
-                  <p className="font-bold">{'Produzido pela equipe editorial do QuemVotar.'}</p>
+                  {author ? (
+                    <p className="font-bold">
+                      {'Por '}
+                      <Link href={`/autores/${author.slug}`} className="underline">
+                        {author.name}
+                      </Link>
+                    </p>
+                  ) : null}
                   <p className="mt-1">{'Para dados atuais ou sens\u00edveis, consulte as fontes oficiais indicadas neste guia.'}</p>
                   <Link href="/politica-editorial" className="mt-3 inline-block font-headline font-black uppercase border-b-2 border-black">
                     {'Pol\u00edtica editorial'}
@@ -134,7 +183,7 @@ export default async function GuiaPage({ params }: { params: Promise<{ slug: str
             <aside className="lg:sticky lg:top-28 bg-white border-4 border-black p-5 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
               <h2 className="font-headline font-black text-2xl uppercase mb-4">Neste guia</h2>
               <nav className="space-y-3">
-                {article.sections.map((section, index) => (
+                {sections.map((section, index) => (
                   <a key={section.title} href={`#secao-${index + 1}`} className="block font-label font-black uppercase text-xs border-b-2 border-black pb-2 hover:text-[#BB0100]">
                     {index + 1}. {section.title}
                   </a>
@@ -150,7 +199,7 @@ export default async function GuiaPage({ params }: { params: Promise<{ slug: str
                 <p className="text-xl md:text-2xl leading-relaxed font-bold">{article.intro}</p>
               </section>
 
-              {article.sections.map((section, index) => (
+              {sections.map((section, index) => (
                 <section key={section.title} id={`secao-${index + 1}`} className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] overflow-hidden scroll-mt-28">
                   <div className={`${getGuideCardStyle(index)} border-b-4 border-black p-4 md:p-5 flex items-center gap-4`}>
                     <span className="bg-black text-white border-2 border-black w-10 h-10 flex items-center justify-center font-headline font-black text-xl shrink-0">
@@ -169,6 +218,80 @@ export default async function GuiaPage({ params }: { params: Promise<{ slug: str
                   </div>
                 </section>
               ))}
+              {exemplos.length > 0 ? (
+                <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-body space-y-6">
+                  <h2 className="font-headline font-black text-3xl md:text-4xl uppercase leading-tight">
+                    Casos reais para conferir
+                  </h2>
+                  {exemplos.map((exemplo) => (
+                    <div key={exemplo.titulo} className="border-l-4 border-black pl-4 md:pl-6">
+                      <h3 className="font-headline font-black text-xl md:text-2xl uppercase leading-tight mb-3">
+                        {exemplo.titulo}
+                      </h3>
+                      {exemplo.paragrafos.map((paragraph) => (
+                        <p key={paragraph} className="leading-relaxed text-base md:text-lg mb-3">
+                          {paragraph}
+                        </p>
+                      ))}
+                      {exemplo.fonte ? (
+                        <a href={exemplo.fonte.href} target="_blank" rel="noreferrer" className="inline-block font-headline font-black uppercase text-sm border-b-4 border-black">
+                          {exemplo.fonte.label}
+                        </a>
+                      ) : null}
+                    </div>
+                  ))}
+                </section>
+              ) : null}
+
+              {tabelas.length > 0 ? (
+                <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-body space-y-6 overflow-x-auto">
+                  {tabelas.map((tabela) => (
+                    <div key={tabela.titulo}>
+                      <h2 className="font-headline font-black text-3xl md:text-4xl uppercase leading-tight mb-4">
+                        {tabela.titulo}
+                      </h2>
+                      <table className="w-full border-collapse text-sm md:text-base min-w-[560px]">
+                        <thead>
+                          <tr>
+                            {tabela.cabecalho.map((celula) => (
+                              <th key={celula} className="border-2 border-black bg-[#FFD709] p-3 text-left font-headline font-black uppercase text-xs md:text-sm">
+                                {celula}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {tabela.linhas.map((linha, rowIndex) => (
+                            <tr key={rowIndex} className={rowIndex % 2 === 0 ? 'bg-white' : 'bg-[#F7F2DE]'}>
+                              {linha.map((celula, colIndex) => (
+                                <td key={colIndex} className="border-2 border-black p-3 align-top leading-relaxed">
+                                  {celula}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ))}
+                </section>
+              ) : null}
+
+              {faq.length > 0 ? (
+                <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-body space-y-6">
+                  <h2 className="font-headline font-black text-3xl md:text-4xl uppercase leading-tight">
+                    Perguntas frequentes
+                  </h2>
+                  {faq.map((item) => (
+                    <div key={item.pergunta} className="border-2 border-black p-4 md:p-5">
+                      <h3 className="font-headline font-black text-lg md:text-xl uppercase leading-tight mb-2">
+                        {item.pergunta}
+                      </h3>
+                      <p className="leading-relaxed text-base md:text-lg">{item.resposta}</p>
+                    </div>
+                  ))}
+                </section>
+              ) : null}
             </div>
           </section>
 

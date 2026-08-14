@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { PerfilDetalhadoPublico } from '@/lib/official';
-import { isProfileEligibleForIndexing, isProfileEligibleForSitemap } from './indexability';
+import { isProfileEligibleForIndexing, isProfileEligibleForSitemap, PROFILE_INDEX_ALLOWLIST } from './indexability';
 
 const profileIdentity = {
   fonte: 'camara' as const,
@@ -48,12 +48,35 @@ describe('profile indexability', () => {
     expect(isProfileEligibleForIndexing(buildDetailedProfile())).toBe(false);
   });
 
-  it('indexes a profile with a source and substantive official data', () => {
+  it('keeps template profiles out of the index even with official data (Fase 1: allowlist vazia)', () => {
     const profile = buildDetailedProfile({
       fatos: [{ label: 'Status', value: 'Active' }],
       linksOficiais: [{ label: 'Perfil oficial', href: profileIdentity.fonteUrl }],
     });
 
-    expect(isProfileEligibleForIndexing(profile)).toBe(true);
+    expect(isProfileEligibleForIndexing(profile)).toBe(false);
+  });
+
+  it('indexes a profile only after it enters the editorial allowlist (Fase 3.6)', () => {
+    const profile = buildDetailedProfile({
+      fatos: [{ label: 'Status', value: 'Active' }],
+      linksOficiais: [{ label: 'Perfil oficial', href: profileIdentity.fonteUrl }],
+    });
+
+    PROFILE_INDEX_ALLOWLIST.push('camara/123');
+    try {
+      expect(isProfileEligibleForIndexing(profile)).toBe(true);
+    } finally {
+      PROFILE_INDEX_ALLOWLIST.pop();
+    }
+  });
+
+  it('keeps an allowlisted key without substantive data out of the index', () => {
+    PROFILE_INDEX_ALLOWLIST.push('camara/123');
+    try {
+      expect(isProfileEligibleForIndexing(buildDetailedProfile())).toBe(false);
+    } finally {
+      PROFILE_INDEX_ALLOWLIST.pop();
+    }
   });
 });

@@ -680,12 +680,11 @@ async function EnrichedProfile({
         </section>
       ) : null}
 
-      {renderListSection(
+      {!areDatesSuspicious(enriched.autorias) && renderListSection(
         'Projetos e requerimentos',
         'Matérias e autorias legislativas localizadas para este parlamentar.',
         enriched.autorias,
         'A fonte não retornou autorias recentes nesta consulta.',
-        areDatesSuspicious(enriched.autorias) ? { hideDates: true } : undefined,
       )}
 
       {!isVoteDataStale(enriched.votacoes) && renderListSection(
@@ -711,7 +710,9 @@ async function EnrichedProfile({
         'A fonte não retornou cargos ativos para este perfil nesta consulta.',
       )}
 
-      {perfil.fonte === 'camara' ? renderGastosPanel(enriched.despesas) : renderListSection(
+      {perfil.fonte === 'camara' ? (
+        !isVoteDataStale(enriched.despesas) ? renderGastosPanel(enriched.despesas) : null
+      ) : renderListSection(
         'Histórico partidário',
         'Filiações partidárias históricas retornadas pelo Senado Federal.',
         perfil.filiacoes,

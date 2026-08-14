@@ -26,6 +26,9 @@ export default function Footer() {
         <Link href="/guias" className="text-black no-underline hover:text-[#ffd709] transition-colors duration-75 cursor-pointer">
           Guias
         </Link>
+        <Link href="/editorial" className="text-black no-underline hover:text-[#ffd709] transition-colors duration-75 cursor-pointer">
+          Análises
+        </Link>
         <Link href="/comparar" className="text-black no-underline hover:text-[#ffd709] transition-colors duration-75 cursor-pointer">
           Comparar
         </Link>
