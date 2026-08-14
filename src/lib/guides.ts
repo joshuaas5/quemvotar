@@ -1801,7 +1801,8 @@ export const ACTIVE_GUIDE_SLUGS: string[] = [
   "guia-temas-educacao",
   "guia-temas-seguranca-publica",
   "guia-temas-meio-ambiente",
-  "guia-temas-economia-impostos"
+  "guia-temas-economia-impostos",
+  "como-conversar-politica-familia"
 ];
 
 export const REMOVED_GUIDE_SLUGS: string[] = [
@@ -1817,7 +1818,6 @@ export const REMOVED_GUIDE_SLUGS: string[] = [
   "o-que-faz-suplente",
   "voto-proporcional-legenda",
   "como-montar-lista-criterios-voto",
-  "como-conversar-politica-familia",
   "como-usar-portais-transparencia",
   "como-avaliar-politico-redes-sociais",
   "guia-primeiro-voto",

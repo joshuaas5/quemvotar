@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next';
 import { getActiveGuides } from '@/lib/guides';
 import { EDITORIAL_ARTICLES } from '@/lib/editorial';
+import { getAllPartidosEditorial } from '@/lib/partidos-editorial-utils';
+import { UFS_EDITORIAL } from '@/lib/content/uf-editorial';
 
 export const revalidate = 86400;
 
@@ -36,9 +38,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
+  // Fase 3.3/3.4: partidos e UFs com conteudo editorial proprio voltam ao sitemap.
+  const partidoRoutes: MetadataRoute.Sitemap = getAllPartidosEditorial().map((partido) => ({
+    url: `${baseUrl}/partidos/${partido.sigla}`,
+    lastModified: new Date(partido.atualizadoEm),
+    changeFrequency: 'monthly',
+    priority: 0.65,
+  }));
+
+  const ufRoutes: MetadataRoute.Sitemap = UFS_EDITORIAL.map((estado) => ({
+    url: `${baseUrl}/uf/${estado.uf}`,
+    lastModified: new Date(estado.atualizadoEm),
+    changeFrequency: 'monthly',
+    priority: 0.6,
+  }));
+
   // Fase 1 do plano de correcao AdSense: perfis de template (/perfil/*) e as
   // paginas de UF/partido sem conteudo editorial proprio saem do sitemap e
   // ficam com noindex. Voltao ao indice apenas quando receberem texto escrito
   // por humano (Fases 3.3/3.4/3.6).
-  return [...staticRoutes, ...guideRoutes, ...editorialRoutes];
+  return [...staticRoutes, ...guideRoutes, ...editorialRoutes, ...partidoRoutes, ...ufRoutes];
 }

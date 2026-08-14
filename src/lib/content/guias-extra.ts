@@ -1318,4 +1318,55 @@ export const GUIAS_EXTRA: GuiaExtra[] = [
       },
     ],
   },
+
+  {
+    slug: 'como-conversar-politica-familia',
+    novasSections: [
+      {
+        titulo: 'Crie combinados antes do tema subir',
+        paragrafos: [
+          'Antes de uma conversa que você sabe que pode esquentar, combine regras simples: ninguém interrompe, ninguém xinga e qualquer afirmação sobre fato precisa vir acompanhada de fonte ou da promessa de buscar uma. Combinados não garantem paz, mas transformam a briga de torcida em discussão com método.',
+          'Um bom combinado é o de não julgar a pessoa pela pergunta: quem pergunta algo que parece ingênuo está, na maioria das vezes, tentando entender. Responder com ironia fecha a porta; responder com uma fonte ou um exemplo abre caminho para a próxima pergunta.',
+        ],
+      },
+      {
+        titulo: 'Use exemplos próximos, não teorias distantes',
+        paragrafos: [
+          'Conversas políticas funcionam melhor quando ancoradas na vida concreta: o posto de saúde do bairro, a escola dos filhos, o preço da cesta básica, a segurança na rua. Em vez de discutir abstrações como "o papel do Estado", pergunte o que cada pessoa acha que deveria mudar nesses lugares e quem ela acha que pode agir.',
+          'Essa ancoragem também ajuda a separar o que é responsabilidade de cada cargo. Quando a conversa chega em um problema real, a pergunta "isso depende de prefeito, governador, deputado, senador ou presidente?" tira a discussão do abstrato e a coloca no terreno em que dá para pesquisar e cobrar.',
+        ],
+      },
+      {
+        titulo: 'Quando a conversa for sobre dados, trate como investigação conjunta',
+        paragrafos: [
+          'Se alguém trouxer um número, uma votação ou uma notícia, trate o caso como uma investigação a dois: qual é a fonte, qual é a data, qual é o recorte, existe registro oficial? Pesquisar junto muda a dinâmica — deixa de ser um contra o outro e passa a ser os dois contra o problema da informação.',
+          'Termine a investigação com um resumo do que ficou confirmado, do que ficou em aberto e do que cada um vai verificar por conta própria. Mesmo que ninguém mude de opinião, os dois saem da conversa com mais método e menos rancor.',
+        ],
+      },
+    ],
+    exemplos: [
+      {
+        titulo: 'O teste da fonte em três perguntas',
+        paragrafos: [
+          'Um exercício simples para aplicar em família: diante de qualquer afirmação política forte, fazer três perguntas — onde isso está registrado? quando aconteceu? quem publicou? Se as três tiverem resposta com link ou documento, a afirmação merece ser levada a sério; se nenhuma tiver, vale tratar como boato até prova em contrário.',
+          'Esse teste funciona melhor como hábito do que como armadilha. Aplicado com gentileza, ele educa sem humilhar; aplicado como ataque, fecha a conversa. A diferença está no tom: perguntar por curiosidade, não por desconfiança.',
+        ],
+      },
+    ],
+    faq: [
+      {
+        pergunta: 'Vale a pena discutir política com quem não quer discutir?',
+        resposta: 'Depende do objetivo. Se a intenção é convencer a qualquer custo, provavelmente não. Se a intenção é entender o outro lado e semear dúvidas saudáveis, uma conversa curta e respeitosa já vale. Saber a hora de parar também é parte da habilidade: nem toda mesa de jantar precisa virar plenário.',
+      },
+      {
+        pergunta: 'Como reagir quando alguém repete uma notícia falsa?',
+        resposta: 'Evite o ataque pessoal. Pergunte de onde veio a informação e ofereça buscar juntos o registro oficial. Se a pessoa se fechar, deixe o tema de lado e volte em outro momento. Corrigir com gentileza funciona melhor do que vencer o debate na hora, e protege a relação familiar a longo prazo.',
+      },
+      {
+        pergunta: 'Política familiar precisa ter sempre um vencedor?',
+        resposta: 'Não. Conversas sobre política podem terminar sem acordo e ainda assim serem produtivas, se cada um sair com uma pergunta nova ou uma fonte para conferir. O voto é individual e secreto; a conversa não precisa virar votação.',
+      },
+    ],
+    tabelas: [],
+  },
 ];

@@ -9,6 +9,8 @@ import ShareButtons from '@/components/ShareButtons';
 import PageHero from '@/components/PageHero';
 import { getParlamentares, getPerfilHref } from '@/lib/api';
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
+import { getUfEditorialByUf } from '@/lib/uf-editorial-utils';
+import { SITE } from '@/lib/site-config';
 
 export const revalidate = 1800;
 
@@ -26,13 +28,13 @@ export async function generateMetadata({ params }: { params: Promise<{ sigla: st
   const { sigla } = await params;
   const uf = sigla.toLowerCase();
   const nome = UF_NAMES[uf] ?? sigla.toUpperCase();
+  // Fase 3.4: a pagina volta a ser indexavel quando recebe conteudo editorial proprio.
+  const hasEditorial = getUfEditorialByUf(uf) !== null;
   return {
     title: `Guia Eleitoral - ${nome}`,
     description: `Conheça os deputados federais e senadores do ${nome}. Dados oficiais de mandato, gastos, presença e ranking de desempenho.`,
     alternates: { canonical: `https://www.quemvotar.com.br/uf/${uf}` },
-    // Fase 1: pagina de UF sem conteudo editorial proprio nao entra no indice.
-    // Volta a ser indexavel na Fase 3.4, quando receber texto escrito por humano.
-    robots: { index: false, follow: true },
+    robots: hasEditorial ? { index: true, follow: true } : { index: false, follow: true },
   };
 }
 
@@ -49,6 +51,7 @@ export default async function UfPage({ params }: { params: Promise<{ sigla: stri
   const { sigla } = await params;
   const uf = sigla.toLowerCase();
   const nomeUf = UF_NAMES[uf];
+  const editorial = getUfEditorialByUf(uf);
 
   if (!nomeUf) {
     notFound();
@@ -108,6 +111,63 @@ export default async function UfPage({ params }: { params: Promise<{ sigla: stri
               <p className="font-label font-bold uppercase text-xs opacity-70 mt-1">Partidos</p>
             </div>
           </section>
+
+          {editorial ? (
+            <>
+              <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-body space-y-6">
+                <p className="font-label font-black uppercase text-xs bg-black text-white px-3 py-1 w-max">
+                  Análise editorial • Atualizado em {new Date(editorial.atualizadoEm).toLocaleDateString('pt-BR')}
+                </p>
+                <h2 className="font-headline font-black text-2xl md:text-4xl uppercase leading-tight">
+                  {editorial.bancada.titulo}
+                </h2>
+                {editorial.bancada.paragrafos.map((paragraph) => (
+                  <p key={paragraph} className="leading-relaxed text-base md:text-lg">{paragraph}</p>
+                ))}
+              </section>
+
+              <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-body space-y-6">
+                <h2 className="font-headline font-black text-2xl md:text-4xl uppercase leading-tight">
+                  {editorial.temas.titulo}
+                </h2>
+                {editorial.temas.paragrafos.map((paragraph) => (
+                  <p key={paragraph} className="leading-relaxed text-base md:text-lg">{paragraph}</p>
+                ))}
+              </section>
+
+              <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-body space-y-6">
+                <h2 className="font-headline font-black text-2xl md:text-4xl uppercase leading-tight">
+                  {editorial.historia.titulo}
+                </h2>
+                {editorial.historia.paragrafos.map((paragraph) => (
+                  <p key={paragraph} className="leading-relaxed text-base md:text-lg">{paragraph}</p>
+                ))}
+              </section>
+
+              {editorial.fontes.length > 0 ? (
+                <section className="bg-white border-4 border-black p-6 md:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+                  <h2 className="font-headline font-black text-2xl md:text-3xl uppercase mb-4">Fontes desta análise</h2>
+                  <div className="space-y-3">
+                    {editorial.fontes.map((fonte) => (
+                      <a
+                        key={fonte.href}
+                        href={fonte.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="block font-headline font-black uppercase border-b-4 border-black w-max max-w-full truncate"
+                      >
+                        {fonte.label}
+                      </a>
+                    ))}
+                  </div>
+                  <p className="mt-6 font-body text-sm leading-relaxed">
+                    Análise assinada pela equipe editorial do QuemVotar ({SITE.publisherName}). Este texto
+                    não representa recomendação de voto nem posição de partido, candidato ou órgão público.
+                  </p>
+                </section>
+              ) : null}
+            </>
+          ) : null}
 
           <section className="bg-white border-4 border-black p-6 md:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-body space-y-4">
             <h2 className="font-headline font-black text-2xl md:text-3xl uppercase">
