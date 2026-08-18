@@ -4,7 +4,12 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useMinhaUrna } from '@/components/candidatos/MinhaUrnaProvider';
 import { FotoCandidato } from '@/components/candidatos/FotoCandidato';
-import { CARGOS_URNA, faltamNaUrna } from '@/lib/candidatos/minha-urna';
+import {
+  CARGOS_URNA,
+  faltamNaUrna,
+  votosPorCargo,
+  votosPreenchidos,
+} from '@/lib/candidatos/minha-urna';
 import { EIXO_TEXTO } from '@/lib/candidatos/ui';
 
 export function MinhaUrnaView() {
@@ -86,18 +91,28 @@ export function MinhaUrnaView() {
       ) : (
         <div className="space-y-6">
           {CARGOS_URNA.map((cargo) => {
-            const escolhido = items.find((i) => i.cargoCodigo === cargo.codigo);
+            const votos = votosPorCargo(cargo.codigo);
+            const escolhidos = items.filter((i) => i.cargoCodigo === cargo.codigo);
+            const completo = escolhidos.length >= votos;
+            const temAlgum = escolhidos.length > 0;
             return (
               <article key={cargo.codigo} className="bg-white border-4 border-black p-5 sm:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
                 <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
                   <div>
                     <p className="font-label font-bold uppercase text-[10px] opacity-60">
-                      {cargo.obrigatorio ? 'Voto obrigatório' : 'Voto'} · 1 escolha
+                      {cargo.obrigatorio ? 'Voto obrigatório' : 'Voto'} · {votos} {votos === 1 ? 'escolha' : 'escolhas'}
                     </p>
-                    <h2 className="font-headline font-black text-2xl sm:text-3xl uppercase">{cargo.rotulo}</h2>
+                    <h2 className="font-headline font-black text-2xl sm:text-3xl uppercase">
+                      {cargo.rotulo}
+                      {votos > 1 ? <span className="text-sm align-middle ml-2 bg-primary-container border-2 border-black px-2 py-0.5">elege {votos} em 2026</span> : null}
+                    </h2>
                   </div>
-                  {escolhido ? (
-                    <span className="font-headline font-black uppercase text-2xl text-emerald-700">✔ Escolhido</span>
+                  {completo ? (
+                    <span className="font-headline font-black uppercase text-2xl text-emerald-700">✔ Completo {escolhidos.length}/{votos}</span>
+                  ) : temAlgum ? (
+                    <span className="font-headline font-black uppercase text-sm bg-amber-50 border-2 border-amber-300 text-amber-700 px-3 py-1">
+                      {escolhidos.length}/{votos} escolhidos
+                    </span>
                   ) : (
                     <span className="font-headline font-black uppercase text-sm bg-red-50 border-2 border-red-300 text-red-700 px-3 py-1">
                       Falta escolher
@@ -105,42 +120,53 @@ export function MinhaUrnaView() {
                   )}
                 </div>
 
-                {escolhido ? (
-                  <div className="flex items-center gap-4 border-2 border-black bg-surface-container p-4 flex-wrap sm:flex-nowrap">
-                    <div className="w-24 h-24 border-2 border-black bg-surface-container-high overflow-hidden shrink-0 flex items-center justify-center">
-                      <FotoCandidato sqEleicao={20322002026} id={escolhido.id} uf={escolhido.uf} nome={escolhido.nomeUrna} iniciaisClassName="font-headline font-black text-xl" />
-                    </div>
-                    <div className="min-w-0 flex-1 space-y-1">
-                      <p className="font-headline font-black text-2xl uppercase leading-none">{escolhido.nomeUrna}</p>
-                      <p className="font-body font-bold uppercase text-xs opacity-70">
-                        {escolhido.partido ?? 'Sem partido'} · {escolhido.uf}
-                      </p>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-headline font-black uppercase text-lg border-2 border-black bg-white px-3 py-1">Nº {escolhido.numero}</span>
-                        {escolhido.eixo ? (
-                          <span className={`font-label font-bold uppercase text-[10px] ${EIXO_TEXTO[escolhido.eixo as keyof typeof EIXO_TEXTO] ?? ''}`}>
-                            {escolhido.eixo}
+                {escolhidos.length > 0 ? (
+                  <div className="space-y-3">
+                    {escolhidos.map((escolhido, index) => (
+                      <div key={escolhido.id} className="flex items-center gap-4 border-2 border-black bg-surface-container p-4 flex-wrap sm:flex-nowrap">
+                        {votos > 1 ? (
+                          <span className="font-headline font-black uppercase text-xs bg-black text-white px-2 py-1 shrink-0">
+                            {index + 1}º voto
                           </span>
                         ) : null}
+                        <div className="w-24 h-24 border-2 border-black bg-surface-container-high overflow-hidden shrink-0 flex items-center justify-center">
+                          <FotoCandidato sqEleicao={20322002026} id={escolhido.id} uf={escolhido.uf} nome={escolhido.nomeUrna} fotoAlta={escolhido.fotoAlta ?? null} iniciaisClassName="font-headline font-black text-xl" />
+                        </div>
+                        <div className="min-w-0 flex-1 space-y-1">
+                          <p className="font-headline font-black text-2xl uppercase leading-none">{escolhido.nomeUrna}</p>
+                          <p className="font-body font-bold uppercase text-xs opacity-70">
+                            {escolhido.partido ?? 'Sem partido'} · {escolhido.uf}
+                          </p>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="font-headline font-black uppercase text-lg border-2 border-black bg-white px-3 py-1">Nº {escolhido.numero}</span>
+                            {escolhido.eixo ? (
+                              <span className={`font-label font-bold uppercase text-[10px] ${EIXO_TEXTO[escolhido.eixo as keyof typeof EIXO_TEXTO] ?? ''}`}>
+                                {escolhido.eixo}
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+                        <div className="flex gap-2 items-center shrink-0">
+                          <Link
+                            href={`/candidatos/2026/${escolhido.uf}/${escolhido.id}`}
+                            className="font-headline font-black uppercase text-xs border-2 border-black px-3 py-1.5 hover:bg-primary-container"
+                          >
+                            Ver perfil
+                          </Link>
+                          <button
+                            onClick={() => remover(escolhido.id)}
+                            className="font-headline font-black uppercase text-xs border-2 border-black px-3 py-1.5 text-red-700 hover:bg-red-100"
+                          >
+                            Remover
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex gap-2 items-center shrink-0">
-                      <Link
-                        href={`/candidatos/2026/${escolhido.uf}/${escolhido.id}`}
-                        className="font-headline font-black uppercase text-xs border-2 border-black px-3 py-1.5 hover:bg-primary-container"
-                      >
-                        Ver perfil
-                      </Link>
-                      <button
-                        onClick={() => remover(escolhido.id)}
-                        className="font-headline font-black uppercase text-xs border-2 border-black px-3 py-1.5 text-red-700 hover:bg-red-100"
-                      >
-                        Remover
-                      </button>
-                    </div>
+                    ))}
                   </div>
-                ) : (
-                  <div className="border-2 border-dashed border-black p-6 text-center">
+                ) : null}
+
+                {!completo ? (
+                  <div className="border-2 border-dashed border-black p-6 text-center mt-3">
                     <Link href={`/match/candidatos?cargo=${cargo.codigo}`} className="font-headline font-black uppercase text-sm underline">
                       Selecione {cargo.rotulo === 'Deputado Estadual' ? 'ou Distrital' : `seu candidato a ${cargo.rotulo.toLowerCase()}`}
                     </Link>
@@ -148,7 +174,7 @@ export function MinhaUrnaView() {
                       Dica: use o Match para achar quem combina com você
                     </p>
                   </div>
-                )}
+                ) : null}
               </article>
             );
           })}

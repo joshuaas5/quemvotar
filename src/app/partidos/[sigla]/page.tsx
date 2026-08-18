@@ -7,6 +7,8 @@ import Header from '@/components/Header';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ShareButtons from '@/components/ShareButtons';
 import { getPartidoPorSigla } from '@/lib/api';
+import { completarPartido2026, getPartidoFallback2026 } from '@/lib/partidos-2026';
+import { saneUrl } from '@/lib/utils/safe-url';
 import { getPartyVisualEmoji } from '@/lib/party-logos';
 import { buildOrganizationSchema, buildBreadcrumbSchema } from '@/lib/jsonld';
 import { getPartidoEditorialBySigla, getPartidoEditorialWordCount } from '@/lib/partidos-editorial-utils';
@@ -17,8 +19,20 @@ export const revalidate = 3600;
 export async function generateMetadata(
   { params }: { params: Promise<{ sigla: string }> }
 ): Promise<Metadata> {
-  const { sigla } = await params;
-  const partido = await getPartidoPorSigla(sigla);
+  const { sigla: siglaEncodada } = await params;
+  // Next 16 entrega o segmento URL-encodado; decodifica antes de usar
+  const sigla = decodeURIComponent(siglaEncodada);
+  // Linha 23: generateMetadata — blindado contra scrape instável do TSE
+  let partido: Awaited<ReturnType<typeof getPartidoPorSigla>> = null;
+  try {
+    partido = await getPartidoPorSigla(sigla);
+  } catch {
+    partido = null;
+  }
+
+  if (!partido) {
+    partido = getPartidoFallback2026(sigla);
+  }
 
   if (!partido) {
     return {
@@ -54,12 +68,33 @@ export default async function PartidoDetailPage({
 }: {
   params: Promise<{ sigla: string }>;
 }) {
-  const { sigla } = await params;
-  const partido = await getPartidoPorSigla(sigla);
+  // Página — decodifica o segmento URL-encodado
+  const { sigla: siglaEncodada } = await params;
+  const sigla = decodeURIComponent(siglaEncodada);
+
+  let partido: Awaited<ReturnType<typeof getPartidoPorSigla>> = null;
+  try {
+    partido = await getPartidoPorSigla(sigla);
+  } catch (error) {
+    // scraping do TSE pode falhar/oscilar — não pode derrubar a página
+    console.error(`Falha ao buscar o partido ${sigla} no TSE:`, String(error).slice(0, 200));
+  }
+
+  if (!partido) {
+    // Partidos novos/2026 que ainda não estão na raspagem do TSE
+    partido = getPartidoFallback2026(sigla);
+  } else {
+    // Preenche campos que o scraper pode deixar faltando (ficha incompleta)
+    partido = completarPartido2026(partido);
+  }
 
   if (!partido) {
     notFound();
   }
+
+  const siteOficial = saneUrl(partido.siteOficial);
+  const estatutoUrl = saneUrl(partido.estatutoUrl);
+  const tseUrl = saneUrl(partido.tseUrl);
 
   const cores = partido.cores ?? ['#111827', '#9ca3af'];
   const visual = getPartyVisualEmoji(partido.sigla);
@@ -158,37 +193,37 @@ export default async function PartidoDetailPage({
             </article>
 
             <article className="bg-white border-4 border-black p-5 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] bg-[#D7F6FF]">
-              <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Presidencia nacional</p>
-              <p className="font-body font-bold text-xl">{partido.presidenteNacional ?? 'Nao localizada'}</p>
+              <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Presidência nacional</p>
+              <p className="font-body font-bold text-xl">{partido.presidenteNacional ?? 'Não localizada'}</p>
             </article>
 
             <article className="bg-white border-4 border-black p-5 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] bg-[#E9FFD2]">
-              <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Lideranca na Camara</p>
-              <p className="font-body font-bold text-xl">{partido.liderCamara?.nome ?? 'Sem lider localizado'}</p>
+              <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Liderança na Câmara</p>
+              <p className="font-body font-bold text-xl">{partido.liderCamara?.nome ?? 'Sem líder localizado'}</p>
             </article>
 
             <article className="bg-white border-4 border-black p-5 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] bg-[#FFE0C7]">
-              <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Lideranca no Senado</p>
-              <p className="font-body font-bold text-xl">{partido.liderSenado?.nome ?? 'Sem lider localizado'}</p>
+              <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Liderança no Senado</p>
+              <p className="font-body font-bold text-xl">{partido.liderSenado?.nome ?? 'Sem líder localizado'}</p>
             </article>
           </section>
 
           <section className="bg-white border-4 border-black p-6 md:p-8 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-            <h2 className="font-headline font-black text-2xl md:text-3xl uppercase mb-4">Identidade politica</h2>
+            <h2 className="font-headline font-black text-2xl md:text-3xl uppercase mb-4">Identidade política</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-3">
                 <p className="font-label font-bold uppercase text-xs opacity-70">Campo aproximado</p>
-                <p className="font-body font-bold text-xl md:text-2xl">{partido.espectro ?? 'Nao classificado'}</p>
+                <p className="font-body font-bold text-xl md:text-2xl">{partido.espectro ?? 'Não classificado'}</p>
                 <p className="font-body font-medium">
                   {partido.familiaPolitica
-                    ? `Familia politica aproximada: ${partido.familiaPolitica}.`
-                    : 'Familia politica nao identificada.'}
+                    ? `Família política aproximada: ${partido.familiaPolitica}.`
+                    : 'Família política não identificada.'}
                 </p>
               </div>
               <div className="space-y-3">
                 <p className="font-label font-bold uppercase text-xs opacity-70">Como o partido se apresenta</p>
                 <p className="font-body font-medium">
-                  {partido.definicaoCurta ?? 'Descricao publica nao localizada no site oficial.'}
+                  {partido.definicaoCurta ?? 'Descrição pública não localizada no site oficial.'}
                 </p>
               </div>
             </div>
@@ -300,18 +335,18 @@ export default async function PartidoDetailPage({
               <Link href={`/parlamentares?partido=${encodeURIComponent(partido.sigla)}`} className="block font-headline font-black uppercase border-b-4 border-black w-max">
                 Ver bancada do partido
               </Link>
-              {partido.siteOficial ? (
-                <a href={partido.siteOficial} target="_blank" rel="noreferrer" className="block font-headline font-black uppercase border-b-4 border-black w-max">
+              {siteOficial ? (
+                <a href={siteOficial} target="_blank" rel="noreferrer" className="block font-headline font-black uppercase border-b-4 border-black w-max">
                   Site oficial
                 </a>
               ) : null}
-              {partido.estatutoUrl ? (
-                <a href={partido.estatutoUrl} target="_blank" rel="noreferrer" className="block font-headline font-black uppercase border-b-4 border-black w-max">
+              {estatutoUrl ? (
+                <a href={estatutoUrl} target="_blank" rel="noreferrer" className="block font-headline font-black uppercase border-b-4 border-black w-max">
                   Estatuto no TSE
                 </a>
               ) : null}
-              {partido.tseUrl ? (
-                <a href={partido.tseUrl} target="_blank" rel="noreferrer" className="block font-headline font-black uppercase border-b-4 border-black w-max">
+              {tseUrl ? (
+                <a href={tseUrl} target="_blank" rel="noreferrer" className="block font-headline font-black uppercase border-b-4 border-black w-max">
                   Registro partidario no TSE
                 </a>
               ) : null}

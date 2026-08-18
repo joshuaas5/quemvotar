@@ -197,7 +197,7 @@ export function CompararCandidatos({ idsIniciais }: { idsIniciais: string }) {
           {selecionados.map(({ lite, detalhe, carregandoDetalhe }) => (
             <article key={lite.id} className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col">
               <div className="aspect-[4/3] border-b-4 border-black bg-surface-container-high overflow-hidden relative">
-                <FotoCandidato sqEleicao={20322002026} id={lite.id} uf={lite.uf} nome={lite.nomeUrna} />
+                <FotoCandidato sqEleicao={20322002026} id={lite.id} uf={lite.uf} nome={lite.nomeUrna} fotoAlta={lite.fotoAlta ?? null} />
                 <button
                   onClick={() => remover(lite.id)}
                   className="absolute top-2 right-2 bg-red-600 text-white border-2 border-black w-8 h-8 flex items-center justify-center font-black text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"

@@ -16,6 +16,8 @@ import {
 import { getPartyLogoBySigla } from '@/lib/party-logos';
 import { SectionSkeleton } from '@/components/ProfileSkeleton';
 import { FotoCandidato } from '@/components/candidatos/FotoCandidato';
+import { getFotoAltaParlamentar } from '@/lib/candidatos/foto-alta';
+import { saneUrl } from '@/lib/utils/safe-url';
 
 export const revalidate = 600;
 export const dynamicParams = true;
@@ -318,7 +320,12 @@ function renderSites(candidato: Awaited<ReturnType<typeof normalizarCandidatoDet
   const sites = candidato.sites ?? [];
   if (sites.length === 0) return null;
 
-  const normalizar = (url: string) => url.toLowerCase().replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const apenasValidos = sites
+    .map((site) => ({ url: saneUrl(site), bruto: site }))
+    .filter((item): item is { url: string; bruto: string } => item.url !== null);
+  if (apenasValidos.length === 0) return null;
+
+  const normalizar = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '');
 
   return (
     <section className="space-y-6">
@@ -329,15 +336,15 @@ function renderSites(candidato: Awaited<ReturnType<typeof normalizarCandidatoDet
         </p>
       </div>
       <div className="flex flex-wrap gap-3">
-        {sites.map((site) => (
+        {apenasValidos.map(({ url, bruto }) => (
           <a
-            key={site}
-            href={site.toLowerCase().startsWith('http') ? site : `https://${site}`}
+            key={bruto}
+            href={url}
             target="_blank"
             rel="noreferrer"
             className="bg-white border-4 border-black px-4 py-2 font-headline font-bold uppercase text-xs hover:bg-primary-container break-all max-w-full"
           >
-            {normalizar(site)}
+            {normalizar(bruto)}
           </a>
         ))}
       </div>
@@ -434,6 +441,7 @@ export default async function CandidatoDetalhePage({
     buscarBiografia(candidato.nomeCompleto || candidato.nomeUrna).catch(() => null),
     buscarMandatoParlamentar(candidato).catch(() => null),
   ]);
+  const fotoAlta = mandato ? getFotoAltaParlamentar(mandato.perfil) : null;
 
   const logo = getPartyLogoBySigla(candidato.partido ?? '');
   const pos = candidato.posicionamento;
@@ -453,6 +461,7 @@ export default async function CandidatoDetalhePage({
                   id={candidato.idTse}
                   uf={candidato.uf}
                   nome={candidato.nomeUrna}
+                  fotoAlta={fotoAlta}
                 />
               </div>
 

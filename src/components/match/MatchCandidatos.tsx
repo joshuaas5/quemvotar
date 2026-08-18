@@ -15,6 +15,7 @@ import {
 import { UF_LISTA } from '@/lib/candidatos/ufs';
 import { FotoCandidato } from '@/components/candidatos/FotoCandidato';
 import { useMinhaUrna } from '@/components/candidatos/MinhaUrnaProvider';
+import { votosPorCargo, votosPreenchidos } from '@/lib/candidatos/minha-urna';
 
 const EIXO_CORES: Record<string, string> = {
   esquerda: 'bg-red-500',
@@ -68,7 +69,7 @@ export function MatchCandidatos() {
   const [semDados, setSemDados] = useState(false);
   const [verMais, setVerMais] = useState(8);
   const [comparar, setComparar] = useState<number[]>([]);
-  const { adicionar, remover, esta } = useMinhaUrna();
+  const { items, adicionar, remover, esta } = useMinhaUrna();
 
   useEffect(() => {
     setComparar(carregarComparar());
@@ -247,7 +248,32 @@ export function MatchCandidatos() {
       </div>
 
       {/* Filtros */}
-      <div className="bg-white border-4 border-black p-4 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] grid grid-cols-1 md:grid-cols-3 gap-3">
+      {/* Escolha do cargo (seção da urna) */}
+      <div className="bg-white border-4 border-black p-4 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-3">
+        <p className="font-headline font-black uppercase text-sm">🗳️ Sugestões para qual cargo?</p>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { codigo: '0', nome: 'Todos' },
+            { codigo: '1', nome: 'Presidente' },
+            { codigo: '3', nome: 'Governador' },
+            { codigo: '5', nome: 'Senador · elege 2' },
+            { codigo: '6', nome: 'Dep. Federal' },
+            { codigo: '7', nome: 'Dep. Estadual' },
+          ].map((cargo) => (
+            <button
+              key={cargo.codigo}
+              type="button"
+              onClick={() => setCargoFiltro(cargo.codigo)}
+              className={`border-2 border-black px-3 py-2 font-headline font-black uppercase text-xs ${
+                cargoFiltro === cargo.codigo ? 'bg-black text-white' : 'bg-white hover:bg-surface-container-high'
+              }`}
+            >
+              {cargo.nome}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
         <select
           value={uf}
           onChange={(e) => setUf(e.target.value)}
@@ -256,19 +282,6 @@ export function MatchCandidatos() {
           <option value="BR">Brasil</option>
           {UF_LISTA.map((item) => (
             <option key={item.sigla} value={item.sigla}>{item.sigla} — {item.nome}</option>
-          ))}
-        </select>
-
-        <select
-          value={cargoFiltro}
-          onChange={(e) => setCargoFiltro(e.target.value)}
-          className="border-4 border-black px-4 py-3 font-headline font-bold uppercase bg-white"
-        >
-          <option value="0">Todos os cargos</option>
-          {[1, 3, 5, 6, 7, 8].map((codigo) => (
-            <option key={codigo} value={codigo}>
-              {dados.find((c) => c.cargoCodigo === codigo)?.cargo ?? `Cargo ${codigo}`}
-            </option>
           ))}
         </select>
 
@@ -282,6 +295,7 @@ export function MatchCandidatos() {
             <option key={sigla} value={sigla}>{sigla}</option>
           ))}
         </select>
+        </div>
       </div>
 
       {carregando ? (
@@ -309,7 +323,7 @@ export function MatchCandidatos() {
                 <span className="text-2xl">{secao.emoji}</span>
                 <h3 className="font-headline font-black text-2xl sm:text-3xl uppercase">{secao.titulo}</h3>
                 <span className="font-label font-bold uppercase text-xs bg-surface-container-high border-2 border-black px-2 py-0.5">
-                  1 voto
+                  {secao.codigos.includes(5) ? '2 votos em 2026' : '1 voto'}
                 </span>
               </header>
 
@@ -347,6 +361,7 @@ export function MatchCandidatos() {
                             id={candidato.id}
                             uf={candidato.uf}
                             nome={candidato.nomeUrna}
+                            fotoAlta={candidato.fotoAlta ?? null}
                             iniciaisClassName="font-headline font-black text-sm"
                           />
                         </div>
@@ -384,6 +399,13 @@ export function MatchCandidatos() {
                         >
                           ✔ Na urna
                         </button>
+                      ) : votosPreenchidos(items, candidato.cargoCodigo) >= votosPorCargo(candidato.cargoCodigo) ? (
+                        <span
+                          className="flex-1 font-headline font-black uppercase text-[10px] px-3 py-3 bg-gray-100 text-gray-400 flex items-center justify-center"
+                          title={`Cargo com ${votosPorCargo(candidato.cargoCodigo)} votos já selecionados`}
+                        >
+                          🗳️ Vaga preenchida
+                        </span>
                       ) : (
                         <button
                           onClick={() =>
@@ -398,6 +420,7 @@ export function MatchCandidatos() {
                               eixo: candidato.eixo,
                               base: candidato.base,
                               baseLabel: candidato.baseLabel,
+                              fotoAlta: candidato.fotoAlta ?? null,
                             })
                           }
                           className="flex-1 font-headline font-black uppercase text-[10px] px-3 py-3 hover:bg-primary-container"

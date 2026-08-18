@@ -17,9 +17,23 @@ export interface MinhaUrnaItem {
   eixo: string | null;
   base: string;
   baseLabel: string;
+  fotoAlta?: string | null;
 }
 
 export const MINHA_URNA_KEY = 'quemvotar:minha-urna:v1';
+
+/** Quantos votos por cargo nas Eleições de 2026 (Senado elege EM DOBRO neste ano). */
+export const VOTOS_POR_CARGO: Record<number, number> = {
+  1: 1, // Presidente
+  3: 1, // Governador
+  5: 2, // Senador — 2026 elege 2 senadores por estado
+  6: 1, // Dep. Federal
+  7: 1, // Dep. Estadual
+};
+
+export function votosPorCargo(cargoCodigo: number): number {
+  return VOTOS_POR_CARGO[cargoCodigo] ?? 1;
+}
 
 /** Cargos da eleição geral, na ordem da urna. */
 export const CARGOS_URNA: Array<{ codigo: number; rotulo: string; obrigatorio: boolean }> = [
@@ -60,10 +74,19 @@ export function salvarMinhaUrna(items: MinhaUrnaItem[]): void {
   }
 }
 
-/** Máximo de 1 voto por cargo. Retorna a lista atualizada. */
-export function adicionarNaUrna(item: Omit<MinhaUrnaItem, 'eixo' | 'base' | 'baseLabel'> & { eixo?: string | null; base?: string; baseLabel?: string }): MinhaUrnaItem[] {
+/** Máximo de votos por cargo (regra da eleição). Retorna a lista atualizada. */
+export function adicionarNaUrna(
+  item: Omit<MinhaUrnaItem, 'eixo' | 'base' | 'baseLabel'> & { eixo?: string | null; base?: string; baseLabel?: string },
+): MinhaUrnaItem[] {
   const atual = carregarMinhaUrna();
-  const semCargo = atual.filter((i) => i.cargoCodigo !== item.cargoCodigo);
+  const jaNoCargo = atual.filter((i) => i.cargoCodigo === item.cargoCodigo);
+  const maxVotos = votosPorCargo(item.cargoCodigo);
+
+  // Já atingiu o máximo de votos para este cargo (senador = 2) → não adiciona
+  if (jaNoCargo.length >= maxVotos) {
+    return atual;
+  }
+
   const novo: MinhaUrnaItem = {
     id: item.id,
     nomeUrna: item.nomeUrna,
@@ -75,8 +98,9 @@ export function adicionarNaUrna(item: Omit<MinhaUrnaItem, 'eixo' | 'base' | 'bas
     eixo: item.eixo ?? null,
     base: item.base ?? 'indefinido',
     baseLabel: item.baseLabel ?? 'Não avaliado',
+    fotoAlta: item.fotoAlta ?? null,
   };
-  const resultado = [...semCargo, novo];
+  const resultado = [...jaNoCargo, novo];
   salvarMinhaUrna(resultado);
   return resultado;
 }
@@ -95,8 +119,24 @@ export function estaNaUrna(items: MinhaUrnaItem[], id: number): boolean {
   return items.some((i) => i.id === id);
 }
 
-/** Quantos cargos obrigatórios faltam (por UF escolhida). */
-export function faltamNaUrna(items: MinhaUrnaItem[]): Array<{ codigo: number; rotulo: string }> {
-  const preenchidos = new Set(items.map((i) => i.cargoCodigo));
-  return CARGOS_URNA.filter((c) => c.obrigatorio && !preenchidos.has(c.codigo));
+/** Quantos votos de um cargo já foram preenchidos. */
+export function votosPreenchidos(items: MinhaUrnaItem[], cargoCodigo: number): number {
+  return items.filter((i) => i.cargoCodigo === cargoCodigo).length;
+}
+
+/** Quantos votos faltam por cargo (Senado conta em dobro). */
+export function faltamNaUrna(items: MinhaUrnaItem[]): Array<{ codigo: number; rotulo: string; faltando: number }> {
+  const preenchidos: Record<number, number> = {};
+  for (const item of items) {
+    preenchidos[item.cargoCodigo] = (preenchidos[item.cargoCodigo] ?? 0) + 1;
+  }
+  return CARGOS_URNA.filter((c) => {
+    if (!c.obrigatorio) return false;
+    const total = votosPorCargo(c.codigo);
+    return (preenchidos[c.codigo] ?? 0) < total;
+  }).map((c) => ({
+    codigo: c.codigo,
+    rotulo: c.rotulo,
+    faltando: votosPorCargo(c.codigo) - (preenchidos[c.codigo] ?? 0),
+  }));
 }

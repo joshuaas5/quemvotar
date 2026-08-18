@@ -81,7 +81,35 @@ export default async function CandidatosPage({
           </section>
 
           {/* Filtros */}
-          <form className="bg-white border-4 border-black p-4 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-3 md:gap-4">
+          <section className="bg-white border-4 border-black p-4 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-4">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <p className="font-headline font-black uppercase text-sm">📍 Marque seu estado</p>
+              <span className="font-label font-bold uppercase text-[10px] opacity-60">Candidatos por estado — clique para filtrar</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href={`/candidatos?uf=BR&cargo=${cargoCodigo}`}
+                className={`border-2 border-black px-3 py-1.5 font-headline font-black uppercase text-xs ${
+                  uf === 'BR' ? 'bg-black text-white' : 'bg-white hover:bg-surface-container-high'
+                }`}
+              >
+                BR
+              </Link>
+              {UF_LISTA.map((item) => (
+                <Link
+                  key={item.sigla}
+                  href={`/candidatos?uf=${item.sigla}&cargo=${cargoCodigo}`}
+                  className={`border-2 border-black px-3 py-1.5 font-headline font-black uppercase text-xs ${
+                    uf === item.sigla ? 'bg-black text-white' : 'bg-white hover:bg-surface-container-high'
+                  }`}
+                  title={item.nome}
+                >
+                  {item.sigla}
+                </Link>
+              ))}
+            </div>
+
+          <form className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-3 md:gap-4">
             <input
               type="text"
               name="q"
@@ -121,6 +149,7 @@ export default async function CandidatosPage({
               Aplicar filtros
             </button>
           </form>
+          </section>
 
           {/* Resumo */}
           <section className="flex flex-wrap items-center justify-between gap-4">

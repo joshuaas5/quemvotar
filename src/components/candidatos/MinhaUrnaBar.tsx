@@ -31,7 +31,7 @@ export function MinhaUrnaBar() {
           ))}
           {faltando.length > 0 ? (
             <span className="font-label font-bold uppercase text-[10px] text-yellow-300">
-              Faltam: {faltando.map((c) => c.rotulo).join(', ')}
+              Faltam: {faltando.map((c) => `${c.rotulo}${c.faltando > 1 ? ` (${c.faltando})` : ''}`).join(', ')}
             </span>
           ) : null}
         </div>

@@ -23,7 +23,7 @@ export default function Error({
           Erro ao carregar
         </h1>
         <p className="font-body font-bold text-base sm:text-lg opacity-80 mb-6">
-          Nao foi possivel carregar esta pagina. Os dados podem estar temporariamente indisponiveis.
+          Não foi possível carregar esta página. Os dados podem estar temporariamente indisponíveis.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button

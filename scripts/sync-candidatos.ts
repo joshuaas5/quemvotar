@@ -20,6 +20,7 @@ import { getPosicionamento } from '../src/lib/candidatos/posicionamento';
 import { CARGO_CODIGOS, CARGO_LABELS, type CargoTse } from '../src/lib/candidatos/types';
 import { ELEICAO_2026, TSE_API_BASE } from '../src/lib/candidatos/urls';
 import { UF_LISTA } from '../src/lib/candidatos/ufs';
+import { getFotoAltaParlamentar } from '../src/lib/candidatos/foto-alta';
 import { fetchOfficialCongressProfiles } from '../src/lib/official';
 
 /* ── Config ─────────────────────────────────────────────────── */
@@ -102,6 +103,8 @@ interface CandidatoLite {
   totalizacao: string | null;
   coligacao: string | null;
   foto: boolean;
+  /** Foto em alta resolução (Câmara/Senado) quando o candidato é parlamentar em exercício. */
+  fotoAlta: string | null;
   /** Já exerce mandato parlamentar hoje (deputado/senador em exercício). */
   mandato: boolean;
   /** Sinaliza reeleição declarada ao TSE (nem sempre preenchido na listagem). */
@@ -137,10 +140,22 @@ function normalizarNome(nome: string): string {
 }
 
 /** Constrói um set de chaves nome|partido|uf dos parlamentares em exercício. */
-function construirChavesParlamentares(perfis: Array<{ nome_urna: string; partido: string; uf?: string | null }>): Set<string> {
-  const chaves = new Set<string>();
+interface PerfilParlamentarResumo {
+  nome_urna: string;
+  partido: string;
+  uf?: string | null;
+  idOrigem: string;
+  casa: 'Câmara dos Deputados' | 'Senado Federal';
+}
+
+/** Constrói um mapa chave nome|partido|uf → foto em alta do parlamentar em exercício. */
+function construirChavesParlamentares(perfis: PerfilParlamentarResumo[]): Map<string, string | null> {
+  const chaves = new Map<string, string | null>();
   for (const perfil of perfis) {
-    chaves.add(`${normalizarNome(perfil.nome_urna)}|${perfil.partido.toUpperCase()}|${(perfil.uf ?? '').toUpperCase()}`);
+    chaves.set(
+      `${normalizarNome(perfil.nome_urna)}|${perfil.partido.toUpperCase()}|${(perfil.uf ?? '').toUpperCase()}`,
+      getFotoAltaParlamentar(perfil),
+    );
   }
   return chaves;
 }
@@ -150,7 +165,7 @@ function normalizar(
   ano: number,
   sqEleicao: number,
   uf: string,
-  chavesParlamentares: Set<string>,
+  chavesParlamentares: Map<string, string | null>,
 ): CandidatoLite {
   const cargoCodigo = raw.cargo?.codigo ?? 0;
   const cargoTse = CARGO_CODIGOS[cargoCodigo] as CargoTse | undefined;
@@ -170,9 +185,17 @@ function normalizar(
   // Conservador: cargo federal aceita nome de urna idêntico; cargo estadual
   // exige nome civil idêntico (evita homônimo com deputado federal).
   const cargoFederal = [5, 6].includes(cargoCodigo);
-  const mandato = cargoFederal
-    ? chavesParlamentares.has(chaveExata) || (chaveCompleta !== '' && chavesParlamentares.has(chaveCompleta))
-    : chaveCompleta !== '' && chavesParlamentares.has(chaveCompleta);
+  const chaveMandato = cargoFederal
+    ? chavesParlamentares.has(chaveExata)
+      ? chaveExata
+      : chaveCompleta !== '' && chavesParlamentares.has(chaveCompleta)
+        ? chaveCompleta
+        : ''
+    : chaveCompleta !== '' && chavesParlamentares.has(chaveCompleta)
+      ? chaveCompleta
+      : '';
+  const mandato = chaveMandato !== '';
+  const fotoAlta = chaveMandato !== '' ? (chavesParlamentares.get(chaveMandato) ?? null) : null;
 
   return {
     id: raw.id,
@@ -186,6 +209,7 @@ function normalizar(
     totalizacao: raw.descricaoTotalizacao ?? null,
     coligacao: raw.nomeColigacao ?? null,
     foto: true,
+    fotoAlta,
     mandato,
     reeleicao: Boolean(raw.st_REELEICAO),
     eixo: posicionamento.eixo,
@@ -204,7 +228,7 @@ async function syncCombinacao(
   cargoCodigo: number,
   outDir: string,
   quiet: boolean,
-  chavesParlamentares: Set<string>,
+  chavesParlamentares: Map<string, string | null>,
 ): Promise<CandidatoLite[]> {
   const path = `/candidatura/listar/${ano}/${uf}/${sqEleicao}/${cargoCodigo}/candidatos`;
   const payload = (await tseGet(path)) as {

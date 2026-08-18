@@ -59,6 +59,8 @@ export interface CandidatoMatchLite {
   situacao: string;
   coligacao: string | null;
   foto: boolean;
+  /** Foto em alta resolução (Câmara/Senado) quando o candidato é parlamentar em exercício. */
+  fotoAlta?: string | null;
   /** Já exerce mandato parlamentar hoje (deputado/senador em exercício). */
   mandato: boolean;
   /** Sinaliza reeleição declarada ao TSE (nem sempre preenchido na listagem). */

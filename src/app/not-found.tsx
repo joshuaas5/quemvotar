@@ -8,10 +8,10 @@ export default function NotFound() {
         <Icon name="search_off" className="w-16 h-16 sm:w-24 sm:h-24 mb-4 block" />
         <h1 className="font-headline font-black text-4xl sm:text-6xl uppercase mb-2">404</h1>
         <h2 className="font-headline font-black text-xl sm:text-2xl uppercase mb-4 opacity-70">
-          Pagina nao encontrada
+          Página não encontrada
         </h2>
         <p className="font-body font-bold text-base sm:text-lg opacity-80 mb-6">
-          A pagina que voce procura nao existe ou foi movida. Verifique o endereco ou use a busca.
+          A página que você procura não existe ou foi movida. Verifique o endereço ou use a busca.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link

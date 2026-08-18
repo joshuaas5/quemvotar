@@ -14,6 +14,7 @@ import { buildArticleSchema, buildBreadcrumbSchema } from '@/lib/jsonld';
 import { isProfileEligibleForIndexing } from '@/lib/seo/indexability';
 import { buildProfileMetaDescription, getAvailableProfileDataAreas } from '@/lib/seo/profile-content';
 import { buildProfileResearchBrief } from '@/lib/seo/profile-brief';
+import { saneUrl } from '@/lib/utils/safe-url';
 import { getPerfilEditorial } from '@/lib/perfis-editorial-utils';
 import { SITE } from '@/lib/site-config';
 
@@ -1018,17 +1019,20 @@ export default async function PerfilPage({
               pelo TSE e por índices públicos de acompanhamento legislativo.
             </p>
             <div className="space-y-3">
-              {perfil.linksOficiais.map((link) => (
-                <a
-                  key={`${link.label}-${link.href}-full`}
-                  href={link.href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="block font-headline font-black uppercase text-sm sm:text-base border-b-4 border-black w-max max-w-full truncate"
-                >
-                  {link.label}
-                </a>
-              ))}
+              {perfil.linksOficiais
+                .map((link) => ({ ...link, hrefSeguro: saneUrl(link.href) }))
+                .filter((link): link is typeof link & { hrefSeguro: string } => link.hrefSeguro !== null)
+                .map((link) => (
+                  <a
+                    key={`${link.label}-${link.hrefSeguro}-full`}
+                    href={link.hrefSeguro}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block font-headline font-black uppercase text-sm sm:text-base border-b-4 border-black w-max max-w-full truncate"
+                  >
+                    {link.label}
+                  </a>
+                ))}
               {partido?.tseUrl ? (
                 <a
                   href={partido.tseUrl}

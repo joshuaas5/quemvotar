@@ -6,6 +6,8 @@ import Header from '@/components/Header';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import PageHero from '@/components/PageHero';
 import { getLiderancas, getPartidos, getParlamentares, getPerfilHref } from '@/lib/api';
+import { getPartidoFallback2026 } from '@/lib/partidos-2026';
+import { saneUrl } from '@/lib/utils/safe-url';
 import { getPartyVisualEmoji } from '@/lib/party-logos';
 
 export const metadata: Metadata = {
@@ -32,7 +34,7 @@ function getCasaLabel(casa: string) {
 
 export default async function PartidosPage() {
   // Falhas temporárias de API/scraping não podem quebrar o build de produção.
-  const [partidos, liderancas, parlamentares] = await Promise.all([
+  const [partidosBase, liderancas, parlamentares] = await Promise.all([
     getPartidos().catch((error) => {
       console.error('Falha ao carregar partidos:', error);
       return [];
@@ -46,6 +48,17 @@ export default async function PartidosPage() {
       return [];
     }),
   ]);
+
+  // Inclui partidos novos de 2026 que ainda não estão na raspagem do TSE
+  const siglasConhecidas = new Set(partidosBase.map((p) => p.sigla.toUpperCase()));
+  const partidos = [
+    ...partidosBase,
+    ...['MISSÃO', 'DEMOCRATA', 'PRTB']
+      .filter((sigla) => !siglasConhecidas.has(sigla))
+      .map((sigla) => getPartidoFallback2026(sigla))
+      .filter((p): p is NonNullable<typeof p> => p !== null),
+  ];
+
   const normalizeNome = (value: string) => value.toLowerCase().replace(/ \([^)]+\)/g, '').trim();
 
   const liderancasComFoto = liderancas.map((l) => {
@@ -120,13 +133,13 @@ export default async function PartidosPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5 md:mt-6">
                   <div className="border-4 border-black p-4 bg-[#E9FFD2]">
-                    <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Presidencia nacional</p>
-                    <p className="font-body font-bold">{partido.presidenteNacional ?? 'Nao localizada'}</p>
+                    <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Presidência nacional</p>
+                    <p className="font-body font-bold">{partido.presidenteNacional ?? 'Não localizada'}</p>
                   </div>
 
                   <div className="border-4 border-black p-4 bg-[#FFE0C7]">
-                    <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Lideranca na Camara</p>
-                    <p className="font-body font-bold">{partido.liderCamara?.nome ?? 'Sem lider retornado'}</p>
+                    <p className="font-label font-bold uppercase text-xs opacity-70 mb-2">Liderança na Câmara</p>
+                    <p className="font-body font-bold">{partido.liderCamara?.nome ?? 'Sem líder retornado'}</p>
                   </div>
                 </div>
 
@@ -138,7 +151,7 @@ export default async function PartidosPage() {
                     Ver bancada
                   </Link>
                   {partido.siteOficial ? (
-                    <a href={partido.siteOficial} target="_blank" rel="noreferrer" className="font-headline font-black uppercase border-b-4 border-black">
+                    <a href={saneUrl(partido.siteOficial) ?? partido.siteOficial} target="_blank" rel="noreferrer" className="font-headline font-black uppercase border-b-4 border-black">
                       Site oficial
                     </a>
                   ) : null}
@@ -167,7 +180,7 @@ export default async function PartidosPage() {
 </div>
                 <p className="font-label font-bold uppercase text-xs mt-3 opacity-70">
                   {lideranca.partido ? `${lideranca.partido} • ` : ''}
-                  {formatDate(lideranca.dataDesignacao) ?? 'Data nao informada'}
+                  {formatDate(lideranca.dataDesignacao) ?? 'Data não informada'}
                 </p>
               </article>
             ))}
