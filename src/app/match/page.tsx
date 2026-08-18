@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import PageHero from '@/components/PageHero';
 import { MatchClient } from '@/components/match/MatchClient';
+import { MatchTabs } from '@/components/match/MatchTabs';
 import { getParlamentares, getRankingParlamentares } from '@/lib/api';
 import { buildRankingLookupKey, rankingHouseFromCargo } from '@/lib/match/ranking-key';
 
@@ -60,6 +61,8 @@ export default async function MatchPage() {
             accent="pink"
             stat={{ value: '10 temas', label: 'Perguntas estruturadas para comparação transparente.' }}
           />
+
+          <MatchTabs ativo="parlamentares" />
 
           <MatchClient parlamentares={parlamentares} rankings={rankingsMap} />
         </div>

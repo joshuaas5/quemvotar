@@ -4,6 +4,7 @@ import Hero from '@/components/Hero';
 import Highlights from '@/components/Highlights';
 import StatsDashboard from '@/components/StatsDashboard';
 import EditorialGuide from '@/components/EditorialGuide';
+import CandidatosBand from '@/components/CandidatosBand';
 import Footer from '@/components/Footer';
 import { buildWebSiteSchema } from '@/lib/jsonld';
 
@@ -65,6 +66,7 @@ export default function Home() {
 
       <main className="flex-grow">
         <Hero />
+        <CandidatosBand />
         <Highlights />
         <EditorialGuide />
         <StatsDashboard />

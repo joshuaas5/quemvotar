@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Icon from './Icon';
 
 const NAV_LINKS = [
+  { href: '/candidatos', label: 'Candidatos 2026' },
   { href: '/match', label: 'Match' },
   { href: '/comparar', label: 'Comparar' },
   { href: '/ranking', label: 'Ranking' },

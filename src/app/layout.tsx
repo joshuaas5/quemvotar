@@ -5,6 +5,8 @@ import { NavigationProvider } from "@/components/NavigationProvider";
 import NavigationOverlay from "@/components/NavigationOverlay";
 import BackToTop from "@/components/BackToTop";
 import ConsentManager from "@/components/ConsentManager";
+import { MinhaUrnaProvider } from "@/components/candidatos/MinhaUrnaProvider";
+import { MinhaUrnaBar } from "@/components/candidatos/MinhaUrnaBar";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -113,13 +115,16 @@ export default function RootLayout({
         )}
       </head>
       <body className="min-h-screen flex flex-col bg-background text-on-background font-body">
-        <NavigationProvider>
-          <ToastProvider>
-            {children}
-            <NavigationOverlay />
-            <BackToTop />
-          </ToastProvider>
-        </NavigationProvider>
+        <MinhaUrnaProvider>
+          <NavigationProvider>
+            <ToastProvider>
+              {children}
+              <MinhaUrnaBar />
+              <NavigationOverlay />
+              <BackToTop />
+            </ToastProvider>
+          </NavigationProvider>
+        </MinhaUrnaProvider>
 
         <ConsentManager adsenseClient={adsenseClient} gaId={gaId} gtmId={gtmId} />
       </body>
