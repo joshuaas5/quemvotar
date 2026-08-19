@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 type ConsentChoice = 'all' | 'necessary';
@@ -118,6 +119,18 @@ export default function ConsentManager({ adsenseClient, gaId, gtmId }: ConsentMa
     if (gtmId) enableTagManager(gtmId);
     if (adsenseClient) enableAdvertising(adsenseClient);
   }, [adsenseClient, consent, gaId, gtmId]);
+
+  // Rastreia cada troca de página (SPA) no Analytics
+  const pathname = usePathname();
+  useEffect(() => {
+    if (!consent || consent.choice !== 'all') return;
+    if (!gaId || typeof window === 'undefined') return;
+    window.gtag?.('event', 'page_view', {
+      page_title: document.title,
+      page_location: window.location.href,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, consent, gaId]);
 
   const saveConsent = useCallback((choice: ConsentChoice) => {
     const nextConsent = { choice, updatedAt: new Date().toISOString() };

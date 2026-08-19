@@ -95,7 +95,7 @@ export const metadata: Metadata = {
   },
 };
 
-const gaId = process.env.NEXT_PUBLIC_GA_ID;
+const gaId = process.env.NEXT_PUBLIC_GA_ID ?? 'G-YDYV55PQYE';
 const gtmId = process.env.NEXT_PUBLIC_GTM_ID;
 const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT ?? 'ca-pub-4642150915962893';
 
