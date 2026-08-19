@@ -8,6 +8,7 @@ import { BASE_BADGE, BASE_EMOJI, BarraEspectro, EIXO_TEXTO, iniciais } from '@/l
 import { getPartyLogoBySigla } from '@/lib/party-logos';
 import { UF_LISTA } from '@/lib/candidatos/ufs';
 import { FotoCandidato } from '@/components/candidatos/FotoCandidato';
+import { lerSnapshotCandidatos } from '@/lib/candidatos/snapshot';
 import { BuscaCandidatos } from '@/components/candidatos/BuscaCandidatos';
 import { AvisoFonteTse } from '@/components/candidatos/AvisoFonteTse';
 
@@ -36,9 +37,9 @@ export default async function CandidatosPage({
   const eixoFiltro = typeof params.eixo === 'string' ? params.eixo : '';
   const busca = (typeof params.q === 'string' ? params.q : '').trim().toLowerCase();
 
-  const resultado = await listarCandidatos(ano, uf, cargoCodigo).catch(() => null);
-
-  const candidatos = resultado?.candidatos ?? [];
+  // Lê do SNAPSHOT estático (atualizado pelo cron a cada ~3h) — nunca depende
+  // do TSE ao vivo, então a página carrega mesmo com o TSE instável.
+  const candidatos = await lerSnapshotCandidatos(uf, cargoCodigo, ano);
   const partidos = Array.from(new Set(candidatos.map((c) => c.partido).filter(Boolean) as string[])).sort();
   const eixos = Array.from(new Set(candidatos.map((c) => c.posicionamento.eixo).filter(Boolean) as string[])).sort();
 
@@ -198,6 +199,7 @@ export default async function CandidatosPage({
                         id={candidato.idTse}
                         uf={candidato.uf}
                         nome={candidato.nomeUrna}
+                        fotoAlta={(candidato as { fotoAlta?: string | null }).fotoAlta ?? null}
                       />
                     </div>
 
@@ -224,6 +226,11 @@ export default async function CandidatosPage({
                       <p className="font-body font-bold uppercase text-xs text-on-surface/80">
                         {candidato.situacao}
                         {candidato.coligacao ? ` · ${candidato.coligacao}` : ''}
+                        {(candidato as { mandato?: boolean | null }).mandato ? (
+                          <span className="ml-2 font-label font-bold uppercase text-[10px] border-2 border-black bg-emerald-100 text-emerald-800 px-1.5 py-0.5">
+                            🏛️ exerce mandato
+                          </span>
+                        ) : null}
                       </p>
 
                       {/* Posicionamento */}
