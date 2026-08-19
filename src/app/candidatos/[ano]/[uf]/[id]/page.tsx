@@ -16,6 +16,7 @@ import {
 import { getPartyLogoBySigla } from '@/lib/party-logos';
 import { SectionSkeleton } from '@/components/ProfileSkeleton';
 import { FotoCandidato } from '@/components/candidatos/FotoCandidato';
+import { AvisoFonteTse } from '@/components/candidatos/AvisoFonteTse';
 import { getFotoAltaParlamentar } from '@/lib/candidatos/foto-alta';
 import { saneUrl } from '@/lib/utils/safe-url';
 
@@ -455,6 +456,9 @@ export default async function CandidatoDetalhePage({
               <p className="font-body font-medium text-sm opacity-60 mb-6">
                 O site do TSE está instável no momento (comum na época de eleição). Tente de novo em instantes.
               </p>
+              <div className="text-left mb-6">
+                <AvisoFonteTse />
+              </div>
               <div className="flex flex-wrap justify-center gap-3">
                 <a href={`/candidatos/${uf}/${idTse}`} className="bg-primary-container border-4 border-black px-6 py-3 font-headline font-black uppercase text-sm hover:bg-primary">
                   ↻ Tentar novamente
@@ -582,14 +586,15 @@ export default async function CandidatoDetalhePage({
 
           {renderHistorico(candidato)}
 
-          <section className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-            <h2 className="font-headline font-black text-xl uppercase mb-3">🔗 Fonte oficial</h2>
+          <section className="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-4">
+            <h2 className="font-headline font-black text-xl uppercase">🔗 Fonte oficial</h2>
             <p className="font-body font-medium text-sm">
               Dados públicos do <a className="font-bold underline" href="https://divulgacandcontas.tse.jus.br/" target="_blank" rel="noreferrer">
               TSE — Divulgação de Candidaturas e Contas Eleitorais</a>.
               Última atualização no TSE: {formatarData(candidato.dataUltimaAtualizacao)}.
               A atualização dos dados de candidatura ocorre a cada 60 minutos no TSE.
             </p>
+            <AvisoFonteTse />
           </section>
         </div>
       </main>

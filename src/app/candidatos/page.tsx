@@ -9,6 +9,7 @@ import { getPartyLogoBySigla } from '@/lib/party-logos';
 import { UF_LISTA } from '@/lib/candidatos/ufs';
 import { FotoCandidato } from '@/components/candidatos/FotoCandidato';
 import { BuscaCandidatos } from '@/components/candidatos/BuscaCandidatos';
+import { AvisoFonteTse } from '@/components/candidatos/AvisoFonteTse';
 
 export const revalidate = 300;
 
@@ -257,6 +258,9 @@ export default async function CandidatosPage({
               análise da redação ou posição do partido — sempre rotulada. Veja a{' '}
               <Link href="/candidatos/metodologia" className="font-bold underline">metodologia completa</Link>.
             </p>
+            <div className="mt-4">
+              <AvisoFonteTse />
+            </div>
           </section>
         </div>
       </main>
