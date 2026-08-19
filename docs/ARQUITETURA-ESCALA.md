@@ -23,8 +23,8 @@
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │ CRON (GitHub Actions, grátis)                                  │
-│ a cada 60 min: scripts/sync-candidatos.ts                       │
-│   TSE → normaliza → posicionamento → JSON + fotos               │
+│ a cada ~3h: scripts/sync-candidatos.ts                         │
+│   TSE → normaliza → posicionamento → JSON                     │
 │   → public/dados/candidatos/*.json (repo) e/ou R2 (fase 2)      │
 └────────────────────────────────────────────────────────────────┘
         │
@@ -69,10 +69,10 @@
 
 ### Fase 1 — AGORA (R$ 0, sem conta nova)
 - [x] Integração ao vivo TSE (feita): `/candidatos`, perfis, posicionamento em 3 camadas.
-- [ ] `scripts/sync-candidatos.ts` — ETL que gera snapshots JSON no repo:
+- [x] `scripts/sync-candidatos.ts` — ETL que gera snapshots JSON no repo:
   `public/dados/candidatos/{UF}-{cargo}.json` + `index.json` (base do Match e da busca).
-- [ ] **Match Candidatos 2026** — 100% client-side (lê o index.json; zero servidor).
-- [ ] Workflow `.github/workflows/sync-candidatos.yml` — cron horário (ou manual).
+- [x] **Match Candidatos 2026** — 100% client-side (lê o index.json; zero servidor).
+- [x] Workflow `.github/workflows/sync-candidatos.yml` — cron a cada ~3h (ou manual).
 
 ### Fase 2 — Cloudflare R2 (guia de ativação, ~10 min, R$ 0)
 
@@ -123,4 +123,5 @@ npx tsx scripts/sync-candidatos.ts --cargo 1        # só presidente
 ~~~
 
 Saída: `public/dados/candidatos/*.json` — servidos estaticamente pela Vercel hoje,
-pelo R2 amanhã, sem mudar o código de leitura (constante `DATA_BASE_URL`).
+pelo R2 amanhã, sem mudar o código de leitura (helper `dadosUrl()` /
+`NEXT_PUBLIC_DADOS_URL`).
