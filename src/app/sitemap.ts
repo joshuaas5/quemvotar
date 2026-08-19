@@ -8,6 +8,7 @@ import { getAllPerfisEditorial } from '@/lib/perfis-editorial-utils';
 export const revalidate = 86400;
 
 const editorialLastModified = new Date('2026-06-02');
+const eleicao2026LastModified = new Date('2026-08-19');
 
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -15,7 +16,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${baseUrl}/`, lastModified: editorialLastModified, changeFrequency: 'weekly', priority: 1 },
-    { url: `${baseUrl}/guias`, lastModified: editorialLastModified, changeFrequency: 'weekly', priority: 0.95 },
+    // Eleições 2026 (prioridade máxima — eleição em 04/10/2026)
+    { url: `${baseUrl}/candidatos`, lastModified: eleicao2026LastModified, changeFrequency: 'hourly', priority: 0.95 },
+    { url: `${baseUrl}/match/candidatos`, lastModified: eleicao2026LastModified, changeFrequency: 'daily', priority: 0.9 },
+    { url: `${baseUrl}/candidatos/metodologia`, lastModified: eleicao2026LastModified, changeFrequency: 'monthly', priority: 0.55 },
+    { url: `${baseUrl}/guias`, lastModified: editorialLastModified, changeFrequency: 'weekly', priority: 0.85 },
     { url: `${baseUrl}/metodologia`, lastModified: editorialLastModified, changeFrequency: 'monthly', priority: 0.9 },
     { url: `${baseUrl}/sobre`, lastModified: editorialLastModified, changeFrequency: 'monthly', priority: 0.85 },
     { url: `${baseUrl}/politica-editorial`, lastModified: editorialLastModified, changeFrequency: 'monthly', priority: 0.8 },
