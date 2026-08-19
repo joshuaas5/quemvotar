@@ -484,7 +484,7 @@ export default async function CandidatoDetalhePage({
                     <BarraEspectro eixo={pos.eixo} base={pos.base} />
                   </div>
                   <div className="flex flex-wrap gap-3">
-                    <a href={`/candidatos/${uf}/${idTse}`} className="bg-primary-container border-4 border-black px-5 py-2.5 font-headline font-black uppercase text-xs hover:bg-primary">
+                    <a href={`/candidatos/${ano}/${uf}/${idTse}`} className="bg-primary-container border-4 border-black px-5 py-2.5 font-headline font-black uppercase text-xs hover:bg-primary">
                       ↻ Carregar dados completos
                     </a>
                     <a href={`/candidatos?uf=${uf}`} className="border-4 border-black px-5 py-2.5 font-headline font-black uppercase text-xs hover:bg-surface-container-high">
@@ -533,7 +533,7 @@ export default async function CandidatoDetalhePage({
                 <AvisoFonteTse />
               </div>
               <div className="flex flex-wrap justify-center gap-3">
-                <a href={`/candidatos/${uf}/${idTse}`} className="bg-primary-container border-4 border-black px-6 py-3 font-headline font-black uppercase text-sm hover:bg-primary">
+                <a href={`/candidatos/${ano}/${uf}/${idTse}`} className="bg-primary-container border-4 border-black px-6 py-3 font-headline font-black uppercase text-sm hover:bg-primary">
                   ↻ Tentar novamente
                 </a>
                 <a href={`/candidatos?uf=${uf}`} className="border-4 border-black px-6 py-3 font-headline font-black uppercase text-sm hover:bg-surface-container-high">
