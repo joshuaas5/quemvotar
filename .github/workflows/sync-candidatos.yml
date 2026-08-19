@@ -1,19 +1,17 @@
 name: Sync Candidatos TSE
 
-# Sincroniza os candidatos 2026 do TSE a cada hora e, se houver
-# mudanças, faz commit — o deploy na Vercel acontece sozinho.
-# Custo: R$ 0 (GitHub Actions grátis em repo público; em repo
-# privado, ~3 min por execução dentro dos 2.000 min/mês).
+# Sincroniza os candidatos 2026 do TSE e atualiza os dados do site.
+# - Sem R2 configurado: commita os dados (a Vercel publica sozinha).
+# - Com R2 configurado (fase 2): SOBE pro Cloudflare e NÃO mexe mais no git.
+# Isso elimina conflitos de branch futuros.
 #
-# Para ativar: basta o repo estar no GitHub e o workflow rodar.
-# Opcional (fase 2 — Cloudflare R2): definir secrets R2_* e o
-# script sobe os dados para o bucket, zerando a dependência do git.
+# Frequência: a cada 3h durante o registro (até ~22/set). Depois, troque
+# para 1x/dia (limpe o cache do workflow após editar o cron).
 
 on:
   schedule:
-    # A cada hora, com pequeno deslocamento para não bater no pico do TSE
-    - cron: '23 * * * *'
-  workflow_dispatch: # permite rodar manualmente pelo GitHub
+    - cron: '23 */3 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -27,7 +25,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        # usa o branch padrão do repo (master ou main)
 
       - uses: actions/setup-node@v4
         with:
@@ -40,23 +37,28 @@ jobs:
       - name: Sincronizar candidatos do TSE
         run: npx tsx scripts/sync-candidatos.ts --upload-r2
         env:
-          # Fase 2 (Cloudflare R2): define estes 4 secrets no GitHub e o
-          # upload automático para o bucket passa a acontecer a cada sync.
+          # Fase 2 (Cloudflare R2): defina estes 4 secrets e o upload automático
+          # para o bucket passa a acontecer a cada sync (e o commit abaixo para).
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
           TSE_QUIET: '1'
 
-      - name: Commit se houver mudanças
+      # Commit apenas quando o R2 ainda NÃO está ativo (senão os dados já vão
+      # para o Cloudflare e o git fica limpo — zero conflitos).
+      - name: Commit se houver mudanças (quando R2 não configurado)
+        if: ${{ secrets.R2_BUCKET == '' }}
         run: |
           git config user.name "quemvotar-bot[bot]"
           git config user.email "125739927+quemvotar-bot[bot]@users.noreply.github.com"
           git add public/dados/candidatos
           if git diff --cached --quiet; then
             echo "Sem mudanças no TSE — nada a commitar."
-          else
-            git commit -m "chore(dados): sync candidatos TSE $(date -u +'%Y-%m-%dT%H:%M')Z"
-            git push
-            echo "Dados atualizados e publicados."
+            exit 0
           fi
+          git commit -m "chore(dados): sync candidatos TSE $(date -u +'%Y-%m-%dT%H:%M')Z"
+          # Se alguém (humano ou IA) tiver commitado no meio, integra antes de subir
+          git pull --rebase origin "$GITHUB_REF_NAME" --autostash || true
+          git push origin "$GITHUB_REF_NAME" || { git pull --rebase origin "$GITHUB_REF_NAME" --autostash && git push origin "$GITHUB_REF_NAME"; }
+          echo "Dados atualizados e publicados."
