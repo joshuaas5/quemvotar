@@ -431,8 +431,45 @@ export default async function CandidatoDetalhePage({
 
   if (!Number.isFinite(idTse) || idTse <= 0) notFound();
 
-  const bruto = await buscarCandidato(ano, uf, idTse).catch(() => null);
-  if (!bruto) notFound();
+  // TSE é instável na época de eleição: cap 12s e NUNCA 404 por falha dele.
+  const bruto = await Promise.race([
+    buscarCandidato(ano, uf, idTse).catch(() => null),
+    new Promise<null>((resolve) => setTimeout(() => resolve(null), 12000)),
+  ]);
+
+  if (!bruto) {
+    // Página amigável (HTTP 200) em vez de 404 — o candidato existe, o TSE é que está fora.
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-grow qv-grid-bg py-16 px-4 md:px-6">
+          <div className="max-w-3xl mx-auto">
+            <section className="bg-white border-4 border-black p-8 md:p-12 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+              <span className="text-6xl block mb-4">🕒</span>
+              <h1 className="font-headline font-black text-3xl md:text-4xl uppercase mb-3">
+                Dados temporariamente indisponíveis
+              </h1>
+              <p className="font-body font-bold uppercase text-sm opacity-70 mb-2">
+                Candidato {idTse} · {uf} · {ano} — não foi possível consultar o registro no TSE agora.
+              </p>
+              <p className="font-body font-medium text-sm opacity-60 mb-6">
+                O site do TSE está instável no momento (comum na época de eleição). Tente de novo em instantes.
+              </p>
+              <div className="flex flex-wrap justify-center gap-3">
+                <a href={`/candidatos/${uf}/${idTse}`} className="bg-primary-container border-4 border-black px-6 py-3 font-headline font-black uppercase text-sm hover:bg-primary">
+                  ↻ Tentar novamente
+                </a>
+                <a href={`/candidatos?uf=${uf}`} className="border-4 border-black px-6 py-3 font-headline font-black uppercase text-sm hover:bg-surface-container-high">
+                  ← Ver candidatos de {uf}
+                </a>
+              </div>
+            </section>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   const sqEleicao = bruto.eleicao?.id ?? 20322002026;
   const candidato = await normalizarCandidatoDetalhe(bruto, ano, sqEleicao, uf);

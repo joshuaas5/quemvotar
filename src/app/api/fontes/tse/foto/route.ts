@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import sharp from 'sharp';
 import { TSE_SITE_BASE } from '@/lib/candidatos/urls';
+
+// NOTA: `sharp` é importado LAZY (dentro da rota) para que, se o binário
+// nativo falhar no ambiente de deploy, a rota não derrube 100% nas 500.
+// Sem import estático no topo.
 
 export const dynamic = 'force-dynamic';
 
@@ -61,6 +64,8 @@ export async function GET(request: NextRequest) {
     let tipoFinal = contentType;
 
     try {
+      // Lazy: sharp só é carregado aqui (fallback p/ imagem original se falhar)
+      const sharp = (await import('sharp')).default;
       const imagem = sharp(buffer);
       const metadados = await imagem.metadata();
 
@@ -73,7 +78,7 @@ export async function GET(request: NextRequest) {
             .rotate()
             .resize({
               width: Math.round(largura * fator),
-              height: metadados.height ? Math.round((metadados.height * fator)) : undefined,
+              height: metadados.height ? Math.round(metadados.height * fator) : undefined,
               fit: 'inside',
               kernel: sharp.kernel.lanczos3,
             })
@@ -84,7 +89,7 @@ export async function GET(request: NextRequest) {
         }
       }
     } catch {
-      // se o sharp falhar (formato inesperado), entrega a imagem original
+      // se o sharp falhar (formato inesperado/binário), entrega a imagem original
     }
 
     return new NextResponse(saida, {
