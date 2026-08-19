@@ -5,7 +5,7 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import { buscarCandidato, normalizarCandidatoDetalhe } from '@/lib/candidatos/tse';
 import { buscarBiografia, buscarMandatoParlamentar, type MandatoParlamentar } from '@/lib/candidatos/mandato';
-import { buscarNoSnapshot, posicionamentoDoLite } from '@/lib/candidatos/snapshot';
+import { buscarNoSnapshot, buscarDetalheSnapshot, posicionamentoDoLite, type CandidatoSnapshotLite, type DetalheSnapshot } from '@/lib/candidatos/snapshot';
 import {
   BASE_BADGE,
   BASE_EMOJI,
@@ -421,6 +421,176 @@ function renderAvisosInelegibilidade(candidato: Awaited<ReturnType<typeof normal
   );
 }
 
+type CandidatoCompleto = Awaited<ReturnType<typeof normalizarCandidatoDetalhe>>;
+
+/** Une o lite do snapshot + o detalhe (bens/plano/redes/histórico) num objeto completo. */
+function liteParaCompleto(
+  lite: CandidatoSnapshotLite & { sqEleicao?: number },
+  ano: number,
+  detalhe: DetalheSnapshot,
+): CandidatoCompleto {
+  const pos = posicionamentoDoLite(lite);
+  return {
+    idTse: lite.id,
+    ano,
+    sqEleicao: lite.sqEleicao ?? 20322002026,
+    uf: lite.uf,
+    nomeUrna: lite.nomeUrna,
+    nomeCompleto: detalhe.nomeCompleto ?? lite.nomeUrna,
+    partido: lite.partido,
+    cargoCodigo: lite.cargoCodigo,
+    cargo: lite.cargo,
+    numero: lite.numero,
+    situacao: lite.situacao,
+    totalizacao: lite.totalizacao,
+    coligacao: lite.coligacao,
+    composicaoColigacao: null,
+    fotoUrl: null,
+    fotoUrlPublicavel: Boolean(lite.foto),
+    reelegibilidade: lite.reeleicao || null,
+    posicionamento: pos,
+    fonteUrl: `/candidatos/${ano}/${lite.uf}/${lite.id}`,
+    sexo: detalhe.sexo ?? null,
+    dataNascimento: detalhe.dataNascimento ?? null,
+    estadoCivil: detalhe.estadoCivil ?? null,
+    corRaca: detalhe.corRaca ?? null,
+    nacionalidade: detalhe.nacionalidade ?? null,
+    grauInstrucao: detalhe.grauInstrucao ?? null,
+    ocupacao: detalhe.ocupacao ?? null,
+    naturalidade: detalhe.naturalidade ?? null,
+    localCandidatura: null,
+    dataUltimaAtualizacao: null,
+    totalDeBens: detalhe.totalDeBens ?? null,
+    bens: (detalhe.bens ?? []).map((b) => ({
+      ordem: 0,
+      descricao: b.descricao,
+      descricaoDeTipoDeBem: b.tipo,
+      valor: b.valor,
+      dataUltimaAtualizacao: null,
+    })),
+    sites: detalhe.sites ?? [],
+    emails: [],
+    vices: (detalhe.vices ?? []).map((v) => ({
+      sq_CANDIDATO: 0,
+      nm_URNA: v.nome,
+      nm_CANDIDATO: v.nome,
+      sg_PARTIDO: v.partido,
+      nm_PARTIDO: null,
+      ds_CARGO: v.cargo,
+      urlFoto: null,
+      descricaoTotalizacao: null,
+    })),
+    eleicoesAnteriores: (detalhe.eleicoesAnteriores ?? []).map((e) => ({
+      nrAno: e.nrAno ?? 0,
+      id: String(lite.id),
+      nomeUrna: lite.nomeUrna,
+      cargo: e.cargo ?? '',
+      partido: e.partido ?? '',
+      situacaoTotalizacao: e.situacaoTotalizacao ?? '',
+      nrCandidato: lite.numero,
+      local: e.local ?? null,
+      txLink: '',
+    })),
+    cnpjcampanha: detalhe.cnpjcampanha ?? null,
+    situacaoCandidato: detalhe.situacaoCandidato ?? null,
+    candidatoApto: null,
+    motivosInelegibilidade: detalhe.motivosInelegibilidade ?? [],
+    planoGoverno: {
+      disponivel: Boolean(detalhe.planoGoverno?.disponivel),
+      nomeArquivo: detalhe.planoGoverno?.nomeArquivo ?? null,
+      idArquivo: null,
+      urlDownload: detalhe.planoGoverno?.urlDownload ?? null,
+      textoExtraido: null,
+      resumoAutomatico: null,
+    },
+    arquivos: [],
+    legendaNome: detalhe.legendaNome ?? null,
+    fotoAlta: lite.fotoAlta ?? null,
+    mandato: lite.mandato || null,
+  } as CandidatoCompleto;
+}
+
+/** Página completa renderizada a partir do snapshot (sem depender do TSE ao vivo). */
+function renderPerfilCompletoSnap(
+  candidato: CandidatoCompleto,
+  biografia: string | null,
+  mandato: MandatoParlamentar | null,
+  fotoAlta: string | null,
+) {
+  const pos = candidato.posicionamento;
+  const logo = getPartyLogoBySigla(candidato.partido ?? '');
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-grow bg-surface-container py-10 md:py-16 px-4 md:px-6">
+        <div className="max-w-7xl mx-auto space-y-10 md:space-y-12">
+          <section className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10">
+            <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-8">
+              <div className="aspect-[4/3] border-4 border-black bg-surface-container-high overflow-hidden">
+                <FotoCandidato
+                  sqEleicao={candidato.sqEleicao}
+                  id={candidato.idTse}
+                  uf={candidato.uf}
+                  nome={candidato.nomeUrna}
+                  fotoAlta={fotoAlta}
+                />
+              </div>
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center gap-2">
+                  {logo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={logo} alt={`Logo ${candidato.partido}`} className="w-10 h-10 object-contain rounded-full bg-white border-2 border-black p-1" />
+                  ) : null}
+                  <span className="font-label font-bold uppercase text-xs bg-surface-container-high border-2 border-black px-2 py-1">
+                    {candidato.cargo} · {candidato.uf} · {candidato.ano}
+                  </span>
+                  <span className="font-label font-bold uppercase text-xs bg-primary-container border-2 border-black px-2 py-1">
+                    Nº {candidato.numero}
+                  </span>
+                </div>
+                <h1 className="font-headline font-black text-3xl md:text-6xl uppercase leading-none">{candidato.nomeUrna}</h1>
+                <div className="space-y-1 font-body font-bold uppercase text-xs sm:text-sm">
+                  <p>{candidato.partido ?? 'Sem partido'}{candidato.coligacao ? ` · Coligação: ${candidato.coligacao}` : ''}</p>
+                  <p className="opacity-80">Situação do registro: {candidato.situacao}</p>
+                </div>
+                <div className="pt-2 space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className={`font-headline font-black uppercase text-2xl ${pos.eixo ? EIXO_TEXTO[pos.eixo] : 'text-gray-500'}`}>{pos.label}</span>
+                    <span className={`font-label font-bold uppercase text-[10px] border-2 px-2 py-1 ${BASE_BADGE[pos.base]}`}>{BASE_EMOJI[pos.base]} {pos.baseLabel}</span>
+                  </div>
+                  <BarraEspectro eixo={pos.eixo} base={pos.base} />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {renderPosicionamento(candidato)}
+          {renderBiografia(biografia)}
+          {renderMandato(mandato)}
+          {renderPlanoGoverno(candidato)}
+          {renderAvisosInelegibilidade(candidato)}
+          {renderDadosPessoais(candidato)}
+          {renderBens(candidato)}
+          {renderSites(candidato)}
+          {renderHistorico(candidato)}
+
+          <div className="bg-amber-50 border-4 border-black p-4 md:p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <p className="font-headline font-black uppercase text-xs mb-1">⚠️ Dados do último sincronismo</p>
+            <p className="font-body font-medium text-xs md:text-sm">
+              O registro completo do TSE não pôde ser consultado ao vivo agora (instabilidade/servidor bloqueando).
+              Este perfil usa o último sincronismo oficial (atualizado automaticamente a cada poucas horas) — bens, plano de
+              governo e histórico constam quando disponíveis na fonte.
+            </p>
+          </div>
+
+          <AvisoFonteTse />
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
 export default async function CandidatoDetalhePage({
   params,
 }: {
@@ -434,13 +604,29 @@ export default async function CandidatoDetalhePage({
   if (!Number.isFinite(idTse) || idTse <= 0) notFound();
 
   // TSE é instável na época de eleição: cap 12s e NUNCA 404 por falha dele.
-  const [bruto, liteSnap] = await Promise.all([
+  const [bruto, liteSnap, detalheSnap] = await Promise.all([
     Promise.race([
       buscarCandidato(ano, uf, idTse).catch(() => null),
       new Promise<null>((resolve) => setTimeout(() => resolve(null), 12000)),
     ]),
     buscarNoSnapshot(uf, idTse),
+    buscarDetalheSnapshot(uf, idTse),
   ]);
+
+  // PERFIL COMPLETO a partir do snapshot (bens, plano, redes, histórico)
+  // quando o TSE bloqueia ao vivo — o cron preenche progressivamente.
+  if (!bruto && liteSnap && detalheSnap) {
+    const semi = {
+      ...liteParaCompleto(liteSnap, ano, detalheSnap),
+      sqEleicao: liteSnap.sqEleicao ?? 20322002026,
+    };
+    const [biografia, mandato] = await Promise.all([
+      buscarBiografia(semi.nomeCompleto || semi.nomeUrna).catch(() => null),
+      buscarMandatoParlamentar(semi).catch(() => null),
+    ]);
+    const fotoAlta = mandato ? getFotoAltaParlamentar(mandato.perfil) : liteSnap.fotoAlta ?? null;
+    return renderPerfilCompletoSnap(semi, biografia, mandato, fotoAlta);
+  }
 
   if (!bruto && liteSnap) {
     // MODO BÁSICO (snapshot): mesmo com o TSE fora, a página abre com foto,

@@ -149,3 +149,47 @@ export async function buscarNoSnapshot(
     return null;
   }
 }
+
+/* ── Detalhe completo (bens, plano, redes, histórico) — snapshot ── */
+
+/** Detalhe emagrecido gerado pelo ETL (modo --detalhes). */
+export interface DetalheSnapshot {
+  nomeCompleto?: string | null;
+  sexo?: string | null;
+  dataNascimento?: string | null;
+  estadoCivil?: string | null;
+  corRaca?: string | null;
+  nacionalidade?: string | null;
+  grauInstrucao?: string | null;
+  ocupacao?: string | null;
+  naturalidade?: string | null;
+  cnpjcampanha?: string | null;
+  situacaoCandidato?: string | null;
+  legendaNome?: string | null;
+  totalDeBens?: number | null;
+  bens?: Array<{ descricao: string; tipo: string; valor: number | null }>;
+  sites?: string[];
+  eleicoesAnteriores?: Array<{
+    nrAno?: number;
+    cargo?: string;
+    partido?: string;
+    situacaoTotalizacao?: string;
+    local?: string | null;
+  }>;
+  planoGoverno?: { disponivel?: boolean; nomeArquivo?: string | null; urlDownload?: string | null };
+  motivosInelegibilidade?: string[];
+  vices?: Array<{ nome: string; partido: string | null; cargo: string }>;
+}
+
+export async function buscarDetalheSnapshot(uf: string, id: number): Promise<DetalheSnapshot | null> {
+  try {
+    const response = await fetch(`${siteUrl()}/dados/candidatos/detalhes-${uf}.json`, {
+      next: { revalidate: 300 },
+    });
+    if (!response.ok) return null;
+    const payload = (await response.json()) as { detalhes?: Record<string, DetalheSnapshot> };
+    return payload.detalhes?.[String(id)] ?? null;
+  } catch {
+    return null;
+  }
+}

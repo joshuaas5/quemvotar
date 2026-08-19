@@ -37,13 +37,23 @@ jobs:
       - name: Sincronizar candidatos do TSE
         run: npx tsx scripts/sync-candidatos.ts --upload-r2
         env:
-          # Fase 2 (Cloudflare R2): defina estes 4 secrets e o upload automático
-          # para o bucket passa a acontecer a cada sync (e o commit abaixo para).
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
           R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
           TSE_QUIET: '1'
+
+      # Detalhes completos (bens, plano, redes, histórico) em lotes incrementais —
+      # ~900 por rodada, com espera entre chamadas, para não tomar bloqueio do TSE
+      # no IP do GitHub. Cobre todos os candidatos em poucos dias e garante perfis
+      # completos mesmo com o TSE bloqueando o acesso ao vivo.
+      - name: Completar perfis (detalhes incrementais)
+        run: npx tsx scripts/sync-candidatos.ts --detalhes --cap 900 --upload-r2
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
 
       # Commit apenas quando o R2 ainda NÃO está ativo (senão os dados já vão
       # para o Cloudflare e o git fica limpo — zero conflitos).

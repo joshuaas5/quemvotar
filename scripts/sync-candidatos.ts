@@ -18,7 +18,7 @@ import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync } from 
 import { join, resolve } from 'node:path';
 import { getPosicionamento } from '../src/lib/candidatos/posicionamento';
 import { CARGO_CODIGOS, CARGO_LABELS, type CargoTse } from '../src/lib/candidatos/types';
-import { ELEICAO_2026, TSE_API_BASE } from '../src/lib/candidatos/urls';
+import { ELEICAO_2026, TSE_API_BASE, arquivoUrlCandidato } from '../src/lib/candidatos/urls';
 import { UF_LISTA } from '../src/lib/candidatos/ufs';
 import { getFotoAltaParlamentar } from '../src/lib/candidatos/foto-alta';
 import { fetchOfficialCongressProfiles } from '../src/lib/official';
@@ -36,10 +36,12 @@ interface Args {
   out: string;
   quiet: boolean;
   uploadR2: boolean;
+  detalhes: boolean;
+  cap: number;
 }
 
 function parseArgs(argv: string[]): Args {
-  const args: Args = { ufs: null, cargos: null, out: 'public/dados/candidatos', quiet: false, uploadR2: false };
+  const args: Args = { ufs: null, cargos: null, out: 'public/dados/candidatos', quiet: false, uploadR2: false, detalhes: false, cap: 1000 };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === '--uf' && argv[i + 1]) {
@@ -53,6 +55,11 @@ function parseArgs(argv: string[]): Args {
       i += 1;
     } else if (arg === '--upload-r2') {
       args.uploadR2 = true;
+    } else if (arg === '--detalhes') {
+      args.detalhes = true;
+    } else if (arg === '--cap' && argv[i + 1]) {
+      args.cap = Math.min(10000, Math.max(50, Number(argv[i + 1]) || 1000));
+      i += 1;
     } else if (arg === '--quiet') {
       args.quiet = true;
     }
@@ -307,6 +314,137 @@ async function uploadArquivosR2(outDir: string, quiet: boolean) {
   }
 }
 
+/* ── Detalhes completos (bens, plano, redes, histórico) — incrementais ──*/
+
+type MapaDetalhes = Record<string, unknown>;
+
+function slimDetalhe(raw: any): Record<string, unknown> {
+  return {
+    nomeCompleto: raw.nomeCompleto ?? null,
+    sexo: raw.descricaoSexo ?? null,
+    dataNascimento: raw.dataDeNascimento ?? null,
+    estadoCivil: raw.descricaoEstadoCivil ?? null,
+    corRaca: raw.descricaoCorRaca ?? null,
+    nacionalidade: raw.nacionalidade ?? null,
+    grauInstrucao: raw.grauInstrucao ?? null,
+    ocupacao: raw.ocupacao ?? null,
+    naturalidade: raw.descricaoNaturalidade ?? raw.nomeMunicipioNascimento ?? null,
+    cnpjcampanha: raw.cnpjcampanha ?? null,
+    situacaoCandidato: raw.descricaoSituacaoCandidato ?? raw.descricaoSituacao ?? null,
+    legendaNome: raw.legenda?.nomeLegenda ?? raw.legenda?.legenda ?? null,
+    totalDeBens: raw.totalDeBens ?? null,
+    bens: (raw.bens ?? []).slice(0, 12).map((b: any) => ({
+      descricao: b.descricao ?? '',
+      tipo: b.descricaoDeTipoDeBem ?? '',
+      valor: b.valor ?? null,
+    })),
+    sites: (raw.sites ?? []).filter((s: unknown) => typeof s === 'string' && /^https?:\/\//.test(s)).slice(0, 20),
+    eleicoesAnteriores: (raw.eleicoesAnteriores ?? []).map((e: any) => ({
+      nrAno: e.nrAno,
+      cargo: e.cargo ?? '',
+      partido: e.partido ?? '',
+      situacaoTotalizacao: e.situacaoTotalizacao ?? '',
+      local: e.local ?? null,
+    })),
+    planoGoverno: (() => {
+      const plano = (raw.arquivos ?? []).find((a: any) => a.codTipo === '5');
+      return plano
+        ? {
+            disponivel: true,
+            nomeArquivo: plano.nome ?? null,
+            urlDownload: arquivoUrlCandidato(plano.idArquivo),
+          }
+        : { disponivel: false };
+    })(),
+    motivosInelegibilidade: (() => {
+      const motivos: string[] = [];
+      if (raw.st_MOTIVO_FICHA_LIMPA) motivos.push('Inelegibilidade (Lei da Ficha Limpa)');
+      if (raw.st_MOTIVO_ABUSO_PODER) motivos.push('Abuso de poder');
+      if (raw.st_MOTIVO_COMPRA_VOTO) motivos.push('Compra de votos');
+      if (raw.st_MOTIVO_CONDUTA_VEDADA) motivos.push('Conduta vedada');
+      if (raw.st_MOTIVO_GASTO_ILICITO) motivos.push('Gasto ilícito de campanha');
+      if (raw.st_MOTIVO_AUSENCIA_REQUISITO) motivos.push('Ausência de requisito de registro');
+      if (raw.st_MOTIVO_IND_PARTIDO) motivos.push('Indeferimento por decisão do partido');
+      return motivos;
+    })(),
+    vices: (raw.vices ?? []).slice(0, 4).map((v: any) => ({
+      nome: v.nm_URNA ?? '',
+      partido: v.sg_PARTIDO ?? null,
+      cargo: v.ds_CARGO ?? '',
+    })),
+  };
+}
+
+async function syncDetalhes(
+  outDir: string,
+  ufs: string[],
+  cargos: number[],
+  ano: number,
+  sqEleicao: number,
+  cap: number,
+  quiet: boolean,
+) {
+  let processados = 0;
+  let falhasConsecutivas = 0;
+  const DELAY_DETALHE = 450;
+
+  for (const uf of ufs) {
+    const ids = new Set<number>();
+    for (const cargoCodigo of cargos) {
+      const arquivo = join(outDir, `${uf}-${cargoCodigo}.json`);
+      if (!existsSync(arquivo)) continue;
+      const dataset = JSON.parse(readFileSync(arquivo, 'utf-8')) as { candidatos: Array<{ id: number }> };
+      (dataset.candidatos ?? []).forEach((c) => ids.add(c.id));
+    }
+    if (ids.size === 0) continue;
+
+    const arquivoDetalhe = join(outDir, `detalhes-${uf}.json`);
+    const mapa: MapaDetalhes = existsSync(arquivoDetalhe)
+      ? (JSON.parse(readFileSync(arquivoDetalhe, 'utf-8')) as { detalhes: MapaDetalhes }).detalhes ?? {}
+      : {};
+
+    const faltando = [...ids].filter((id) => mapa[String(id)] === undefined);
+    if (!quiet) console.log(`🔍 ${uf}: ${ids.size} candidatos, ${faltando.length} sem detalhe ainda`);
+
+    for (const id of faltando) {
+      if (processados >= cap) break;
+      if (falhasConsecutivas >= 20) {
+        console.warn('⛔ Muitas falhas consecutivas (TSE bloqueando) — parando esta rodada para proteger o IP do cron.');
+        await finalizarDetalhes(outDir, uf, mapa);
+        return;
+      }
+      try {
+        const raw = (await tseGet(`/candidatura/buscar/${ano}/${uf}/${sqEleicao}/candidato/${id}`)) as any;
+        if (raw && typeof raw.id === 'number') {
+          mapa[String(id)] = slimDetalhe(raw);
+          falhasConsecutivas = 0;
+        } else {
+          falhasConsecutivas += 1;
+        }
+      } catch {
+        falhasConsecutivas += 1;
+      }
+      processados += 1;
+      if (processados % 50 === 0 && !quiet) {
+        console.log(`   … ${processados}/${cap} processados`);
+      }
+      await new Promise((r) => setTimeout(r, DELAY_DETALHE));
+    }
+
+    await finalizarDetalhes(outDir, uf, mapa, sqEleicao);
+  }
+
+  if (!quiet) console.log(`✅ Detalhes: ${processados} candidatos processados nesta rodada (cap ${cap}).`);
+}
+
+async function finalizarDetalhes(outDir: string, uf: string, mapa: MapaDetalhes, sqEleicao = ELEICAO_2026.sqEleicao) {
+  writeFileSync(
+    join(outDir, `detalhes-${uf}.json`),
+    JSON.stringify({ geradoEm: new Date().toISOString(), sqEleicao, uf, total: Object.keys(mapa).length, detalhes: mapa }),
+    'utf-8',
+  );
+}
+
 /* ── Main ───────────────────────────────────────────────────── */
 
 async function main() {
@@ -318,6 +456,16 @@ async function main() {
   const cargos = args.cargos ?? CARGOS;
   const ano = ELEICAO_2026.ano;
   const sqEleicao = ELEICAO_2026.sqEleicao;
+
+  // Modo DETALHES: só completa os perfis (bens, plano, redes, histórico),
+  // incremental e devagar, para não tomar bloqueio do TSE no IP do cron.
+  if (args.detalhes) {
+    await syncDetalhes(outDir, ufs, cargos, ano, sqEleicao, args.cap, args.quiet);
+    if (args.uploadR2) {
+      await uploadArquivosR2(outDir, args.quiet);
+    }
+    return;
+  }
 
   // Referência de parlamentares em exercício (para marcar quem já tem mandato)
   const perfisParlamentares = await fetchOfficialCongressProfiles().catch(() => []);
