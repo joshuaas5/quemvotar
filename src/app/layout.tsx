@@ -7,6 +7,7 @@ import BackToTop from "@/components/BackToTop";
 import ConsentManager from "@/components/ConsentManager";
 import { MinhaUrnaProvider } from "@/components/candidatos/MinhaUrnaProvider";
 import { MinhaUrnaBar } from "@/components/candidatos/MinhaUrnaBar";
+import { LoadingFeedback } from "@/components/LoadingFeedback";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -119,6 +120,7 @@ export default function RootLayout({
           <NavigationProvider>
             <ToastProvider>
               {children}
+              <LoadingFeedback />
               <MinhaUrnaBar />
               <NavigationOverlay />
               <BackToTop />

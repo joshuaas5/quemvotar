@@ -8,6 +8,7 @@ import { BASE_BADGE, BASE_EMOJI, BarraEspectro, EIXO_TEXTO, iniciais } from '@/l
 import { getPartyLogoBySigla } from '@/lib/party-logos';
 import { UF_LISTA } from '@/lib/candidatos/ufs';
 import { FotoCandidato } from '@/components/candidatos/FotoCandidato';
+import { BuscaCandidatos } from '@/components/candidatos/BuscaCandidatos';
 
 export const revalidate = 300;
 
@@ -165,8 +166,11 @@ export default async function CandidatosPage({
             </div>
           </section>
 
-          {/* Grid */}
-          {filtrados.length === 0 ? (
+          {/* Resultados */}
+          {busca ? (
+            /* Busca GLOBAL ativa: pesquisa em todos os estados e cargos */
+            <BuscaCandidatos inicial={busca} />
+          ) : filtrados.length === 0 ? (
             <div className="bg-white border-4 border-black p-10 md:p-16 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
               <span className="text-6xl mb-4 block">🗳️</span>
               <h2 className="font-headline font-black text-2xl md:text-3xl uppercase">Nenhum candidato encontrado</h2>

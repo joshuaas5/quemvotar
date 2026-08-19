@@ -185,3 +185,19 @@ html.navigating {
 html.navigating * {
   cursor: wait !important;
 }
+
+/* Feedback tátil global: pointer-mão e aperto sutil em tudo clicável */
+a, button, select, summary, [role="button"], label[for], input[type="submit"], input[type="search"] {
+  cursor: pointer;
+}
+a:active, button:active, [role="button"]:active {
+  transform: scale(0.97);
+  transition: transform 60ms ease-out;
+}
+input[type="text"], input[type="search"], input[type="email"], textarea {
+  cursor: text;
+}
+input[type="text"]:focus, input[type="search"]:focus, textarea:focus, select:focus {
+  outline: 3px solid #ffd709;
+  outline-offset: 0;
+}
