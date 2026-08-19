@@ -43,12 +43,10 @@ jobs:
           R2_BUCKET: ${{ secrets.R2_BUCKET }}
           TSE_QUIET: '1'
 
-      # Detalhes completos (bens, plano, redes, histórico) em lotes incrementais —
-      # ~900 por rodada, com espera entre chamadas, para não tomar bloqueio do TSE
-      # no IP do GitHub. Cobre todos os candidatos em poucos dias e garante perfis
-      # completos mesmo com o TSE bloqueando o acesso ao vivo.
-      - name: Completar perfis (detalhes incrementais)
-        run: npx tsx scripts/sync-candidatos.ts --detalhes --cap 900 --upload-r2
+      # Detalhes completos (bens, plano, redes, histórico) em lotes —
+      # ritmo moderado para não tomar bloqueio do TSE no IP do GitHub.
+      - name: Completar perfis (detalhes)
+        run: npx tsx scripts/sync-candidatos.ts --detalhes --cap 1500 --upload-r2
         env:
           R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
           R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
