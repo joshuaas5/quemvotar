@@ -12,6 +12,7 @@ import {
   searchCandidatos,
 } from '@/lib/api';
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
+import { BuscaCandidatos } from '@/components/candidatos/BuscaCandidatos';
 
 export const metadata: Metadata = {
   title: "Busca de Parlamentares",
@@ -38,6 +39,9 @@ export default async function BuscaPage({
   const unresolvedSearchParams = await searchParams;
   const q = typeof unresolvedSearchParams.q === 'string' ? unresolvedSearchParams.q : '';
   const resultados = await searchCandidatos(q);
+
+  // Busca também nos candidatos 2026 (snapshot estático do TSE)
+  const temBusca = q.trim().length >= 2;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -121,6 +125,16 @@ export default async function BuscaPage({
               })}
             </div>
           )}
+
+          {temBusca ? (
+            <div className="border-t-4 border-black pt-8">
+              <h2 className="font-headline font-black text-2xl md:text-3xl uppercase mb-2">🗳️ Candidatos 2026</h2>
+              <p className="font-body font-bold uppercase text-xs opacity-70 mb-6">
+                Resultados também nas candidaturas das Eleições Gerais de 2026 (fonte TSE).
+              </p>
+              <BuscaCandidatos inicial={q} />
+            </div>
+          ) : null}
 
           <div className="text-center">
             <LoadingLink

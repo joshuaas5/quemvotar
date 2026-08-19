@@ -29,14 +29,29 @@ export async function GET(request: NextRequest) {
   const urlTse = `${TSE_SITE_BASE}/divulga/rest/arquivo/img/${sqEleicao}/${id}/${uf}`;
 
   try {
-    const response = await fetch(urlTse, {
-      headers: { 'User-Agent': 'QuemVotar/1.0 (proxy de imagem oficial do TSE)' },
-      next: { revalidate: 86400 },
-      cache: 'force-cache',
-    });
+    // Timeout rígido: o TSE é instável e um upstream travado NÃO pode segurar o
+    // servidor (foi o que derrubou fotos e até o manifest.json em rajada).
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 8000);
+
+    let response: Response;
+    try {
+      response = await fetch(urlTse, {
+        headers: { 'User-Agent': 'QuemVotar/1.0 (proxy de imagem oficial do TSE)' },
+        signal: controller.signal,
+        next: { revalidate: 86400 },
+        cache: 'force-cache',
+      });
+    } finally {
+      clearTimeout(timer);
+    }
 
     if (!response.ok) {
-      return NextResponse.json({ erro: `Foto indisponível (TSE HTTP ${response.status}).` }, { status: 404 });
+      // 404 COM cache: o navegador esconde (iniciais) e não martela o servidor
+      return new NextResponse(null, {
+        status: 404,
+        headers: { 'Cache-Control': 'public, max-age=600, s-maxage=600' },
+      });
     }
 
     const buffer = Buffer.from(await response.arrayBuffer());
@@ -81,7 +96,11 @@ export async function GET(request: NextRequest) {
         'X-Foto-Melhorada': saida.length !== buffer.length ? '1' : '0',
       },
     });
-  } catch {
-    return NextResponse.json({ erro: 'Falha ao buscar a foto no TSE.' }, { status: 502 });
+  } catch (error) {
+    // Falha de rede/timeout do TSE: 404 cacheado (iniciais + sem martelar)
+    return new NextResponse(null, {
+      status: 404,
+      headers: { 'Cache-Control': 'public, max-age=600, s-maxage=600' },
+    });
   }
 }
