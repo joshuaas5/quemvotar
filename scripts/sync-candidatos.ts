@@ -14,7 +14,7 @@
  *
  * Idempotente: rodar 1x ou 100x gera o mesmo resultado.
  */
-import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { getPosicionamento } from '../src/lib/candidatos/posicionamento';
 import { CARGO_CODIGOS, CARGO_LABELS, type CargoTse } from '../src/lib/candidatos/types';
@@ -35,10 +35,11 @@ interface Args {
   cargos: number[] | null;
   out: string;
   quiet: boolean;
+  uploadR2: boolean;
 }
 
 function parseArgs(argv: string[]): Args {
-  const args: Args = { ufs: null, cargos: null, out: 'public/dados/candidatos', quiet: false };
+  const args: Args = { ufs: null, cargos: null, out: 'public/dados/candidatos', quiet: false, uploadR2: false };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === '--uf' && argv[i + 1]) {
@@ -50,6 +51,8 @@ function parseArgs(argv: string[]): Args {
     } else if (arg === '--out' && argv[i + 1]) {
       args.out = argv[i + 1];
       i += 1;
+    } else if (arg === '--upload-r2') {
+      args.uploadR2 = true;
     } else if (arg === '--quiet') {
       args.quiet = true;
     }
@@ -261,6 +264,49 @@ async function syncCombinacao(
   return candidatos;
 }
 
+/* ── Upload para o Cloudflare R2 (fase 2 — egress grátis) ───── */
+
+async function uploadArquivosR2(outDir: string, quiet: boolean) {
+  const accountId = process.env.R2_ACCOUNT_ID ?? '';
+  const accessKeyId = process.env.R2_ACCESS_KEY_ID ?? '';
+  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY ?? '';
+  const bucket = process.env.R2_BUCKET ?? '';
+
+  if (!accountId || !accessKeyId || !secretAccessKey || !bucket) {
+    console.warn('⚠️ --upload-r2 pedido, mas faltam envs R2_* (R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET). Pulando upload.');
+    return;
+  }
+
+  const { S3Client, PutObjectCommand } = await import('@aws-sdk/client-s3');
+  const s3 = new S3Client({
+    region: 'auto',
+    endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+    credentials: { accessKeyId, secretAccessKey },
+  });
+
+  const arquivos = readdirSync(outDir).filter((f) => f.endsWith('.json'));
+  let ok = 0;
+
+  for (const arquivo of arquivos) {
+    const body = readFileSync(join(outDir, arquivo));
+    const isIndex = arquivo.startsWith('index');
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: bucket,
+        Key: `candidatos/${arquivo}`,
+        Body: body,
+        ContentType: 'application/json; charset=utf-8',
+        CacheControl: isIndex ? 'public, max-age=600, s-maxage=600' : 'public, max-age=300, s-maxage=300',
+      }),
+    );
+    ok += 1;
+  }
+
+  if (!quiet) {
+    console.log(`☁️ R2: ${ok} arquivos enviados para s3://${bucket}/candidatos/`);
+  }
+}
+
 /* ── Main ───────────────────────────────────────────────────── */
 
 async function main() {
@@ -342,6 +388,10 @@ async function main() {
   const segundos = ((Date.now() - inicio) / 1000).toFixed(0);
   console.log(`\n✅ Sync concluído: ${total} candidatos em ${ufs.length} UF × ${cargos.length} cargos (${segundos}s)`);
   console.log(`📁 Saída: ${outDir}`);
+
+  if (args.uploadR2) {
+    await uploadArquivosR2(outDir, args.quiet);
+  }
 }
 
 main().catch((error) => {

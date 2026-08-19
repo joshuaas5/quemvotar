@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { CandidatoMatchLite } from '@/lib/match/candidatos';
+import { dadosUrl } from '@/lib/candidatos/dados-url';
 import { FotoCandidato } from '@/components/candidatos/FotoCandidato';
 
 /**
@@ -39,7 +40,7 @@ export function BuscaCandidatos({ inicial = '' }: { inicial?: string }) {
   useEffect(() => {
     if (catalogo !== null) return;
     setCarregando(true);
-    fetch('/dados/candidatos/index.json')
+    fetch(dadosUrl('index.json'))
       .then((r) => {
         if (!r.ok) throw new Error('sem índice');
         return r.json();

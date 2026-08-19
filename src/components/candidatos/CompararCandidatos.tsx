@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { UF_LISTA } from '@/lib/candidatos/ufs';
+import { dadosUrl } from '@/lib/candidatos/dados-url';
 import { FotoCandidato } from '@/components/candidatos/FotoCandidato';
 import type { CandidatoMatchLite } from '@/lib/match/candidatos';
 
@@ -63,7 +64,7 @@ export function CompararCandidatos({ idsIniciais }: { idsIniciais: string }) {
   // catálogo (para o seletor adicionar candidatos)
   useEffect(() => {
     setBusca('');
-    fetch(`/dados/candidatos/index-${uf}.json`)
+    fetch(dadosUrl(`index-${uf}.json`))
       .then((r) => (r.ok ? r.json() : null))
       .then((p: { candidatos: CandidatoMatchLite[] } | null) => setCatalogo(p?.candidatos ?? []))
       .catch(() => setCatalogo([]));

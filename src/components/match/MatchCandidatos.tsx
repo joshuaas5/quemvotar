@@ -13,9 +13,11 @@ import {
   type MatchCandidatoResultado,
 } from '@/lib/match/candidatos';
 import { UF_LISTA } from '@/lib/candidatos/ufs';
+import { dadosUrl } from '@/lib/candidatos/dados-url';
 import { FotoCandidato } from '@/components/candidatos/FotoCandidato';
 import { useMinhaUrna } from '@/components/candidatos/MinhaUrnaProvider';
 import { votosPorCargo, votosPreenchidos } from '@/lib/candidatos/minha-urna';
+import { CompararLadoALado } from '@/components/candidatos/CompararLadoALado';
 
 const EIXO_CORES: Record<string, string> = {
   esquerda: 'bg-red-500',
@@ -82,7 +84,7 @@ export function MatchCandidatos() {
     setSemDados(false);
     setVerMais(8);
 
-    fetch(`/dados/candidatos/index-${uf}.json`)
+    fetch(dadosUrl(`index-${uf}.json`))
       .then((response) => {
         if (!response.ok) throw new Error('sem dados');
         return response.json();
@@ -225,12 +227,20 @@ export function MatchCandidatos() {
 
         <div className="flex flex-wrap items-center gap-3">
           {comparar.length >= 2 ? (
-            <Link
-              href={`/comparar/candidatos?ids=${comparar.join(',')}`}
-              className="bg-black text-white border-4 border-black font-headline font-black px-6 py-4 uppercase text-lg hover:opacity-90"
-            >
-              Comparar ({comparar.length}) ⧉
-            </Link>
+            <>
+              <a
+                href="#comparacao"
+                className="bg-black text-white border-4 border-black font-headline font-black px-6 py-4 uppercase text-lg hover:opacity-90"
+              >
+                🆚 Comparar ({comparar.length}) ↓
+              </a>
+              <Link
+                href={`/comparar/candidatos?ids=${comparar.join(',')}`}
+                className="bg-white border-4 border-black font-headline font-black px-6 py-4 uppercase text-lg hover:bg-gray-100"
+              >
+                Página completa ↗
+              </Link>
+            </>
           ) : null}
           <button
             onClick={() => setShowResults(false)}
@@ -445,6 +455,14 @@ export function MatchCandidatos() {
           );
         })
       )}
+
+      {/* Comparação lado a lado (quando 2+ selecionados) */}
+      {!carregando && !semDados && comparar.length >= 2 ? (
+        <CompararLadoALado
+          selecionados={dados.filter((c) => comparar.includes(c.id))}
+          itens={dados}
+        />
+      ) : null}
 
       {!carregando && !semDados && matches.length > verMais ? (
         <div className="text-center">

@@ -74,13 +74,32 @@
 - [ ] **Match Candidatos 2026** — 100% client-side (lê o index.json; zero servidor).
 - [ ] Workflow `.github/workflows/sync-candidatos.yml` — cron horário (ou manual).
 
-### Fase 2 — quando criar a conta Cloudflare (grátis, ~10 min)
-- [ ] Bucket R2 `quemvotar-dados` + domínio público (ex.: `dados.quemvotar.com.br`).
-- [ ] ETL com `--upload-r2` (env `R2_*`): sobe datasets + fotos para o R2.
-- [ ] Constante `DATA_BASE_URL` aponta para o R2; proxy de foto passa a ler do R2.
-- [ ] Vercel passa a servir só HTML → banda cai ~90%.
+### Fase 2 — Cloudflare R2 (guia de ativação, ~10 min, R$ 0)
+
+> Os dados continuam funcionando sem isto (a Vercel serve os JSONs). Este passo
+> desliga o peso dos dados da banda da Vercel quando o tráfego crescer.
+
+1. Crie uma conta grátis em <https://dash.cloudflare.com/sign-up>.
+2. Vá em **R2 → Create bucket**: nome `quemvotar-dados` (região automática).
+3. Em *Settings → Public access*: **Enable public access** (o bucket vira https).
+4. (Opcional, recomendado) Em **Custom domain**, aponte `dados.quemvotar.com.br`
+   e adicione o registro DNS que a Cloudflare fornece (egress continua grátis).
+5. Em **Account → R2 → Manage API tokens → Create API token** (objeto-read + objeto-write
+   no bucket) e copie `Account ID`, `Access Key ID` e `Secret Access Key`.
+6. No GitHub (Settings → Secrets and variables → Actions) crie 4 secrets:
+   `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET=quemvotar-dados`.
+7. Pronto: o cron já sobe os dados para o R2 a cada hora (o ETL aceita `--upload-r2`).
+   A partir daí, o app passa a ler de lá definindo a env `NEXT_PUBLIC_DADOS_URL`
+   (ex.: `https://dados.quemvotar.com.br`) no deploy da Vercel.
+
+Código já pronto:
+
+- `scripts/sync-candidatos.ts --upload-r2` (upload S3-compatível com cache-control)
+- `.github/workflows/sync-candidatos.yml` (passa os secrets)
+- `src/lib/candidatos/dados-url.ts` (troca o base de `/dados` para o R2 via env)
 
 ### Fase 3 — busca global + ranking (R$ 0)
+
 - [ ] Worker + D1 com FTS5: busca por nome em todo o Brasil, ranking por eixo,
   comparação lado a lado. Cache de borda em tudo.
 
