@@ -8,6 +8,7 @@ import ConsentManager from "@/components/ConsentManager";
 import { MinhaUrnaProvider } from "@/components/candidatos/MinhaUrnaProvider";
 import { MinhaUrnaBar } from "@/components/candidatos/MinhaUrnaBar";
 import { LoadingFeedback } from "@/components/LoadingFeedback";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -116,6 +117,7 @@ export default function RootLayout({
         )}
       </head>
       <body className="min-h-screen flex flex-col bg-background text-on-background font-body">
+        <Analytics />
         <MinhaUrnaProvider>
           <NavigationProvider>
             <ToastProvider>
