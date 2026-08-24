@@ -113,6 +113,22 @@ export default function RootLayout({
       <head>
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        {gaId && (
+          <>
+            {/* Google tag (gtag.js) — fixa no cabeçalho: coleta sempre, sem depender de JS */}
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${gaId}');
+                `,
+              }}
+            />
+          </>
+        )}
         <link rel="icon" type="image/png" sizes="512x512" href="/icon.png?v=5" />
         <link rel="shortcut icon" href="/favicon.ico?v=5" />
         {adsenseClient && (

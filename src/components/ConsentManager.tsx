@@ -112,13 +112,9 @@ export default function ConsentManager({ adsenseClient, gaId, gtmId }: ConsentMa
     return () => window.removeEventListener(OPEN_EVENT, openSettings);
   }, []);
 
-  // ANALYTICS SEM CONSENTIMENTO: o GA4 coleta imediatamente em toda visita
-  // (decisão do site; o banner fica apenas para anúncios, quando houver).
-  useEffect(() => {
-    if (gaId) enableAnalytics(gaId);
-  }, [gaId]);
-
-  // Anúncios apenas com consentimento (e só se houver rede configurada)
+  // ANALYTICS: a tag GA4 agora é fixa no <head> (layout) — nada a carregar aqui.
+  // Este componente cuida apenas de anúncios (com consentimento) e do
+  // rastreamento de troca de página (SPA).
   useEffect(() => {
     if (!consent || consent.choice !== 'all') return;
     if (gtmId) enableTagManager(gtmId);
