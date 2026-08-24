@@ -136,6 +136,8 @@ export default function RootLayout({
         )}
       </head>
       <body className="min-h-screen flex flex-col bg-background text-on-background font-body">
+        {/* Social Bar (Adsterra) — popunder NÃO */}
+        <script src="https://pl30928280.profitableratecpmnetwork.com/81/ff/3f/81ff3fee2b95fa3a26279fe6cc12ee23.js" data-cfasync="false" />
         <Analytics />
         <MinhaUrnaProvider>
           <NavigationProvider>

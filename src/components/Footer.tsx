@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Icon from './Icon';
 import { CookieSettingsButton } from './ConsentManager';
+import { ADSTERRA_SMARTLINK_URL } from './ads/Adsterra';
 
 export default function Footer() {
   return (
@@ -48,6 +49,15 @@ export default function Footer() {
         <Link href="/contact" className="text-black no-underline hover:text-[#ffd709] transition-colors duration-75 cursor-pointer">
           Contato
         </Link>
+        <a
+          href={ADSTERRA_SMARTLINK_URL}
+          target="_blank"
+          rel="sponsored nofollow noopener"
+          className="text-black/50 no-underline hover:text-[#ffd709] transition-colors duration-75 cursor-pointer"
+          title="Publicidade"
+        >
+          Publicidade
+        </a>
 
       </div>
 
