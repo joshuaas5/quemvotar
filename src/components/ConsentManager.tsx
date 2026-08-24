@@ -112,25 +112,29 @@ export default function ConsentManager({ adsenseClient, gaId, gtmId }: ConsentMa
     return () => window.removeEventListener(OPEN_EVENT, openSettings);
   }, []);
 
+  // ANALYTICS SEM CONSENTIMENTO: o GA4 coleta imediatamente em toda visita
+  // (decisão do site; o banner fica apenas para anúncios, quando houver).
+  useEffect(() => {
+    if (gaId) enableAnalytics(gaId);
+  }, [gaId]);
+
+  // Anúncios apenas com consentimento (e só se houver rede configurada)
   useEffect(() => {
     if (!consent || consent.choice !== 'all') return;
-
-    if (gaId) enableAnalytics(gaId);
     if (gtmId) enableTagManager(gtmId);
     if (adsenseClient) enableAdvertising(adsenseClient);
-  }, [adsenseClient, consent, gaId, gtmId]);
+  }, [adsenseClient, consent, gtmId]);
 
-  // Rastreia cada troca de página (SPA) no Analytics
+  // Rastreia cada troca de página (SPA) no Analytics — sempre, sem depender de clique
   const pathname = usePathname();
   useEffect(() => {
-    if (!consent || consent.choice !== 'all') return;
     if (!gaId || typeof window === 'undefined') return;
     window.gtag?.('event', 'page_view', {
       page_title: document.title,
       page_location: window.location.href,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, consent, gaId]);
+  }, [pathname, gaId]);
 
   const saveConsent = useCallback((choice: ConsentChoice) => {
     const nextConsent = { choice, updatedAt: new Date().toISOString() };
@@ -145,7 +149,11 @@ export default function ConsentManager({ adsenseClient, gaId, gtmId }: ConsentMa
     setIsOpen(false);
   }, []);
 
-  if (!isReady || !isOpen) return null;
+  // O banner só aparece quando há algo que precise de consentimento
+  // (redes de anúncio configuradas). Analytics puro não gera banner.
+  const hasConsentGate = Boolean(adsenseClient || gtmId);
+
+  if (!isReady || !isOpen || !hasConsentGate) return null;
 
   const updating = consent !== null;
 
