@@ -7,6 +7,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import { EDITORIAL_ARTICLES, getEditorialBySlug } from '@/lib/editorial';
 import { getAuthorBySlug } from '@/lib/authors';
 import { SITE } from '@/lib/site-config';
+import { AdLeaderboard, AdRectangle300x250, AdNative } from '@/components/ads/Adsterra';
 
 export function generateStaticParams() {
   return EDITORIAL_ARTICLES.map((article) => ({ slug: article.slug }));
@@ -87,6 +88,8 @@ export default async function EditorialArticlePage({ params }: { params: Promise
         <article className="max-w-4xl mx-auto space-y-8 md:space-y-10">
           <Breadcrumbs items={[{ label: 'Análises', href: '/editorial' }, { label: article.title }]} />
 
+          <AdLeaderboard />
+
           <header className="relative border-4 border-black bg-[#111827] text-white shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] overflow-hidden p-6 md:p-10 lg:p-12">
             <p className="font-label font-black uppercase text-xs md:text-sm bg-[#FF4D8D] text-black border-2 border-black px-3 py-1 w-max mb-5">
               Análise do QuemVotar
@@ -161,6 +164,15 @@ export default async function EditorialArticlePage({ params }: { params: Promise
               recomendação de voto nem posição de partido, candidato ou órgão público.
             </p>
           </section>
+
+          <div className="space-y-6">
+            <div className="border-4 border-dashed border-black p-4 text-center">
+              <AdRectangle300x250 />
+            </div>
+            <div className="border-4 border-dashed border-black p-4 text-center">
+              <AdNative />
+            </div>
+          </div>
         </article>
       </main>
       <Footer />

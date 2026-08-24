@@ -9,6 +9,7 @@ import { getGuiaExtraBySlug, getGuiaExtraWordCount } from '@/lib/guides-extra-ut
 import { getAuthorBySlug } from '@/lib/authors';
 import { SITE } from '@/lib/site-config';
 import { buildArticleSchema, buildFaqPageSchema } from '@/lib/jsonld';
+import { AdLeaderboard, AdRectangle300x250, AdNative } from '@/components/ads/Adsterra';
 
 export function generateStaticParams() {
   return getActiveGuides().map((article) => ({ slug: article.slug }));
@@ -119,6 +120,8 @@ export default async function GuiaPage({ params }: { params: Promise<{ slug: str
       <main className="flex-grow bg-[#F7F2DE] py-10 md:py-16 px-4 md:px-6 overflow-hidden">
         <article className="max-w-7xl mx-auto space-y-8 md:space-y-10">
           <Breadcrumbs items={[{ label: 'Guias', href: '/guias' }, { label: article.title }]} />
+
+          <AdLeaderboard />
 
           <header className="relative border-4 border-black bg-[#111827] text-white shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
             <div className={`absolute -right-12 -top-12 w-40 h-40 ${accent} border-4 border-black rotate-12`} />
@@ -360,6 +363,15 @@ export default async function GuiaPage({ params }: { params: Promise<{ slug: str
               </Link>
             </div>
           </footer>
+
+          <div className="space-y-6">
+            <div className="border-4 border-dashed border-black p-4 text-center">
+              <AdRectangle300x250 />
+            </div>
+            <div className="border-4 border-dashed border-black p-4 text-center">
+              <AdNative />
+            </div>
+          </div>
         </article>
       </main>
       <Footer />
