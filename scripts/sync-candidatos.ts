@@ -387,8 +387,14 @@ async function syncDetalhes(
   let processados = 0;
   let falhasConsecutivas = 0;
   const DELAY_DETALHE = 450;
+  const inicioRodada = Date.now();
+  const LIMITE_MINUTOS_DETALHE = 10;
 
   for (const uf of ufs) {
+    if (Date.now() - inicioRodada > LIMITE_MINUTOS_DETALHE * 60 * 1000) {
+      console.warn(`⏱️ Limite de ${LIMITE_MINUTOS_DETALHE} min atingido — guardando o progresso e encerrando a rodada de detalhes.`);
+      break;
+    }
     const ids = new Set<number>();
     for (const cargoCodigo of cargos) {
       const arquivo = join(outDir, `${uf}-${cargoCodigo}.json`);
@@ -475,18 +481,34 @@ async function main() {
   }
 
   const inicio = Date.now();
+  const LIMITE_MINUTOS_LISTA = 18;
   let total = 0;
+  let falhasLista = 0;
   const resumo: Record<string, number> = {};
 
+  let tempoEsgotado = false;
   for (const uf of ufs) {
+    if (tempoEsgotado) break;
     for (const cargoCodigo of cargos) {
+      if (Date.now() - inicio > LIMITE_MINUTOS_LISTA * 60 * 1000) {
+        console.warn(`⏱️ Limite de ${LIMITE_MINUTOS_LISTA} min atingido — parando o sync (arquivos antigos preservados).`);
+        tempoEsgotado = true;
+        break;
+      }
       try {
         const candidatos = await syncCombinacao(ano, sqEleicao, uf, cargoCodigo, outDir, args.quiet, chavesParlamentares);
         total += candidatos.length;
+        falhasLista = 0;
         resumo[`${uf}-${cargoCodigo}`] = candidatos.length;
       } catch (error) {
         const mensagem = error instanceof Error ? error.message : String(error);
         console.error(`✗ ${uf} | cargo ${cargoCodigo}: ${mensagem}`);
+        falhasLista += 1;
+        if (falhasLista >= 8) {
+          console.warn(`⛔ TSE indisponível (${falhasLista} falhas seguidas) — parando a rodada para proteger o IP do cron.`);
+          tempoEsgotado = true;
+          break;
+        }
       }
       await new Promise((resolveDelay) => setTimeout(resolveDelay, DELAY_MS));
     }

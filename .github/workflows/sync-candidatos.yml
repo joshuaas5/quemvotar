@@ -23,6 +23,8 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    # Falha rápido se o TSE estiver bloqueando (protege contra timeout de 6h)
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
 
