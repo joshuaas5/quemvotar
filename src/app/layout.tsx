@@ -9,7 +9,6 @@ import { MinhaUrnaProvider } from "@/components/candidatos/MinhaUrnaProvider";
 import { MinhaUrnaBar } from "@/components/candidatos/MinhaUrnaBar";
 import { LoadingFeedback } from "@/components/LoadingFeedback";
 import { Analytics } from "@vercel/analytics/next";
-import { AdsterraLayoutScripts } from "@/components/ads/Adsterra";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -137,7 +136,6 @@ export default function RootLayout({
         )}
       </head>
       <body className="min-h-screen flex flex-col bg-background text-on-background font-body">
-        <AdsterraLayoutScripts />
         <Analytics />
         <MinhaUrnaProvider>
           <NavigationProvider>
