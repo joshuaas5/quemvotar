@@ -11,6 +11,7 @@ import { FotoCandidato } from '@/components/candidatos/FotoCandidato';
 import { lerSnapshotCandidatos } from '@/lib/candidatos/snapshot';
 import { BuscaCandidatos } from '@/components/candidatos/BuscaCandidatos';
 import { AvisoFonteTse } from '@/components/candidatos/AvisoFonteTse';
+import { AdLeaderboard } from '@/components/ads/Adsterra';
 
 export const revalidate = 300;
 
@@ -84,6 +85,7 @@ export default async function CandidatosPage({
           </section>
 
           {/* Filtros */}
+          <AdLeaderboard />
           <section className="bg-white border-4 border-black p-4 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-4">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <p className="font-headline font-black uppercase text-sm">📍 Marque seu estado</p>

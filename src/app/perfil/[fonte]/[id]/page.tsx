@@ -17,6 +17,7 @@ import { buildProfileResearchBrief } from '@/lib/seo/profile-brief';
 import { saneUrl } from '@/lib/utils/safe-url';
 import { getPerfilEditorial } from '@/lib/perfis-editorial-utils';
 import { SITE } from '@/lib/site-config';
+import { AdLeaderboard } from '@/components/ads/Adsterra';
 
 export const revalidate = 1800;
 
@@ -855,6 +856,7 @@ export default async function PerfilPage({
 
       <main className="flex-grow qv-grid-bg py-6 sm:py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto space-y-6 sm:space-y-10">
+          <AdLeaderboard />
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <Breadcrumbs
               items={[

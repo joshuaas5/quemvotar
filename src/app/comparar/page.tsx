@@ -8,6 +8,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import ShareButtons from '@/components/ShareButtons';
 import CompararClient from '@/components/CompararClient';
 import PageHero from '@/components/PageHero';
+import { AdLeaderboard } from '@/components/ads/Adsterra';
 import {
   getParlamentares,
   getPerfilBasico,
@@ -115,6 +116,7 @@ export default async function CompararPage({
         <main className="flex-grow qv-grid-bg py-10 md:py-16 px-4 md:px-6">
           <div className="max-w-5xl mx-auto">
             <Breadcrumbs items={[{ label: 'Comparar' }]} />
+            <AdLeaderboard />
             <CompararClient parlamentares={parlamentares} />
           </div>
         </main>
@@ -151,6 +153,8 @@ export default async function CompararPage({
       <main className="flex-grow qv-grid-bg py-6 sm:py-12 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto space-y-6 sm:space-y-10">
           <Breadcrumbs items={[{ label: 'Comparar' }]} />
+
+          <AdLeaderboard />
 
           <section className="space-y-4">
             <PageHero

@@ -7,6 +7,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import PageHero from '@/components/PageHero';
 import { getLiderancas, getPartidos, getParlamentares, getPerfilHref } from '@/lib/api';
 import { getPartidoFallback2026 } from '@/lib/partidos-2026';
+import { AdLeaderboard } from '@/components/ads/Adsterra';
 import { saneUrl } from '@/lib/utils/safe-url';
 import { getPartyVisualEmoji } from '@/lib/party-logos';
 
@@ -74,6 +75,7 @@ export default async function PartidosPage() {
       <main className="flex-grow qv-grid-bg py-10 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto space-y-8 md:space-y-10">
           <Breadcrumbs items={[{ label: 'Partidos' }]} />
+          <AdLeaderboard />
           <PageHero
             eyebrow="Mapa partidário"
             title="Partidos e Lideranças"

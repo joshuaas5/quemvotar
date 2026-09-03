@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getActiveGuides, GUIDE_CATEGORIES, getGuideCardStyle, getGuideCategory, getGuideReadingTime, getGuideWordCount } from '@/lib/guides';
+import { AdLeaderboard } from '@/components/ads/Adsterra';
 
 export const metadata: Metadata = {
   title: 'Guias do Eleitor',
@@ -22,6 +23,8 @@ export default function GuiasPage() {
       <main className="flex-grow bg-[#F7F2DE] py-10 md:py-16 px-4 md:px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto space-y-8 md:space-y-12">
           <Breadcrumbs items={[{ label: 'Guias' }]} />
+
+          <AdLeaderboard />
 
           <section className="relative border-4 border-black bg-[#111827] text-white shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
             <div className="absolute -right-16 -top-16 w-44 h-44 bg-[#FFD709] border-4 border-black rotate-12" />

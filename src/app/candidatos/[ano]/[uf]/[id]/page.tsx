@@ -20,6 +20,7 @@ import { FotoCandidato } from '@/components/candidatos/FotoCandidato';
 import { AvisoFonteTse } from '@/components/candidatos/AvisoFonteTse';
 import { getFotoAltaParlamentar } from '@/lib/candidatos/foto-alta';
 import { saneUrl } from '@/lib/utils/safe-url';
+import { AdLeaderboard } from '@/components/ads/Adsterra';
 
 export const revalidate = 600;
 export const dynamicParams = true;
@@ -524,6 +525,7 @@ function renderPerfilCompletoSnap(
       <Header />
       <main className="flex-grow bg-surface-container py-10 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto space-y-10 md:space-y-12">
+          <AdLeaderboard />
           <section className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10">
             <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-8">
               <div className="aspect-[4/3] border-4 border-black bg-surface-container-high overflow-hidden">
@@ -752,6 +754,7 @@ export default async function CandidatoDetalhePage({
 
       <main className="flex-grow bg-surface-container py-10 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto space-y-10 md:space-y-12">
+          <AdLeaderboard />
           {/* Cabeçalho */}
           <section className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 md:p-10">
             <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-8">

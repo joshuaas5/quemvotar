@@ -5,6 +5,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import PageHero from '@/components/PageHero';
 import { MatchClient } from '@/components/match/MatchClient';
 import { MatchTabs } from '@/components/match/MatchTabs';
+import { AdLeaderboard } from '@/components/ads/Adsterra';
 import { getParlamentares, getRankingParlamentares } from '@/lib/api';
 import { buildRankingLookupKey, rankingHouseFromCargo } from '@/lib/match/ranking-key';
 
@@ -63,6 +64,8 @@ export default async function MatchPage() {
           />
 
           <MatchTabs ativo="parlamentares" />
+
+          <AdLeaderboard />
 
           <MatchClient parlamentares={parlamentares} rankings={rankingsMap} />
         </div>

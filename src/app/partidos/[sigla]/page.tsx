@@ -13,6 +13,7 @@ import { getPartyVisualEmoji } from '@/lib/party-logos';
 import { buildOrganizationSchema, buildBreadcrumbSchema } from '@/lib/jsonld';
 import { getPartidoEditorialBySigla, getPartidoEditorialWordCount } from '@/lib/partidos-editorial-utils';
 import { SITE } from '@/lib/site-config';
+import { AdLeaderboard } from '@/components/ads/Adsterra';
 
 export const revalidate = 3600;
 
@@ -125,6 +126,7 @@ export default async function PartidoDetailPage({
 
       <main className="flex-grow qv-grid-bg py-10 md:py-12 px-4 md:px-6">
         <div className="max-w-7xl mx-auto space-y-8 md:space-y-10">
+          <AdLeaderboard />
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <Breadcrumbs
               items={[

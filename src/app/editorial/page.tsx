@@ -6,6 +6,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import PageHero from '@/components/PageHero';
 import { EDITORIAL_ARTICLES } from '@/lib/editorial';
 import { getAuthorBySlug } from '@/lib/authors';
+import { AdLeaderboard } from '@/components/ads/Adsterra';
 
 export const metadata: Metadata = {
   title: 'Análises do Congresso',
@@ -30,6 +31,8 @@ export default function EditorialPage() {
             accent="pink"
             stat={{ value: String(EDITORIAL_ARTICLES.length), label: 'análises publicadas até agora.' }}
           />
+
+          <AdLeaderboard />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             {EDITORIAL_ARTICLES.map((article) => {

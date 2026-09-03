@@ -5,6 +5,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import PageHero from '@/components/PageHero';
 import { MatchCandidatos } from '@/components/match/MatchCandidatos';
 import { MatchTabs } from '@/components/match/MatchTabs';
+import { AdLeaderboard } from '@/components/ads/Adsterra';
 
 export const metadata: Metadata = {
   title: 'Match Candidatos 2026',
@@ -31,6 +32,8 @@ export default function MatchCandidatosPage() {
           />
 
           <MatchTabs ativo="candidatos" />
+
+          <AdLeaderboard />
 
           <MatchCandidatos />
         </div>

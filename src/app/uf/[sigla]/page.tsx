@@ -11,6 +11,7 @@ import { getParlamentares, getPerfilHref } from '@/lib/api';
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
 import { getUfEditorialByUf } from '@/lib/uf-editorial-utils';
 import { SITE } from '@/lib/site-config';
+import { AdLeaderboard } from '@/components/ads/Adsterra';
 
 export const revalidate = 1800;
 
@@ -74,6 +75,7 @@ export default async function UfPage({ params }: { params: Promise<{ sigla: stri
 
       <main className="flex-grow qv-grid-bg py-10 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto space-y-8 md:space-y-10">
+          <AdLeaderboard />
           <Breadcrumbs
             items={[{ label: nomeUf }]}
           />

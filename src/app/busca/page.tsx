@@ -13,6 +13,7 @@ import {
 } from '@/lib/api';
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
 import { BuscaCandidatos } from '@/components/candidatos/BuscaCandidatos';
+import { AdLeaderboard } from '@/components/ads/Adsterra';
 
 export const metadata: Metadata = {
   title: "Busca de Parlamentares",
@@ -56,6 +57,8 @@ export default async function BuscaPage({
             accent="cyan"
             stat={{ value: resultados.length.toLocaleString('pt-BR'), label: 'Perfis encontrados para esta consulta.' }}
           />
+
+          <AdLeaderboard />
 
           {resultados.length === 0 ? (
             <div className="bg-white border-4 border-black p-8 md:p-12 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">

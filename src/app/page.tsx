@@ -6,6 +6,7 @@ import StatsDashboard from '@/components/StatsDashboard';
 import EditorialGuide from '@/components/EditorialGuide';
 import CandidatosBand from '@/components/CandidatosBand';
 import Footer from '@/components/Footer';
+import { AdLeaderboard } from '@/components/ads/Adsterra';
 import { buildWebSiteSchema } from '@/lib/jsonld';
 
 export const metadata: Metadata = {
@@ -66,6 +67,9 @@ export default function Home() {
 
       <main className="flex-grow">
         <Hero />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+          <AdLeaderboard />
+        </div>
         <CandidatosBand />
         <Highlights />
         <EditorialGuide />

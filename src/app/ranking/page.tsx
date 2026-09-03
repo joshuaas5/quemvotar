@@ -8,6 +8,7 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 import PageHero from '@/components/PageHero';
 import { getParlamentares, getPerfilHref, getRankingParlamentares, type PerfilPublico } from '@/lib/api';
 import { getPartyLogoBySigla, getPartyVisualEmoji } from '@/lib/party-logos';
+import { AdLeaderboard } from '@/components/ads/Adsterra';
 
 export const metadata: Metadata = {
   title: "Ranking de parlamentares",
@@ -106,6 +107,8 @@ export default async function RankingPage({
             accent="yellow"
             stat={{ value: resultados.length.toLocaleString('pt-BR'), label: 'Parlamentares no recorte atual de filtros.' }}
           />
+
+          <AdLeaderboard />
 
           <section className="bg-white border-4 border-black p-5 md:p-7 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
             <h2 className="font-headline font-black text-2xl md:text-3xl uppercase mb-3">
