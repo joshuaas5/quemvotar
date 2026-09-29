@@ -74,21 +74,22 @@ export function PollsExplorer({ dataset, asOf, initialOffice = 'president', init
 
     <section id="metodologia" className="border-4 border-black bg-[#9BF6FF] p-5 sm:p-7" aria-labelledby="poll-method-title">
       <h2 id="poll-method-title" className="font-headline text-2xl font-black uppercase">Como ler estes números</h2>
-      <div className="mt-4 grid gap-5 font-body text-sm font-semibold leading-relaxed md:grid-cols-2">
+      <p className="mt-3 font-body text-sm font-semibold">A média usa pesquisas comparáveis e não prevê o resultado da eleição.</p>
+      <details className="mt-4"><summary className="cursor-pointer font-label text-xs font-black uppercase">Ver método e critérios</summary><div className="mt-4 grid gap-5 font-body text-sm font-semibold leading-relaxed md:grid-cols-2">
         <p><strong className="block font-headline text-base uppercase">A média é uma descrição</strong>Consideramos pesquisas estimuladas com fim do campo nos últimos {dataset.maxAgeDays} dias, já divulgadas. Cada instituto contribui com o seu levantamento mais recente para cada cenário e recebe o mesmo peso. Não fazemos previsão eleitoral, ponderação por tamanho da amostra nem intervalo de confiança combinado.</p>
         <p><strong className="block font-headline text-base uppercase">Cenários precisam ser comparáveis</strong>Presidente nacional, governador e Senado de cada UF são recortes separados. Também separamos os turnos, as listas de candidatos e, no Senado, soma das duas escolhas, média das duas escolhas, primeira escolha e segunda escolha. Não juntamos pesquisa espontânea com estimulada.</p>
         <p><strong className="block font-headline text-base uppercase">Dado ausente não vira zero</strong>Um candidato só aparece na média se seu percentual está explicitamente informado em todos os levantamentos usados naquele grupo. Brancos, nulos e indecisos permanecem nos resultados individuais. Não recalculamos percentuais como votos válidos.</p>
         <p><strong className="block font-headline text-base uppercase">Cada levantamento tem suas limitações</strong>As margens de erro e o nível de confiança são do levantamento original. Diferenças menores que essas margens exigem cautela; a ordem das barras não demonstra uma vantagem estatisticamente significativa. Consulte a fonte para o questionário, a amostragem e o método completo.</p>
       </div>
-      <p className="mt-5 border-t-2 border-black pt-4 font-body text-sm font-semibold">Fonte da regra de divulgação: <a className="underline underline-offset-4" target="_blank" rel="noopener noreferrer" href="https://www.tse.jus.br/legislacao/compilada/res/2019/resolucao-no-23-600-de-12-de-dezembro-de-2019">Resolução TSE nº 23.600/2019, art. 10 ↗</a>. Os levantamentos originais podem ser consultados no <a href="https://pesqele-divulgacao.tse.jus.br/app/pesquisa/listar.xhtml" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">PesqEle do TSE ↗</a>.</p>
+      <p className="mt-5 border-t-2 border-black pt-4 font-body text-sm font-semibold">Fonte da regra de divulgação: <a className="underline underline-offset-4" target="_blank" rel="noopener noreferrer" href="https://www.tse.jus.br/legislacao/compilada/res/2019/resolucao-no-23-600-de-12-de-dezembro-de-2019">Resolução TSE nº 23.600/2019, art. 10 ↗</a>. Os levantamentos originais podem ser consultados no <a href="https://pesqele-divulgacao.tse.jus.br/app/pesquisa/listar.xhtml" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">PesqEle do TSE ↗</a>.</p></details>
     </section>
 
     <section className="border-2 border-black bg-white p-5" aria-label="Cobertura e atualização">
       <h2 className="font-headline text-xl font-black uppercase">Cobertura e atualização</h2>
       <p className="mt-2 font-body text-sm font-semibold">{registrations} registros no acervo · {pollCount} {pollCount === 1 ? 'recorte elegível' : 'recortes elegíveis'} · {statesWithPolls.size} UFs com dados estaduais nesta janela · consulta em {formatPollDate(asOf)}.{dataset.updatedAt && ` Base atualizada em ${formatPollDate(dataset.updatedAt.slice(0, 10))}.`}</p>
       <p className="mt-2 font-body text-sm font-bold">Institutos no acervo: {[...new Set(dataset.polls.map((poll) => poll.institute))].sort().join(' · ')}.</p>
-      {dataset.coverageNote && <p className="mt-2 font-body text-sm leading-relaxed">{dataset.coverageNote}</p>}
-      <p className="mt-2 font-body text-sm leading-relaxed">A publicação de uma pesquisa depende da checagem da fonte, do registro e dos dados exigidos para divulgação. A página mostra as lacunas e não preenche estados ou candidatos com números estimados.</p>
+      {dataset.coverageNote && <details className="mt-2 font-body text-sm"><summary className="cursor-pointer font-semibold">Sobre a cobertura</summary><p className="mt-2 leading-relaxed">{dataset.coverageNote}</p></details>}
+
     </section>
     <div className="grid gap-3 font-headline font-black uppercase sm:grid-cols-2"><Link href="/match/candidatos" className="border-4 border-black bg-[#FF4D8D] p-5">Descobrir meu Match 2026 →</Link><Link href="/minha-urna" className="border-4 border-black bg-[#C8FF8C] p-5">Montar e imprimir minha cola →</Link></div>
   </div>;

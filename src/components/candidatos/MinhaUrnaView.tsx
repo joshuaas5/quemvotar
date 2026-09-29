@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { useMinhaUrna } from './MinhaUrnaProvider';
 import { cargosDaUrna, faltamNaUrna, ufDaUrna, votosPorCargo } from '@/lib/candidatos/minha-urna';
@@ -7,14 +7,22 @@ import { UF_LISTA } from '@/lib/candidatos/ufs';
 import { baixarCartao, compartilharCartao, criarCartao, type ShareCard } from '@/lib/sharing/cards';
 import { sharingEvent } from '@/lib/sharing/events';
 import { ShareTool } from '@/components/sharing/ShareTool';
+import { ColaCandidatePicker } from './ColaCandidatePicker';
+import { FotoCandidato } from './FotoCandidato';
+import { SQ_ELEICAO_2026 } from '@/lib/candidatos/snapshot';
+
+const subscribeUf = (notify: () => void) => { window.addEventListener('storage', notify); return () => window.removeEventListener('storage', notify); };
+const savedUf = () => { try { const uf = window.localStorage.getItem('quemvotar:cola-uf:v1'); return UF_LISTA.some((state) => state.sigla === uf) ? uf! : 'BR'; } catch { return 'BR'; } };
 
 export function MinhaUrnaView() {
-  const { items, remover, limpar } = useMinhaUrna();
-  const [estado, setEstado] = useState('BR');
+  const { items, adicionar, remover, limpar } = useMinhaUrna();
+  const [picker, setPicker] = useState<string | null>(null);
+  const persistedUf = useSyncExternalStore(subscribeUf, savedUf, () => 'BR');
+  const [estado, setEstado] = useState('');
   const [status, setStatus] = useState('');
   const [busy, setBusy] = useState(false);
   const ufSalva = ufDaUrna(items);
-  const uf = ufSalva === 'BR' ? estado : ufSalva;
+  const uf = ufSalva === 'BR' ? estado || persistedUf : ufSalva;
   const slots = cargosDaUrna(uf).flatMap((cargo) => Array.from({ length: votosPorCargo(cargo.codigo) }, (_, index) => ({
     ...cargo, index, escolhido: items.filter((i) => i.cargoCodigo === cargo.codigo)[index],
   })));
@@ -40,9 +48,9 @@ export function MinhaUrnaView() {
   return <div className="space-y-8">
     <section className="qv-no-print border-4 border-black bg-[#9BF6FF] p-5 space-y-4">
       <h2 className="font-headline font-black text-2xl uppercase">Sua cola, na ordem da urna</h2>
-      <p className="font-body">São seis escolhas no 1º turno, incluindo <strong>dois senadores diferentes</strong>. A lista fica neste navegador. Você decide se quer mostrar suas escolhas.</p>
+      <p className="font-body text-sm">Escolha seu estado e toque em cada cargo. São seis escolhas, com dois senadores; sua cola fica neste navegador.</p>
       <label className="block font-body font-bold">Estado onde você vota
-        <select value={uf} disabled={ufSalva !== 'BR'} onChange={(e) => setEstado(e.target.value)} className="block w-full sm:w-auto mt-2 border-2 border-black bg-white p-3">
+        <select value={uf} disabled={ufSalva !== 'BR'} onChange={(e) => { setEstado(e.target.value); setPicker(e.target.value === 'BR' ? null : '6-0'); try { window.localStorage.setItem('quemvotar:cola-uf:v1', e.target.value); } catch { /* Opcional. */ } }} className="block w-full sm:w-auto mt-2 border-2 border-black bg-white p-3">
           <option value="BR">Selecione seu estado</option>
           {UF_LISTA.map((u) => <option key={u.sigla} value={u.sigla}>{u.sigla} — {u.nome}</option>)}
         </select>
@@ -55,21 +63,22 @@ export function MinhaUrnaView() {
         {items.length > 0 && <button onClick={limpar} className="border-2 border-black bg-white px-3 py-2 font-body font-bold">Limpar escolhas</button>}
       </div>
       <p role="status" className="font-body font-bold text-sm">{status}</p>
-      <p className="font-body text-sm"><strong>Na cabine, use papel.</strong> O celular deve ficar fora da cabine. Você também pode votar em branco ou anular; o checklist não exige escolher candidatos.</p>
+      <p className="font-body text-xs">Na cabine, leve a cola em papel e deixe o celular fora.</p>
     </section>
     <section className="qv-print-cola border-4 border-black bg-white p-4 sm:p-6 space-y-3">
       <h2 className="font-headline font-black text-2xl uppercase">Minha cola eleitoral 2026 · {uf}</h2>
       <p className="font-body text-sm">1º turno · 4 de outubro · siga esta ordem</p>
-      {slots.map((slot, index) => <article key={`${slot.codigo}-${slot.index}`} className="qv-cola-row border-2 border-black p-4 flex gap-4 items-center">
-        <span className="font-headline font-black text-2xl shrink-0">{index + 1}.</span>
+      {slots.map((slot, index) => <div key={`${slot.codigo}-${slot.index}`} className="space-y-2"><article className="qv-cola-row border-2 border-black p-3 sm:p-4 flex gap-2 sm:gap-4 items-center">
+        <span className={`font-headline font-black text-2xl shrink-0 ${slot.escolhido ? 'hidden sm:block print:block' : ''}`}>{index + 1}.</span>
+        {slot.escolhido && <span className="qv-no-print w-11 h-14 shrink-0 overflow-hidden border border-black"><FotoCandidato sqEleicao={SQ_ELEICAO_2026} id={slot.escolhido.id} uf={slot.escolhido.uf} nome={slot.escolhido.nomeUrna} fotoAlta={slot.escolhido.fotoAlta} iniciaisClassName="font-headline font-bold text-base" /></span>}
         <div className="flex-1 min-w-0">
           <h3 className="font-label font-bold uppercase text-xs">{slot.rotulo}{slot.codigo === 5 ? ` · ${slot.index + 1}º voto` : ''}</h3>
           <p className="font-headline font-black text-lg sm:text-xl break-words">{slot.escolhido?.nomeUrna ?? 'Ainda não escolhido'}</p>
           {slot.escolhido ? <><p className="font-body text-sm">{slot.escolhido.partido} · {slot.escolhido.uf}</p><div className="qv-no-print mt-2 flex flex-wrap gap-3 text-sm"><Link className="underline" href={`/candidatos/2026/${slot.escolhido.uf}/${slot.escolhido.id}`}>Conferir perfil</Link><button className="underline text-red-700" onClick={() => remover(slot.escolhido!.id)}>Remover</button></div></>
-            : <Link className="qv-no-print underline text-sm" href={`/candidatos?uf=${slot.codigo === 1 ? 'BR' : uf}&cargo=${slot.codigo}`}>Escolher candidato →</Link>}
+            : <button type="button" disabled={slot.codigo !== 1 && uf === 'BR'} className="qv-no-print mt-2 border-2 border-black bg-primary-container px-3 py-2 font-body font-bold text-sm disabled:opacity-50" onClick={() => setPicker(`${slot.codigo}-${slot.index}`)}>{slot.codigo !== 1 && uf === 'BR' ? 'Selecione seu estado acima' : 'Escolher candidato →'}</button>}
         </div>
         <span className="font-headline font-black text-2xl sm:text-4xl shrink-0">{slot.escolhido?.numero ?? '—'}</span>
-      </article>)}
+      </article>{picker === `${slot.codigo}-${slot.index}` && !slot.escolhido && <ColaCandidatePicker key={`${uf}-${picker}`} uf={uf} cargo={slot.codigo} selectedIds={items.map((item) => item.id)} onClose={() => setPicker(null)} onChoose={(candidate) => { adicionar(candidate); setPicker(null); setStatus(`${candidate.nomeUrna} adicionado à sua cola. Você pode remover abaixo.`); }} />}</div>)}
       <p className="font-body text-xs">Escolhas pessoais · confira números e registro no TSE · quemvotar.com.br/minha-urna</p>
     </section>
     <section className="qv-no-print border-4 border-black bg-primary-container p-5 space-y-4">
