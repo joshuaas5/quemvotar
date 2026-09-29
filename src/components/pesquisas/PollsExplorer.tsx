@@ -71,7 +71,7 @@ export function PollsExplorer({ dataset, asOf, initialOffice = 'president', init
 
     <section className="border-2 border-black bg-white p-5" aria-label="Cobertura e atualização">
       <h2 className="font-headline text-xl font-black uppercase">Cobertura e atualização</h2>
-      <p className="mt-2 font-body text-sm font-semibold">{pollCount} {pollCount === 1 ? 'levantamento elegível' : 'levantamentos elegíveis'} · {statesWithPolls.size} UFs com dados estaduais nesta janela · consulta em {formatPollDate(asOf)}.{dataset.updatedAt && ` Base atualizada em ${formatPollDate(dataset.updatedAt.slice(0, 10))}.`}</p>
+      <p className="mt-2 font-body text-sm font-semibold">{pollCount} {pollCount === 1 ? 'recorte elegível' : 'recortes elegíveis'} · {statesWithPolls.size} UFs com dados estaduais nesta janela · consulta em {formatPollDate(asOf)}.{dataset.updatedAt && ` Base atualizada em ${formatPollDate(dataset.updatedAt.slice(0, 10))}.`}</p>
       {dataset.coverageNote && <p className="mt-2 font-body text-sm leading-relaxed">{dataset.coverageNote}</p>}
       <p className="mt-2 font-body text-sm leading-relaxed">A publicação de uma pesquisa depende da checagem da fonte, do registro e dos dados exigidos para divulgação. A página mostra as lacunas e não preenche estados ou candidatos com números estimados.</p>
     </section>
