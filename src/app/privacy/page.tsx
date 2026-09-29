@@ -53,7 +53,7 @@ export default function PrivacyPage() {
               <ul className="list-disc pl-5 space-y-2 leading-relaxed">
                 <li>Melhorar a experiencia do usuario e o desempenho do Site;</li>
                 <li>Analisar tendencias de trafego e comportamento de navegacao;</li>
-                <li>Exibir anuncios relevantes via Google AdSense;</li>
+                <li>Exibir anuncios por parceiros de publicidade, como Adsterra e, quando configurado, Google AdSense;</li>
                 <li>Prevenir fraudes e uso abusivo da plataforma;</li>
                 <li>Gerar estatisticas agregadas e anonimas sobre o uso do Site.</li>
               </ul>
@@ -62,7 +62,7 @@ export default function PrivacyPage() {
             <section>
               <h2 className="font-headline font-black text-xl md:text-2xl uppercase mb-3">4. Cookies e Tecnologias Semelhantes</h2>
               <p className="leading-relaxed">
-                {'Usamos recursos opcionais para medir audi\u00eancia e, se voc\u00ea permitir, exibir publicidade. Eles s\u00f3 s\u00e3o carregados depois da sua escolha no aviso de cookies.'}
+                {'O site mede audi\u00eancia com Google Analytics e exibe banners da Adsterra. Se voc\u00ea aceitar no aviso, tamb\u00e9m carregamos a Social Bar e recursos opcionais de publicidade. Recusar os formatos adicionais n\u00e3o desativa os banners e a medi\u00e7\u00e3o de audi\u00eancia.'}
               </p>
               <p className="mt-3 leading-relaxed">
                 {'Voc\u00ea pode revisar ou alterar a escolha a qualquer momento pelo link "Prefer\u00eancias de cookies" no rodap\u00e9. A decis\u00e3o fica armazenada apenas neste navegador.'}

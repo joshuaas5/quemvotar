@@ -3,23 +3,8 @@
  * OBSERVAÇÃO: configurado a pedido do dono do site para testes.
  * ──────────────────────────────────────────────────────────────── */
 
-/** Scripts globais que rodam em TODAS as páginas (popunder + social bar). */
-export function AdsterraLayoutScripts() {
-  return (
-    <>
-      {/* Popunder */}
-      <script
-        src="https://pl30928279.profitableratecpmnetwork.com/e3/56/c2/e356c23c8d6d06504fb388e912637a7c.js"
-        data-cfasync="false"
-      />
-      {/* Social Bar */}
-      <script
-        src="https://pl30928280.profitableratecpmnetwork.com/81/ff/3f/81ff3fee2b95fa3a26279fe6cc12ee23.js"
-        data-cfasync="false"
-      />
-    </>
-  );
-}
+export const ADSTERRA_SOCIAL_BAR_SRC =
+  'https://pl30928280.profitableratecpmnetwork.com/81/ff/3f/81ff3fee2b95fa3a26279fe6cc12ee23.js';
 
 /** Leaderboard: 728x90 no desktop, 320x50 no mobile (mesma faixa). */
 export function AdLeaderboard() {

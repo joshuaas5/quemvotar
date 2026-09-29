@@ -11,7 +11,7 @@ import { FotoCandidato } from '@/components/candidatos/FotoCandidato';
 import { lerSnapshotCandidatos } from '@/lib/candidatos/snapshot';
 import { BuscaCandidatos } from '@/components/candidatos/BuscaCandidatos';
 import { AvisoFonteTse } from '@/components/candidatos/AvisoFonteTse';
-import { AdLeaderboard } from '@/components/ads/Adsterra';
+import { AdLeaderboard, AdRectangle300x250 } from '@/components/ads/Adsterra';
 
 export const revalidate = 300;
 
@@ -169,6 +169,13 @@ export default async function CandidatosPage({
               ))}
             </div>
           </section>
+
+          {(busca || filtrados.length > 0) && (
+            <div className="flex flex-col items-center gap-2" aria-label="Publicidade">
+              <span className="font-label text-[10px] font-bold uppercase opacity-60">Publicidade</span>
+              <AdRectangle300x250 />
+            </div>
+          )}
 
           {/* Resultados */}
           {busca ? (

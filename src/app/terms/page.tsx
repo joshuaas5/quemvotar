@@ -66,14 +66,14 @@ export default function TermsPage() {
             <section>
               <h2 className="font-headline font-black text-xl md:text-2xl uppercase mb-3">6. Privacidade e Cookies</h2>
               <p className="leading-relaxed">
-                {'O QuemVotar usa recursos opcionais de medi\u00e7\u00e3o e publicidade. Voc\u00ea escolhe se permite esses recursos no aviso de cookies e pode alterar essa escolha a qualquer momento pelo rodap\u00e9. Para detalhes, consulte a nossa '}<a href="/privacy" className="underline font-bold">{'Pol\u00edtica de Privacidade'}</a>.
+                {'O QuemVotar mede audi\u00eancia e exibe banners. Voc\u00ea escolhe se permite formatos adicionais de publicidade no aviso e pode alterar essa escolha pelo rodap\u00e9. Para detalhes, consulte a nossa '}<a href="/privacy" className="underline font-bold">{'Pol\u00edtica de Privacidade'}</a>.
               </p>
             </section>
 
             <section>
               <h2 className="font-headline font-black text-xl md:text-2xl uppercase mb-3">7. Anuncios e Monetizacao</h2>
               <p className="leading-relaxed">
-                {'Quando voc\u00ea autoriza publicidade, o site pode exibir an\u00fancios pelo Google AdSense. A personaliza\u00e7\u00e3o e a veicula\u00e7\u00e3o dependem das configura\u00e7\u00f5es de privacidade aplic\u00e1veis. O QuemVotar n\u00e3o endossa produtos ou servi\u00e7os anunciados e n\u00e3o se responsabiliza pelo conte\u00fado de sites de terceiros.'}
+                {'O site exibe banners da Adsterra. Se voc\u00ea aceitar formatos adicionais, pode exibir Social Bar e an\u00fancios do Google AdSense quando configurado. O QuemVotar n\u00e3o endossa produtos ou servi\u00e7os anunciados e n\u00e3o se responsabiliza pelo conte\u00fado de sites de terceiros.'}
               </p>
             </section>
 

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
+import { ADSTERRA_SOCIAL_BAR_SRC } from './ads/Adsterra';
 
 type ConsentChoice = 'all' | 'necessary';
 
@@ -84,6 +85,17 @@ function enableAdvertising(adsenseClient: string) {
   );
 }
 
+function enableAdsterra() {
+  // A rede orienta inserir a Social Bar no fim do body.
+  if (document.getElementById('qv-adsterra-social-bar')) return;
+  const script = document.createElement('script');
+  script.id = 'qv-adsterra-social-bar';
+  script.src = ADSTERRA_SOCIAL_BAR_SRC;
+  script.async = true;
+  script.setAttribute('data-cfasync', 'false');
+  document.body.appendChild(script);
+}
+
 export function CookieSettingsButton() {
   return (
     <button
@@ -119,6 +131,7 @@ export default function ConsentManager({ adsenseClient, gaId, gtmId }: ConsentMa
     if (!consent || consent.choice !== 'all') return;
     if (gtmId) enableTagManager(gtmId);
     if (adsenseClient) enableAdvertising(adsenseClient);
+    enableAdsterra();
   }, [adsenseClient, consent, gtmId]);
 
   // Rastreia cada troca de página (SPA) no Analytics — sempre, sem depender de clique
@@ -143,13 +156,11 @@ export default function ConsentManager({ adsenseClient, gaId, gtmId }: ConsentMa
 
     setConsent(nextConsent);
     setIsOpen(false);
-  }, []);
+    // Scripts de anúncios já carregados não podem ser desfeitos apenas removendo a tag.
+    if (consent?.choice === 'all' && choice === 'necessary') window.location.reload();
+  }, [consent]);
 
-  // O banner só aparece quando há algo que precise de consentimento
-  // (redes de anúncio configuradas). Analytics puro não gera banner.
-  const hasConsentGate = Boolean(adsenseClient || gtmId);
-
-  if (!isReady || !isOpen || !hasConsentGate) return null;
+  if (!isReady || !isOpen) return null;
 
   const updating = consent !== null;
 
@@ -163,10 +174,10 @@ export default function ConsentManager({ adsenseClient, gaId, gtmId }: ConsentMa
               {updating ? 'Atualize suas prefer\u00eancias' : 'Sua privacidade, sua escolha'}
             </h2>
             <p className="mt-3 font-body text-sm font-semibold leading-relaxed sm:text-base">
-              {'Usamos cookies opcionais para medir audi\u00eancia e, quando habilitado, exibir publicidade. Sem sua escolha, esses recursos n\u00e3o s\u00e3o carregados.'}
+              {'O site mede audi\u00eancia e exibe banners. Se voc\u00ea aceitar, tamb\u00e9m ativaremos a Social Bar e outros recursos opcionais de publicidade.'}
             </p>
             <p className="mt-2 font-body text-sm leading-relaxed text-black/70">
-              {'Voc\u00ea pode aceitar todos ou manter apenas os recursos necess\u00e1rios ao funcionamento do site. Saiba mais na '}
+              {'Voc\u00ea pode recusar esses formatos adicionais e alterar sua escolha depois. Saiba mais na '}
               <Link href="/privacy" className="font-bold underline">
                 {'Pol\u00edtica de Privacidade'}
               </Link>
@@ -187,7 +198,7 @@ export default function ConsentManager({ adsenseClient, gaId, gtmId }: ConsentMa
               onClick={() => saveConsent('necessary')}
               className="cursor-pointer border-4 border-black bg-white px-4 py-3 font-headline text-sm font-black uppercase transition-colors hover:bg-[#ffe066]"
             >
-              {'Manter s\u00f3 necess\u00e1rios'}
+              {'Recusar formatos adicionais'}
             </button>
           </div>
         </div>
@@ -195,4 +206,3 @@ export default function ConsentManager({ adsenseClient, gaId, gtmId }: ConsentMa
     </div>
   );
 }
-
