@@ -3,7 +3,10 @@ import { aggregatePolls, brazilToday, formatPercent, formatPollDate } from '@/li
 import { readPollDataset } from '@/lib/pesquisas/read';
 import { FotoCandidato } from '@/components/candidatos/FotoCandidato';
 
-const PHOTO_IDS: Record<string, number> = { 'flavio-bolsonaro': 280002551544, lula: 280002542548 };
+const PHOTOS: Record<string, { id: number; src: string }> = {
+  'flavio-bolsonaro': { id: 280002551544, src: '/images/candidatos/flavio-bolsonaro.jpg' },
+  lula: { id: 280002542548, src: '/images/candidatos/lula.png' },
+};
 
 export async function PollLeaderBanner() {
   const dataset = await readPollDataset();
@@ -18,7 +21,7 @@ export async function PollLeaderBanner() {
       <h2 id="poll-leader-title" className="relative mt-5 font-headline text-2xl font-black leading-tight sm:text-4xl">Se o segundo turno fosse hoje?</h2>
       {leader && runner ? <>
         <div className="relative mt-5 flex items-center gap-4 sm:gap-7">
-          {!tied && PHOTO_IDS[leader.id] && <div className="h-28 w-24 shrink-0 overflow-hidden rounded-2xl border-2 border-white/30 bg-white sm:h-44 sm:w-36"><FotoCandidato sqEleicao={20322002026} id={PHOTO_IDS[leader.id]} uf="BR" nome={leader.name} iniciaisClassName="font-headline text-3xl font-black text-black" /></div>}
+          {!tied && PHOTOS[leader.id] && <div className="h-28 w-24 shrink-0 overflow-hidden rounded-2xl border-2 border-white/30 bg-white sm:h-44 sm:w-36"><FotoCandidato sqEleicao={20322002026} id={PHOTOS[leader.id].id} fotoAlta={PHOTOS[leader.id].src} loading="eager" uf="BR" nome={leader.name} iniciaisClassName="font-headline text-3xl font-black text-black" /></div>}
           <div className="min-w-0"><h3 className="font-headline text-[clamp(1.5rem,7vw,4.5rem)] font-black leading-[1.02] tracking-tight text-[#FFD709]">{tied ? `${leader.name} e ${runner.name}` : leader.name}</h3><p className="mt-3 font-body text-base font-semibold sm:text-xl">{tied ? 'empatam na média das pesquisas.' : 'lidera a média das pesquisas.'}</p></div>
         </div>
         <div className="relative mt-6 grid grid-cols-2 gap-3">

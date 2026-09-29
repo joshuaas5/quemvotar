@@ -18,6 +18,7 @@ interface FotoCandidatoProps {
   uf: string;
   nome: string;
   fotoAlta?: string | null;
+  loading?: 'lazy' | 'eager';
   className?: string;
   iniciaisClassName?: string;
 }
@@ -34,6 +35,7 @@ function FotoComFallback({
   uf,
   nome,
   fotoAlta = null,
+  loading = 'lazy',
   className = '',
   iniciaisClassName = '',
 }: FotoCandidatoProps) {
@@ -65,7 +67,7 @@ function FotoComFallback({
       src={src}
       alt={`Foto oficial de ${nome}`}
       className={`w-full h-full object-cover object-top ${className}`}
-      loading="lazy"
+      loading={loading}
       decoding="async"
       referrerPolicy="no-referrer"
       onError={() => setSourceIndex((current) => current + 1)}
