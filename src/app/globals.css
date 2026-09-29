@@ -204,9 +204,10 @@ input[type="text"]:focus, input[type="search"]:focus, textarea:focus, select:foc
 
 @media print {
   @page { size: A4; margin: 12mm; }
-  body:has(.qv-print-cola) * { visibility: hidden !important; }
-  body:has(.qv-print-cola) .qv-print-cola, body:has(.qv-print-cola) .qv-print-cola * { visibility: visible !important; }
+  body:has(.qv-print-cola) { min-height: 0; margin: 0; background: #fff; }
+  body:has(.qv-print-cola) *:not(:has(.qv-print-cola)):not(.qv-print-cola):not(.qv-print-cola *) { display: none !important; }
+  body:has(.qv-print-cola) :has(.qv-print-cola) { margin: 0 !important; padding: 0 !important; min-height: 0 !important; max-width: none !important; border: 0 !important; box-shadow: none !important; }
   body:has(.qv-print-cola) .qv-no-print { display: none !important; }
-  .qv-print-cola { position: absolute; inset: 0 auto auto 0; width: 100%; color: #000; background: #fff; box-shadow: none; }
+  .qv-print-cola { position: static; width: 100%; color: #000; background: #fff; box-shadow: none; }
   .qv-cola-row { break-inside: avoid; }
 }

@@ -26,7 +26,7 @@ export async function PesquisasDestaque({ dataset }: { dataset?: PollDataset } =
             <Link href="/pesquisas?cargo=governor&uf=SP" className="border-2 border-black bg-white px-3 py-4 hover:bg-[#9BF6FF]">Governador<br /><span className="font-body text-xs normal-case">Escolha seu estado →</span></Link>
             <Link href="/pesquisas?cargo=senate&uf=SP" className="border-2 border-black bg-white px-3 py-4 hover:bg-[#C8FF8C]">Senado<br /><span className="font-body text-xs normal-case">Confira as duas vagas →</span></Link>
           </div>
-          <p className="mt-4 font-body text-sm font-semibold">27 estados disponíveis para consulta. {states.size > 0 ? `${states.size} com levantamentos estaduais verificados na janela atual.` : 'A inclusão de dados depende da verificação da pesquisa e do registro no TSE.'}</p>
+          <p className="mt-4 font-body text-sm font-semibold">26 estados e Distrito Federal disponíveis para consulta. {states.size > 0 ? `${states.size} com levantamentos estaduais verificados na janela atual.` : 'A inclusão de dados depende da verificação da pesquisa e do registro no TSE.'}</p>
         </div>
         <div className="border-4 border-black bg-[#FFFDF5] p-5 shadow-[8px_8px_0_0_#000] sm:p-6">
           <h3 className="mb-1 font-headline text-2xl font-black uppercase">Presidente · Brasil</h3>

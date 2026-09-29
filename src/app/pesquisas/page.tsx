@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   description: 'Compare pesquisas eleitorais de 2026 com fontes identificadas e média descritiva de cenários comparáveis. Presidente em destaque e consulta por estado para governador e Senado.',
   alternates: { canonical: 'https://www.quemvotar.com.br/pesquisas' },
   openGraph: { title: 'Como está a corrida eleitoral? Pesquisas 2026', description: 'Presidente, governador e Senado. Veja os levantamentos, os números e as fontes no QuemVotar.', url: 'https://www.quemvotar.com.br/pesquisas' },
-  twitter: { card: 'summary_large_image', title: 'Pesquisas Eleitorais 2026 | QuemVotar' },
+  twitter: { card: 'summary_large_image', title: 'Pesquisas Eleitorais 2026 | QuemVotar', images: ['/pesquisas/opengraph-image'] },
 };
 
 export default async function PesquisasPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {

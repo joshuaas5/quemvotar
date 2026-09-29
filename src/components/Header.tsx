@@ -68,7 +68,7 @@ export default function Header() {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="xl:hidden w-10 h-10 border-2 border-black flex items-center justify-center bg-white active:scale-95 cursor-pointer"
+            className="w-10 h-10 border-2 border-black flex items-center justify-center bg-white active:scale-95 cursor-pointer"
             aria-label="Abrir menu"
           >
             <Icon name="menu" className="w-6 h-6" />
@@ -77,7 +77,7 @@ export default function Header() {
       </nav>
 
       {open && (
-        <div className="fixed inset-0 z-[100] xl:hidden">
+        <div className="fixed inset-0 z-[100]">
           <div
             className="absolute inset-0 bg-black/50"
             onClick={() => setOpen(false)}

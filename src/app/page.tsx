@@ -69,10 +69,10 @@ export default function Home() {
       <Header />
 
       <main className="flex-grow">
-        <PesquisasDestaque />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4" aria-label="Publicidade">
           <AdLeaderboard />
         </div>
+        <PesquisasDestaque />
         <Hero />
         <CandidatosBand />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col items-center gap-2" aria-label="Publicidade">
