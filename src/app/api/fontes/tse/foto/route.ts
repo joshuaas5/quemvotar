@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
   const id = Number(params.get('id') ?? '');
   const uf = (params.get('uf') ?? '').toUpperCase();
 
-  if (!Number.isFinite(sqEleicao) || !Number.isFinite(id) || !uf) {
+  if (!Number.isSafeInteger(sqEleicao) || sqEleicao <= 0 || !Number.isSafeInteger(id) || id <= 0 || !/^(BR|AC|AL|AP|AM|BA|CE|DF|ES|GO|MA|MT|MS|MG|PA|PB|PR|PE|PI|RJ|RN|RS|RO|RR|SC|SP|SE|TO)$/.test(uf)) {
     return NextResponse.json({ erro: 'Parâmetros inválidos. Use sqEleicao, id e uf.' }, { status: 400 });
   }
 
@@ -50,15 +50,19 @@ export async function GET(request: NextRequest) {
     }
 
     if (!response.ok) {
-      // 404 COM cache: o navegador esconde (iniciais) e não martela o servidor
+      // Só uma ausência real pode ser cacheada como foto inexistente.
+      // Bloqueio/indisponibilidade do upstream não significa ausência da foto.
       return new NextResponse(null, {
-        status: 404,
-        headers: { 'Cache-Control': 'public, max-age=600, s-maxage=600' },
+        status: response.status === 404 ? 404 : 502,
+        headers: { 'Cache-Control': response.status === 404 ? 'public, max-age=600, s-maxage=600' : 'no-store' },
       });
     }
 
     const buffer = Buffer.from(await response.arrayBuffer());
     const contentType = response.headers.get('content-type') ?? 'image/jpeg';
+    if (!contentType.toLowerCase().startsWith('image/') || buffer.length === 0) {
+      return new NextResponse(null, { status: 502, headers: { 'Cache-Control': 'no-store' } });
+    }
 
     let saida = buffer;
     let tipoFinal = contentType;
@@ -101,11 +105,11 @@ export async function GET(request: NextRequest) {
         'X-Foto-Melhorada': saida.length !== buffer.length ? '1' : '0',
       },
     });
-  } catch (error) {
-    // Falha de rede/timeout do TSE: 404 cacheado (iniciais + sem martelar)
+  } catch {
+    // Falha de rede/timeout: permite nova tentativa e o fallback oficial no cliente.
     return new NextResponse(null, {
-      status: 404,
-      headers: { 'Cache-Control': 'public, max-age=600, s-maxage=600' },
+      status: 502,
+      headers: { 'Cache-Control': 'no-store' },
     });
   }
 }

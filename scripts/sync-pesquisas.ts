@@ -66,6 +66,7 @@ export function checkPoll(value: unknown, referenceDate: string): CheckedPoll {
   if (poll.round !== 1 && poll.round !== 2) throw new Error(`${id}: turno inválido.`);
   if (office === 'senate' && poll.round !== 1) throw new Error(`${id}: Senado não tem segundo turno.`);
   if (poll.questionType !== 'stimulated') throw new Error(`${id}: apenas intenção de voto estimulada entra nesta base.`);
+  if (poll.voteBasis !== undefined && !['total', 'valid'].includes(String(poll.voteBasis))) throw new Error(`${id}: base de percentuais inválida.`);
   if (office === 'senate' && !SENATE_VOTES.has(String(poll.senateVote))) throw new Error(`${id}: informar como o voto para Senado foi medido.`);
   if (office !== 'senate' && poll.senateVote != null) throw new Error(`${id}: senateVote só se aplica ao Senado.`);
 
@@ -85,6 +86,7 @@ export function checkPoll(value: unknown, referenceDate: string): CheckedPoll {
   }
   if (office !== 'president' && registry.slice(0, 2) !== uf) throw new Error(`${id}: registro não corresponde à UF.`);
   if (office === 'president' && registry.slice(0, 2) !== 'BR') throw new Error(`${id}: pesquisa nacional exige registro BR.`);
+  if (poll.tseRegistrations !== undefined && (!Array.isArray(poll.tseRegistrations) || !poll.tseRegistrations.length || !poll.tseRegistrations.includes(registry) || poll.tseRegistrations.some((code) => typeof code !== 'string' || !new RegExp(`^${uf}-\\d{5}/2026$`).test(code)))) throw new Error(`${id}: registros adicionais inválidos.`);
   const sourceUrl = new URL(text(poll.sourceUrl, `${id}.sourceUrl`));
   if (sourceUrl.protocol !== 'https:' || sourceUrl.username || sourceUrl.password) throw new Error(`${id}: URL HTTPS pública da fonte esperada.`);
 

@@ -7,9 +7,11 @@ export function PollChart({ average, compact = false }: { average: PollAverage; 
   return <div>
     <div className="mb-6 flex flex-wrap items-center gap-2 font-label text-xs font-black uppercase">
       <span className="border-2 border-black bg-black px-3 py-1 text-white">{average.round}º turno · estimulada</span>
-      <span className="border-2 border-black bg-white px-3 py-1">{average.polls.length} {average.polls.length === 1 ? 'pesquisa' : 'pesquisas'} · {average.polls.length} {average.polls.length === 1 ? 'instituto' : 'institutos'}</span>
+      <span className="border-2 border-black bg-white px-3 py-1">{average.polls.length} {average.polls.length === 1 ? 'recorte' : 'recortes'} · {average.polls.length} {average.polls.length === 1 ? 'instituto' : 'institutos'}</span>
       <span className="border-2 border-black bg-white px-3 py-1">Campo até {formatPollDate(average.lastFieldDate)}</span>
     </div>
+    {average.polls.some((poll) => poll.voteBasis === 'valid') && <p className="mb-4 border-2 border-black bg-[#FFB3D9] p-3 font-body text-sm font-bold">Votos válidos, conforme publicados pelo instituto. Brancos, nulos e indecisos não compõem este denominador. Este recorte fica separado dos percentuais sobre o total da amostra.</p>}
+    {average.polls.filter((poll) => poll.tseRegistrations?.length).map((poll) => <p key={poll.id} className="mb-4 border-2 border-black bg-white p-3 font-body text-sm font-bold">{poll.institute}: consolidação de {poll.tseRegistrations!.length} levantamentos registrados. {poll.notes}</p>)}
     <ol className="space-y-4" aria-label={average.polls.length === 1 ? 'Intenção de voto na pesquisa selecionada' : 'Média descritiva de intenção de voto'}>
       {(compact ? average.results.slice(0, 6) : average.results).map((result, index) => <li key={result.id} className="relative">
         <div className="mb-1 flex items-end justify-between gap-3">

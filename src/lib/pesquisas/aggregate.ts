@@ -20,11 +20,13 @@ export function isVerifiedPoll(input: unknown): input is ElectoralPoll {
   const textFields = ['id', 'institute', 'contractor', 'scenarioId', 'scenarioLabel', 'sourceLabel', 'tseRegistration'] as const;
   if (textFields.some((field) => typeof poll[field] !== 'string' || !poll[field]?.trim())) return false;
   if (!['president', 'governor', 'senate'].includes(poll.office ?? '') || poll.questionType !== 'stimulated' || ![1, 2].includes(poll.round ?? 0)) return false;
+  if (poll.voteBasis !== undefined && !['total', 'valid'].includes(poll.voteBasis)) return false;
   if (poll.office === 'president' ? poll.uf !== 'BR' : !POLL_UFS.some(([uf]) => uf === poll.uf)) return false;
   if (poll.office === 'senate' && (poll.round !== 1 || !['two-votes', 'average-two-votes', 'first-vote', 'second-vote', 'one-vote'].includes(poll.senateVote ?? ''))) return false;
   if (!Number.isInteger(poll.sampleSize) || (poll.sampleSize ?? 0) < 1 || typeof poll.marginOfError !== 'number' || !Number.isFinite(poll.marginOfError) || poll.marginOfError < 0 || poll.marginOfError > 100 || typeof poll.confidenceLevel !== 'number' || !Number.isFinite(poll.confidenceLevel) || poll.confidenceLevel <= 0 || poll.confidenceLevel > 100) return false;
   const registry = poll.tseRegistration?.match(/^([A-Z]{2})-\d{5}\/2026$/);
   if (!registry || registry[1] !== (poll.office === 'president' ? 'BR' : poll.uf)) return false;
+  if (poll.tseRegistrations !== undefined && (!Array.isArray(poll.tseRegistrations) || !poll.tseRegistrations.length || !poll.tseRegistrations.includes(poll.tseRegistration!) || poll.tseRegistrations.some((code) => typeof code !== 'string' || !new RegExp(`^${poll.uf}-\\d{5}/2026$`).test(code)))) return false;
   const start = dateNumber(poll.fieldStart ?? ''), end = dateNumber(poll.fieldEnd ?? ''), published = dateNumber(poll.publishedAt ?? '');
   if (![start, end, published].every(Number.isFinite) || start > end || published < end) return false;
   try { if (new URL(poll.sourceUrl ?? '').protocol !== 'https:') return false; } catch { return false; }
@@ -73,7 +75,7 @@ export function aggregatePolls(dataset: PollDataset, asOf: string): PollAverage[
     if (!isVerifiedPoll(poll)) continue;
     const age = (today - dateNumber(poll.fieldEnd)) / DAY;
     if (age < 0 || age > dataset.maxAgeDays || dateNumber(poll.publishedAt) > today) continue;
-    const key = [poll.office, poll.uf, poll.round, poll.scenarioId, poll.senateVote ?? ''].join('|');
+    const key = [poll.office, poll.uf, poll.round, poll.scenarioId, poll.senateVote ?? '', poll.voteBasis ?? 'total'].join('|');
     groups.set(key, [...(groups.get(key) ?? []), poll]);
   }
   const aggregates: PollAverage[] = [];
