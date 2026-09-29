@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
+import HomeElectionHub from '@/components/HomeElectionHub';
 import { PesquisasDestaque } from '@/components/pesquisas/PesquisasDestaque';
 import Highlights from '@/components/Highlights';
 import StatsDashboard from '@/components/StatsDashboard';
@@ -69,11 +70,14 @@ export default function Home() {
       <Header />
 
       <main className="flex-grow">
+        <HomeElectionHub />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4" aria-label="Publicidade">
           <AdLeaderboard />
         </div>
-        <PesquisasDestaque />
-        <Hero />
+        <div className="mx-auto grid max-w-6xl items-start gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2">
+          <Hero />
+          <PesquisasDestaque />
+        </div>
         <CandidatosBand />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col items-center gap-2" aria-label="Publicidade">
           <span className="font-label text-[10px] font-bold uppercase opacity-60">Publicidade</span>

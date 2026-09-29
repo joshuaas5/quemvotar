@@ -18,6 +18,7 @@ export interface ElectoralPoll {
   uf: string;
   round: 1 | 2;
   questionType: 'stimulated';
+  voteBasis?: 'total' | 'valid';
   /** Same choices, wording, vote convention and electorate must share this key. */
   scenarioId: string;
   scenarioLabel: string;
@@ -29,6 +30,10 @@ export interface ElectoralPoll {
   marginOfError: number;
   confidenceLevel: number;
   tseRegistration: string;
+  /** All registrations when the source consolidates multiple registered studies. */
+  tseRegistrations?: string[];
+  notes?: string;
+  marginOfErrorApproximate?: boolean;
   sourceUrl: string;
   sourceLabel: string;
   results: PollResult[];

@@ -19,6 +19,14 @@ function dataset(polls: ElectoralPoll[]): PollDataset {
 }
 
 describe('electoral polling aggregation', () => {
+  it('keeps published valid-vote percentages separate from total-sample percentages', () => {
+    expect(aggregatePolls(dataset([poll(), poll({ id: 'valid', institute: 'B', voteBasis: 'valid' })]), '2026-09-29')).toHaveLength(2);
+  });
+  it('requires every registration in a consolidated study to match the electorate', () => {
+    expect(isVerifiedPoll(poll({ tseRegistrations: ['BR-12345/2026', 'BR-54321/2026'] }))).toBe(true);
+    expect(isVerifiedPoll(poll({ tseRegistrations: ['BR-12345/2026', 'SP-54321/2026'] }))).toBe(false);
+  });
+
   it('gives institutes equal weight rather than weighting by sample size', () => {
     const a = poll();
     const b = poll({ id: 'b', institute: 'Instituto B', sampleSize: 5000, results: [{ id: 'a', name: 'Candidato A', percent: 60, kind: 'candidate' }, { id: 'b', name: 'Candidato B', percent: 20, kind: 'candidate' }] });

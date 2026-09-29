@@ -1,25 +1,18 @@
 'use client';
 
 import React, { useState } from 'react';
-import { fotoProxiUrl } from '@/lib/candidatos/urls';
+import { fotoProxiUrl, fotoUrlCandidato } from '@/lib/candidatos/urls';
 import { iniciais } from '@/lib/candidatos/ui';
 
 /**
  * Foto do candidato com fallback em cascata:
  *   1. fotoAlta (Câmara/Senado em alta resolução, quando disponível)
  *   2. proxy da foto oficial do TSE
- *   3. iniciais do nome
+ *   3. foto oficial diretamente do TSE, se o proxy estiver indisponível
+ *   4. iniciais do nome
  * Nunca quebra a página se a foto não existir.
  */
-export function FotoCandidato({
-  sqEleicao,
-  id,
-  uf,
-  nome,
-  fotoAlta = null,
-  className = '',
-  iniciaisClassName = '',
-}: {
+interface FotoCandidatoProps {
   sqEleicao: number;
   id: number;
   uf: string;
@@ -27,12 +20,32 @@ export function FotoCandidato({
   fotoAlta?: string | null;
   className?: string;
   iniciaisClassName?: string;
-}) {
-  const [usarAlta, setUsarAlta] = useState(Boolean(fotoAlta));
-  const [usarTse, setUsarTse] = useState(!fotoAlta);
+}
+
+export function FotoCandidato(props: FotoCandidatoProps) {
+  // A troca de candidato deve reiniciar a cascata, mesmo quando React reutiliza
+  // a mesma posição da lista depois de uma busca ou alteração dos filtros.
+  return <FotoComFallback key={`${props.sqEleicao}:${props.id}:${props.uf}:${props.fotoAlta ?? ''}`} {...props} />;
+}
+
+function FotoComFallback({
+  sqEleicao,
+  id,
+  uf,
+  nome,
+  fotoAlta = null,
+  className = '',
+  iniciaisClassName = '',
+}: FotoCandidatoProps) {
+  const sources = [...new Set([
+    fotoAlta,
+    fotoProxiUrl(sqEleicao, id, uf),
+    fotoUrlCandidato(sqEleicao, id, uf),
+  ].filter((source): source is string => Boolean(source)))];
+  const [sourceIndex, setSourceIndex] = useState(0);
 
   // Sem nenhuma fonte utilizável → iniciais
-  if (!usarAlta && !usarTse) {
+  if (sourceIndex >= sources.length) {
     return (
       <div
         className={`w-full h-full flex items-center justify-center bg-white ${
@@ -44,7 +57,7 @@ export function FotoCandidato({
     );
   }
 
-  const src = usarAlta && fotoAlta ? fotoAlta : fotoProxiUrl(sqEleicao, id, uf);
+  const src = sources[sourceIndex];
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
@@ -53,16 +66,9 @@ export function FotoCandidato({
       alt={`Foto oficial de ${nome}`}
       className={`w-full h-full object-cover object-top ${className}`}
       loading="lazy"
-      onError={() => {
-        // Foto em alta falhou → tenta a foto do TSE
-        if (usarAlta) {
-          setUsarAlta(false);
-          setUsarTse(true);
-        } else {
-          // Foto do TSE falhou → iniciais
-          setUsarTse(false);
-        }
-      }}
+      decoding="async"
+      referrerPolicy="no-referrer"
+      onError={() => setSourceIndex((current) => current + 1)}
     />
   );
 }

@@ -14,11 +14,16 @@ export function PollsExplorer({ dataset, asOf, initialOffice = 'president', init
   const [round, setRound] = useState<1 | 2>(1);
   const [scenario, setScenario] = useState('');
   const [shareStatus, setShareStatus] = useState('');
+  const [institute, setInstitute] = useState('');
+  const archive = dataset.polls.filter((poll) => poll.office === office && poll.uf === (office === 'president' ? 'BR' : uf) && poll.round === round && poll.publishedAt <= asOf).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+  const institutes = [...new Set(archive.map((poll) => poll.institute))].sort();
+  const history = archive.filter((poll) => !institute || poll.institute === institute);
+  const registrations = new Set(dataset.polls.flatMap((poll) => poll.tseRegistrations ?? [poll.tseRegistration])).size;
   const groups = useMemo(() => aggregatePolls(dataset, asOf), [dataset, asOf]);
   const visible = groups.filter((group) => group.office === office && group.uf === (office === 'president' ? 'BR' : uf) && group.round === round);
   const selected = visible.find((group) => group.id === scenario) ?? visible[0];
   const selectedName = office === 'president' ? 'Brasil' : POLL_UFS.find(([code]) => code === uf)?.[1];
-  const hasSecondRound = groups.some((group) => group.office === office && group.uf === (office === 'president' ? 'BR' : uf) && group.round === 2);
+  const hasSecondRound = dataset.polls.some((poll) => poll.office === office && poll.uf === (office === 'president' ? 'BR' : uf) && poll.round === 2 && poll.publishedAt <= asOf);
   const statesWithPolls = new Set(groups.filter((group) => group.office !== 'president').map((group) => group.uf));
   const pollCount = new Set(groups.flatMap((group) => group.polls.map((poll) => poll.id))).size;
 
@@ -37,10 +42,10 @@ export function PollsExplorer({ dataset, asOf, initialOffice = 'president', init
   return <div className="space-y-7">
     <section className="border-4 border-black bg-[#FFD709] p-4 shadow-[6px_6px_0_0_#000] sm:p-6" aria-label="Filtros de pesquisas eleitorais">
       <div className="grid gap-3 sm:grid-cols-3" role="group" aria-label="Cargo">
-        {(Object.keys(POLL_OFFICES) as PollOffice[]).map((value) => <button type="button" key={value} onClick={() => { setOffice(value); setRound(1); setScenario(''); }} aria-pressed={office === value} className={`cursor-pointer border-4 border-black px-4 py-4 text-left font-headline text-xl font-black uppercase transition ${office === value ? 'bg-black text-white shadow-[4px_4px_0_0_#FF4D8D]' : 'bg-white text-black hover:bg-[#9BF6FF]'}`}>{POLL_OFFICES[value]}<span className="mt-1 block font-body text-xs font-semibold normal-case">{value === 'president' ? 'A corrida nacional' : value === 'governor' ? 'O governo do seu estado' : 'Duas vagas por estado'}</span></button>)}
+        {(Object.keys(POLL_OFFICES) as PollOffice[]).map((value) => <button type="button" key={value} onClick={() => { setOffice(value); setRound(1); setScenario(''); setInstitute(''); }} aria-pressed={office === value} className={`cursor-pointer border-4 border-black px-4 py-4 text-left font-headline text-xl font-black uppercase transition ${office === value ? 'bg-black text-white shadow-[4px_4px_0_0_#FF4D8D]' : 'bg-white text-black hover:bg-[#9BF6FF]'}`}>{POLL_OFFICES[value]}<span className="mt-1 block font-body text-xs font-semibold normal-case">{value === 'president' ? 'A corrida nacional' : value === 'governor' ? 'O governo do seu estado' : 'Duas vagas por estado'}</span></button>)}
       </div>
       <div className="mt-5 grid items-end gap-4 sm:grid-cols-[1fr_1fr_auto]">
-        <label className="font-label text-xs font-black uppercase">{office === 'president' ? 'Abrangência' : 'Estado'}<select value={office === 'president' ? 'BR' : uf} disabled={office === 'president'} onChange={(event) => { setUf(event.target.value); setScenario(''); }} className="mt-2 block w-full border-2 border-black bg-white px-3 py-3 font-body text-base font-bold text-black disabled:opacity-80">{office === 'president' ? <option value="BR">Brasil · pesquisa nacional</option> : POLL_UFS.map(([code, name]) => <option value={code} key={code}>{code} · {name}</option>)}</select></label>
+        <label className="font-label text-xs font-black uppercase">{office === 'president' ? 'Abrangência' : 'Estado'}<select value={office === 'president' ? 'BR' : uf} disabled={office === 'president'} onChange={(event) => { setUf(event.target.value); setScenario(''); setInstitute(''); }} className="mt-2 block w-full border-2 border-black bg-white px-3 py-3 font-body text-base font-bold text-black disabled:opacity-80">{office === 'president' ? <option value="BR">Brasil · pesquisa nacional</option> : POLL_UFS.map(([code, name]) => <option value={code} key={code}>{code} · {name}</option>)}</select></label>
         <label className="font-label text-xs font-black uppercase">Turno<select value={round} onChange={(event) => { setRound(Number(event.target.value) as 1 | 2); setScenario(''); }} className="mt-2 block w-full border-2 border-black bg-white px-3 py-3 font-body text-base font-bold"><option value="1">1º turno</option>{hasSecondRound && <option value="2">2º turno · cenários separados</option>}</select></label>
         <button type="button" onClick={share} className="cursor-pointer border-2 border-black bg-[#FF4D8D] px-4 py-3 font-headline font-black uppercase">Compartilhar ↗</button>
       </div>
@@ -58,6 +63,14 @@ export function PollsExplorer({ dataset, asOf, initialOffice = 'president', init
 
     {selected && <PollSources polls={selected.polls} />}
 
+    <section id="historico" className="border-4 border-black bg-[#FFFDF5] p-5 sm:p-7" aria-labelledby="poll-history-title">
+      <h2 id="poll-history-title" className="font-headline text-2xl font-black uppercase">Todas as publicações do acervo</h2>
+      <p className="mt-2 font-body text-sm font-semibold">Veja cada divulgação de {POLL_OFFICES[office].toLocaleLowerCase('pt-BR')} em {selectedName}, incluindo rodadas anteriores e cenários diferentes. Pesquisas fora da janela não entram na média acima.</p>
+      <label className="my-5 block font-label text-xs font-black uppercase">Filtrar por instituto<select value={institutes.includes(institute) ? institute : ''} onChange={(event) => setInstitute(event.target.value)} className="mt-2 block w-full border-2 border-black bg-white px-3 py-3 font-body text-base font-bold"><option value="">Todos os institutos · {archive.length} recortes</option>{institutes.map((name) => <option key={name} value={name}>{name}</option>)}</select></label>
+      <p className="mb-4 font-body text-sm font-bold">{history.length} recortes · {new Set(history.flatMap((poll) => poll.tseRegistrations ?? [poll.tseRegistration])).size} registros de pesquisa</p>
+      {history.length ? <PollSources polls={history} /> : <p className="font-body font-semibold">Ainda não há publicações verificadas neste filtro.</p>}
+    </section>
+
     <section id="metodologia" className="border-4 border-black bg-[#9BF6FF] p-5 sm:p-7" aria-labelledby="poll-method-title">
       <h2 id="poll-method-title" className="font-headline text-2xl font-black uppercase">Como ler estes números</h2>
       <div className="mt-4 grid gap-5 font-body text-sm font-semibold leading-relaxed md:grid-cols-2">
@@ -71,7 +84,8 @@ export function PollsExplorer({ dataset, asOf, initialOffice = 'president', init
 
     <section className="border-2 border-black bg-white p-5" aria-label="Cobertura e atualização">
       <h2 className="font-headline text-xl font-black uppercase">Cobertura e atualização</h2>
-      <p className="mt-2 font-body text-sm font-semibold">{pollCount} {pollCount === 1 ? 'recorte elegível' : 'recortes elegíveis'} · {statesWithPolls.size} UFs com dados estaduais nesta janela · consulta em {formatPollDate(asOf)}.{dataset.updatedAt && ` Base atualizada em ${formatPollDate(dataset.updatedAt.slice(0, 10))}.`}</p>
+      <p className="mt-2 font-body text-sm font-semibold">{registrations} registros no acervo · {pollCount} {pollCount === 1 ? 'recorte elegível' : 'recortes elegíveis'} · {statesWithPolls.size} UFs com dados estaduais nesta janela · consulta em {formatPollDate(asOf)}.{dataset.updatedAt && ` Base atualizada em ${formatPollDate(dataset.updatedAt.slice(0, 10))}.`}</p>
+      <p className="mt-2 font-body text-sm font-bold">Institutos no acervo: {[...new Set(dataset.polls.map((poll) => poll.institute))].sort().join(' · ')}.</p>
       {dataset.coverageNote && <p className="mt-2 font-body text-sm leading-relaxed">{dataset.coverageNote}</p>}
       <p className="mt-2 font-body text-sm leading-relaxed">A publicação de uma pesquisa depende da checagem da fonte, do registro e dos dados exigidos para divulgação. A página mostra as lacunas e não preenche estados ou candidatos com números estimados.</p>
     </section>
