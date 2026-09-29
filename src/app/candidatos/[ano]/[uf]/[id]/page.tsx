@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Footer from '@/components/Footer';
@@ -25,6 +26,39 @@ import ShareButtons from '@/components/ShareButtons';
 
 export const revalidate = 600;
 export const dynamicParams = true;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ ano: string; uf: string; id: string }>;
+}): Promise<Metadata> {
+  const { ano, uf, id } = await params;
+  const canonical = `https://www.quemvotar.com.br/candidatos/${encodeURIComponent(ano)}/${encodeURIComponent(uf.toUpperCase())}/${encodeURIComponent(id)}`;
+  const candidato = await buscarNoSnapshot(uf.toUpperCase(), Number(id));
+
+  if (!candidato) {
+    return {
+      title: 'Candidato nas Eleições 2026',
+      description: 'Consulte o registro de candidatura e confira as fontes oficiais no QuemVotar.',
+      alternates: { canonical },
+    };
+  }
+
+  const title = `${candidato.nomeUrna} — ${candidato.cargo} ${candidato.uf} | Eleições 2026`;
+  const description = `Confira ${candidato.nomeUrna} (${candidato.partido ?? 'sem partido'}), número ${candidato.numero}, situação do registro e dados do TSE no QuemVotar.`;
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      images: ['/og-match-eleitoral.png'],
+    },
+    twitter: { card: 'summary_large_image', title, description, images: ['/og-match-eleitoral.png'] },
+  };
+}
 
 function renderDadosPessoais(candidato: Awaited<ReturnType<typeof normalizarCandidatoDetalhe>>) {
   const detalhes = [
