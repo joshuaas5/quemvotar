@@ -1,22 +1,21 @@
 import React from 'react';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, expect, it, vi } from 'vitest';
-import { MinhaUrnaProvider } from './MinhaUrnaProvider';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { cleanup, render, screen } from '@testing-library/react';
 import { MinhaUrnaView } from './MinhaUrnaView';
-import { MINHA_URNA_KEY } from '@/lib/candidatos/minha-urna';
-
-afterEach(() => { cleanup(); window.localStorage.clear(); vi.unstubAllGlobals(); });
-
-it('escolher estado e tocar no candidato preenche a cola e permite remover sem abrir perfil', async () => {
-  window.localStorage.clear();
-  const candidate = { id: 123, nomeUrna: 'JOÃO SILVA', numero: 1234, partido: 'PL', uf: 'SC', cargoCodigo: 6, cargo: 'Deputado Federal' };
-  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ candidatos: [candidate] }) }));
-  render(<MinhaUrnaProvider><MinhaUrnaView /></MinhaUrnaProvider>);
-  fireEvent.change(screen.getByRole('combobox', { name: /Estado onde você vota/ }), { target: { value: 'SC' } });
-  fireEvent.click(await screen.findByRole('button', { name: /JOÃO SILVA/ }));
-  expect(JSON.parse(window.localStorage.getItem(MINHA_URNA_KEY)!)[0]).toMatchObject({ id: 123, uf: 'SC', cargoCodigo: 6 });
-  expect(screen.getAllByRole('status').some((element) => element.textContent?.includes('JOÃO SILVA adicionado'))).toBe(true);
-  expect(screen.queryByText('Toque no nome para adicionar à cola')).toBeNull();
-  fireEvent.click(screen.getByRole('button', { name: 'Remover' }));
-  expect(JSON.parse(window.localStorage.getItem(MINHA_URNA_KEY)!)).toEqual([]);
+const items = [{ id: 10, nomeUrna: 'Escolha privada', numero: 12345, partido: 'ABC', cargoCodigo: 6, cargo: 'Deputado Federal', uf: 'DF', eixo: null, base: 'partido', baseLabel: 'Partido' }];
+vi.mock('./MinhaUrnaProvider', () => ({ useMinhaUrna: () => ({ items, remover: vi.fn(), limpar: vi.fn() }) }));
+afterEach(cleanup);
+describe('cola e convite', () => {
+  it('mostra seis posições na ordem da urna com o cargo distrital', () => {
+    render(<MinhaUrnaView />);
+    expect(screen.getAllByRole('article')).toHaveLength(6);
+    expect(screen.getAllByRole('heading', { level: 3 }).map((e) => e.textContent)).toEqual(['Deputado Federal', 'Deputado Distrital', 'Senador · 1º voto', 'Senador · 2º voto', 'Governador', 'Presidente']);
+  });
+  it('compartilha a ferramenta sem incluir escolhas privadas no convite', () => {
+    render(<MinhaUrnaView />);
+    const url = screen.getByRole('link', { name: 'Convidar pelo WhatsApp' }).getAttribute('href')!;
+    expect(decodeURIComponent(url)).toContain('/minha-urna?utm_source=compartilhamento');
+    expect(decodeURIComponent(url)).not.toContain('Escolha privada');
+    expect(screen.getByRole('button', { name: 'Baixar minha cola' })).toBeTruthy();
+  });
 });
