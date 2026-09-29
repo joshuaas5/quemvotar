@@ -1,22 +1,22 @@
 import Link from 'next/link';
 
-const ENTRY_POINTS = [
-  { href: '/minha-urna', title: 'Montar colinha', action: 'Minha cola', color: '#9BF6FF', eyebrow: 'Prepare seu voto', description: 'Guarde os números na ordem da urna. Baixe ou imprima sua cola eleitoral.' },
-  { href: '/candidatos', title: 'Candidatos e Match', action: 'Ver candidatos', color: '#FF4D8D', eyebrow: 'Descubra e compare', description: 'Conheça os candidatos e descubra sua afinidade com 10 perguntas.' },
-  { href: '/pesquisas', title: 'Pesquisas eleitorais', action: 'Ver pesquisas', color: '#FFD709', eyebrow: 'Acompanhe a corrida', description: 'Presidente, governo e Senado. Compare levantamentos e fontes por estado.' },
+const OPTIONS = [
+  { href: '/minha-urna', title: 'Montar minha colinha', description: 'Os números certos, na ordem da urna.', color: '#9BF6FF', icon: 'M8 3h8v4H8z M6 5H4v16h16V5h-2 M8 12l2 2 5-5 M8 18h8' },
+  { href: '/candidatos', title: 'Conhecer os candidatos', description: 'Busque, compare e descubra seu Match.', color: '#FFB3D9', icon: 'M16 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0 M4 21v-2a8 8 0 0 1 16 0v2' },
+  { href: '/pesquisas', title: 'Acompanhar as pesquisas', description: 'Presidente, governo e Senado do seu estado.', color: '#FFD709', icon: 'M4 3v18h17 M8 17v-5 M13 17V8 M18 17V4' },
 ];
 
-/** Three equal entry points remain immediately visible together on mobile. */
 export default function HomeElectionHub() {
-  return <section className="qv-grid-bg px-4 py-6 sm:px-6 sm:py-8" aria-labelledby="election-hub-title">
+  return <section className="bg-[#FFFDF5] px-4 pb-6 pt-7 sm:px-6 sm:py-10" aria-labelledby="election-hub-title">
     <div className="mx-auto max-w-6xl">
-      <p className="font-label text-xs font-black uppercase">Eleições 2026 · grátis e sem cadastro</p>
-      <h1 id="election-hub-title" className="mt-2 font-headline text-3xl font-black uppercase leading-tight tracking-tight sm:text-5xl">Seu voto. A corrida. Tudo aqui.</h1>
-      <p className="mt-3 font-body text-sm font-semibold sm:text-base">Por onde você quer começar?</p>
-      <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-5">
-        {ENTRY_POINTS.map(entry => <Link key={entry.href} href={entry.href} style={{ backgroundColor: entry.color }} className="flex min-w-0 flex-col justify-between border-4 border-black p-2 text-black shadow-[3px_3px_0_0_#000] transition hover:-translate-y-1 sm:p-5 sm:shadow-[4px_4px_0_0_#000]">
-          <div><p className="hidden font-label text-xs font-black uppercase sm:block">{entry.eyebrow}</p><h2 className="font-headline text-sm font-black uppercase leading-tight [overflow-wrap:anywhere] sm:mt-2 sm:text-3xl">{entry.title}</h2><p className="mt-3 hidden font-body text-sm font-semibold leading-relaxed sm:block">{entry.description}</p></div>
-          <span className="mt-4 flex min-h-14 items-center justify-between gap-1 border-2 border-black bg-white px-1.5 py-2 font-headline text-[10px] font-black uppercase leading-tight [overflow-wrap:anywhere] sm:mt-5 sm:px-3 sm:py-3 sm:text-base">{entry.action}<span aria-hidden="true">→</span></span>
+      <p className="font-label text-[11px] font-black uppercase tracking-[.15em]">Eleições 2026 · grátis e sem cadastro</p>
+      <h1 id="election-hub-title" className="mt-3 max-w-3xl font-headline text-[clamp(2.25rem,9vw,4.5rem)] font-black leading-[1.02] tracking-tight">Seu voto<br className="sm:hidden" /> começa aqui.</h1>
+      <p className="mt-3 font-body text-sm font-semibold text-black/65 sm:text-lg">Escolha o que você precisa. É simples.</p>
+      <div className="mt-6 grid gap-3 sm:grid-cols-3 sm:gap-5">
+        {OPTIONS.map(option => <Link key={option.href} href={option.href} className="group flex min-w-0 items-center gap-3 rounded-2xl border-2 border-black bg-white p-3.5 shadow-[3px_3px_0_0_#000] transition hover:-translate-y-1 focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-black sm:flex-col sm:items-start sm:gap-5 sm:p-6">
+          <span style={{ backgroundColor: option.color }} className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border-2 border-black sm:h-16 sm:w-16"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-7 w-7 sm:h-9 sm:w-9" aria-hidden="true"><path d={option.icon} /></svg></span>
+          <span className="min-w-0 flex-1"><span className="block font-headline text-lg font-black leading-tight sm:text-2xl">{option.title}</span><span className="mt-1 block font-body text-xs font-medium leading-relaxed text-black/65 sm:mt-3 sm:text-sm">{option.description}</span></span>
+          <span className="shrink-0 font-headline text-2xl font-black sm:self-end" aria-hidden="true">↗</span>
         </Link>)}
       </div>
     </div>
