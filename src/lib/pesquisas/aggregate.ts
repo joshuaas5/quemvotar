@@ -93,7 +93,7 @@ export function aggregatePolls(dataset: PollDataset, asOf: string): PollAverage[
     for (const [candidateId, candidate] of candidates) {
       const values = polls.map((poll) => poll.results.find((result) => result.id === candidateId && result.kind === 'candidate'));
       if (values.some((result) => !result)) { excludedCandidates.push(candidate.name); continue; }
-      results.push({ ...candidate, percent: values.reduce((sum, result) => sum + result!.percent, 0) / values.length });
+      results.push({ ...candidate, percent: Number((values.reduce((sum, result) => sum + result!.percent, 0) / values.length).toFixed(6)) });
     }
     results.sort((a, b) => b.percent - a.percent || a.name.localeCompare(b.name, 'pt-BR'));
     const first = polls[0];

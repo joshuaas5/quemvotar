@@ -8,10 +8,10 @@ import { POLL_OFFICES, POLL_UFS } from '@/lib/pesquisas/types';
 import { PollChart } from './PollChart';
 import { PollSources } from './PollSources';
 
-export function PollsExplorer({ dataset, asOf, initialOffice = 'president', initialUf = 'SP' }: { dataset: PollDataset; asOf: string; initialOffice?: PollOffice; initialUf?: string }) {
+export function PollsExplorer({ dataset, asOf, initialOffice = 'president', initialUf = 'SP', initialRound = 1 }: { dataset: PollDataset; asOf: string; initialOffice?: PollOffice; initialUf?: string; initialRound?: 1 | 2 }) {
   const [office, setOffice] = useState<PollOffice>(initialOffice);
   const [uf, setUf] = useState(initialUf);
-  const [round, setRound] = useState<1 | 2>(1);
+  const [round, setRound] = useState<1 | 2>(initialRound);
   const [scenario, setScenario] = useState('');
   const [shareStatus, setShareStatus] = useState('');
   const [institute, setInstitute] = useState('');
@@ -30,6 +30,7 @@ export function PollsExplorer({ dataset, asOf, initialOffice = 'president', init
   async function share() {
     const url = new URL('/pesquisas', window.location.origin);
     url.searchParams.set('cargo', office);
+    url.searchParams.set('turno', String(round));
     if (office !== 'president') url.searchParams.set('uf', uf);
     url.searchParams.set('utm_source', 'compartilhamento');
     const title = `Pesquisas 2026: ${POLL_OFFICES[office]} · ${selectedName}`;

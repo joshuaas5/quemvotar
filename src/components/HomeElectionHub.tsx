@@ -15,8 +15,8 @@ export default function HomeElectionHub() {
       <p className="mt-3 font-body text-sm font-semibold sm:text-base">Por onde você quer começar?</p>
       <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-5">
         {ENTRY_POINTS.map(entry => <Link key={entry.href} href={entry.href} style={{ backgroundColor: entry.color }} className="flex min-w-0 flex-col justify-between border-4 border-black p-2 text-black shadow-[3px_3px_0_0_#000] transition hover:-translate-y-1 sm:p-5 sm:shadow-[4px_4px_0_0_#000]">
-          <div><p className="hidden font-label text-xs font-black uppercase sm:block">{entry.eyebrow}</p><h2 className="font-headline text-base font-black uppercase leading-tight sm:mt-2 sm:text-3xl">{entry.title}</h2><p className="mt-3 hidden font-body text-sm font-semibold leading-relaxed sm:block">{entry.description}</p></div>
-          <span className="mt-4 flex min-h-14 items-center justify-between gap-1 border-2 border-black bg-white px-1.5 py-2 font-headline text-[10px] font-black uppercase leading-tight sm:mt-5 sm:px-3 sm:py-3 sm:text-base">{entry.action}<span aria-hidden="true">→</span></span>
+          <div><p className="hidden font-label text-xs font-black uppercase sm:block">{entry.eyebrow}</p><h2 className="font-headline text-sm font-black uppercase leading-tight [overflow-wrap:anywhere] sm:mt-2 sm:text-3xl">{entry.title}</h2><p className="mt-3 hidden font-body text-sm font-semibold leading-relaxed sm:block">{entry.description}</p></div>
+          <span className="mt-4 flex min-h-14 items-center justify-between gap-1 border-2 border-black bg-white px-1.5 py-2 font-headline text-[10px] font-black uppercase leading-tight [overflow-wrap:anywhere] sm:mt-5 sm:px-3 sm:py-3 sm:text-base">{entry.action}<span aria-hidden="true">→</span></span>
         </Link>)}
       </div>
     </div>
