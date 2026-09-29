@@ -21,6 +21,7 @@ import { AvisoFonteTse } from '@/components/candidatos/AvisoFonteTse';
 import { getFotoAltaParlamentar } from '@/lib/candidatos/foto-alta';
 import { saneUrl } from '@/lib/utils/safe-url';
 import { AdLeaderboard, AdRectangle300x250 } from '@/components/ads/Adsterra';
+import ShareButtons from '@/components/ShareButtons';
 
 export const revalidate = 600;
 export const dynamicParams = true;
@@ -566,6 +567,7 @@ function renderPerfilCompletoSnap(
             </div>
           </section>
 
+          <ShareButtons title={`Confira os dados de ${candidato.nomeUrna} no QuemVotar`} />
           {renderPosicionamento(candidato)}
           <div className="flex flex-col items-center gap-2" aria-label="Publicidade">
             <span className="font-label text-[10px] font-bold uppercase opacity-60">Publicidade</span>
@@ -687,6 +689,7 @@ export default async function CandidatoDetalhePage({
               </div>
             </section>
 
+            <ShareButtons title={`Confira os dados de ${liteSnap.nomeUrna} no QuemVotar`} />
             <div className="bg-amber-50 border-4 border-black p-4 md:p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               <p className="font-headline font-black uppercase text-xs mb-1">⚠️ Dados básicos exibidos</p>
               <p className="font-body font-medium text-xs md:text-sm">
@@ -830,6 +833,7 @@ export default async function CandidatoDetalhePage({
             </div>
           </section>
 
+          <ShareButtons title={`Confira os dados de ${candidato.nomeUrna} no QuemVotar`} />
           <Suspense fallback={<SectionSkeleton />}>
             {renderPosicionamento(candidato)}
           </Suspense>
