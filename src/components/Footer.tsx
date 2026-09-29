@@ -1,14 +1,11 @@
 import Link from 'next/link';
 import Icon from './Icon';
 import { CookieSettingsButton } from './ConsentManager';
-import { ADSTERRA_SMARTLINK_URL, AdLeaderboard } from './ads/Adsterra';
+import { ADSTERRA_SMARTLINK_URL } from './ads/Adsterra';
 
 export default function Footer() {
   return (
     <>
-      <div className="w-full px-4 py-6 bg-[#e0e3e4] border-t-4 border-black">
-        <AdLeaderboard />
-      </div>
       <footer className="w-full py-12 px-6 flex flex-col md:flex-row justify-between items-center gap-8 bg-[#e0e3e4] border-t-4 border-black">
       <div className="flex flex-col items-center md:items-start gap-4">
         <div className="text-lg font-black text-black font-headline uppercase">QUEM VOTAR.</div>
