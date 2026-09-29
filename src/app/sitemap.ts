@@ -8,14 +8,17 @@ import { getAllPerfisEditorial } from '@/lib/perfis-editorial-utils';
 export const revalidate = 86400;
 
 const editorialLastModified = new Date('2026-06-02');
-const eleicao2026LastModified = new Date('2026-08-19');
+const eleicao2026LastModified = new Date('2026-09-29');
 
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.quemvotar.com.br';
 
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: `${baseUrl}/`, lastModified: editorialLastModified, changeFrequency: 'weekly', priority: 1 },
+    { url: `${baseUrl}/`, lastModified: eleicao2026LastModified, changeFrequency: 'weekly', priority: 1 },
+    { url: `${baseUrl}/pesquisas`, lastModified: eleicao2026LastModified, changeFrequency: 'daily', priority: 0.95 },
+    { url: `${baseUrl}/minha-urna`, lastModified: eleicao2026LastModified, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${baseUrl}/resultados`, lastModified: eleicao2026LastModified, changeFrequency: 'hourly', priority: 0.9 },
     // Eleições 2026 (prioridade máxima — eleição em 04/10/2026)
     { url: `${baseUrl}/candidatos`, lastModified: eleicao2026LastModified, changeFrequency: 'hourly', priority: 0.95 },
     { url: `${baseUrl}/match/candidatos`, lastModified: eleicao2026LastModified, changeFrequency: 'daily', priority: 0.9 },

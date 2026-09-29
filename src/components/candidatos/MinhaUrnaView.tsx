@@ -1,185 +1,82 @@
 'use client';
-
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { useMinhaUrna } from '@/components/candidatos/MinhaUrnaProvider';
-import { FotoCandidato } from '@/components/candidatos/FotoCandidato';
-import {
-  CARGOS_URNA,
-  faltamNaUrna,
-  votosPorCargo,
-  votosPreenchidos,
-} from '@/lib/candidatos/minha-urna';
-import { EIXO_TEXTO } from '@/lib/candidatos/ui';
+import { useMinhaUrna } from './MinhaUrnaProvider';
+import { cargosDaUrna, faltamNaUrna, ufDaUrna, votosPorCargo } from '@/lib/candidatos/minha-urna';
+import { UF_LISTA } from '@/lib/candidatos/ufs';
+import { baixarCartao, compartilharCartao, criarCartao, type ShareCard } from '@/lib/sharing/cards';
+import { sharingEvent } from '@/lib/sharing/events';
+import { ShareTool } from '@/components/sharing/ShareTool';
 
 export function MinhaUrnaView() {
   const { items, remover, limpar } = useMinhaUrna();
-  const [copiado, setCopiado] = useState(false);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  const faltando = faltamNaUrna(items);
-
-  const textoCompartilhar = [
-    '🗳️ Minha Urna — QuemVotar 2026',
-    ...items
-      .sort((a, b) => a.cargoCodigo - b.cargoCodigo)
-      .map((i) => `• ${i.cargo}: ${i.nomeUrna} (${i.partido ?? '?'}) — Nº ${i.numero}`),
-    faltando.length > 0
-      ? `\nFaltando: ${faltando.map((c) => c.rotulo).join(', ')}`
-      : '\nUrna completa! ✅',
-    '\nCompare ideias. Vote com informação.',
-    'https://www.quemvotar.com.br/minha-urna',
-  ].join('\n');
-
-  const compartilhar = async () => {
-    const navegador = navigator as Navigator & { share?: (d: { title: string; text: string }) => Promise<void> };
-    if (navegador.share) {
-      try {
-        await navegador.share({ title: 'Minha Urna 2026', text: textoCompartilhar });
-        return;
-      } catch {
-        // cancelado
-      }
-    }
-    try {
-      await navigator.clipboard.writeText(textoCompartilhar);
-      setCopiado(true);
-      setTimeout(() => setCopiado(false), 2500);
-    } catch {
-      // sem clipboard
-    }
+  const [estado, setEstado] = useState('BR');
+  const [status, setStatus] = useState('');
+  const [busy, setBusy] = useState(false);
+  const ufSalva = ufDaUrna(items);
+  const uf = ufSalva === 'BR' ? estado : ufSalva;
+  const slots = cargosDaUrna(uf).flatMap((cargo) => Array.from({ length: votosPorCargo(cargo.codigo) }, (_, index) => ({
+    ...cargo, index, escolhido: items.filter((i) => i.cargoCodigo === cargo.codigo)[index],
+  })));
+  const faltando = faltamNaUrna(items, uf).reduce((sum, c) => sum + c.faltando, 0);
+  const card: ShareCard = {
+    title: 'MINHA COLA ELEITORAL', subtitle: `1º turno • 04/10/2026 • ${uf === 'BR' ? 'Escolha seu estado' : uf} • ordem de votação`,
+    rows: slots.map((slot, index) => ({ label: `${index + 1}. ${slot.rotulo}${slot.codigo === 5 ? ` (${slot.index + 1}º voto)` : ''}`,
+      title: slot.escolhido?.nomeUrna ?? 'Ainda não escolhido', detail: slot.escolhido ? `${slot.escolhido.partido ?? 'Sem partido'} • ${slot.escolhido.uf}` : 'Confira antes de votar', value: slot.escolhido ? String(slot.escolhido.numero) : '—' })),
+    notes: ['Escolhas pessoais. Confira os números e o registro no TSE.', 'Leve a cola em papel. Celular não pode ser usado na cabine.'], path: '/minha-urna',
   };
-
-  return (
-    <div className="space-y-8">
+  const image = async (share: boolean) => {
+    setBusy(true); setStatus('');
+    try {
+      const blob = await criarCartao(card);
+      if (share) {
+        const result = await compartilharCartao(blob, 'minha-cola-eleitoral-2026.png', 'Minha cola eleitoral 2026');
+        if (result !== 'cancelled') sharingEvent('cola_image_share');
+        setStatus(result === 'downloaded' ? 'Imagem baixada. Você pode anexá-la onde quiser.' : result === 'shared' ? 'Imagem compartilhada.' : '');
+      } else { baixarCartao(blob, 'minha-cola-eleitoral-2026.png'); sharingEvent('cola_download'); setStatus('Cola baixada! Imprima para levar à votação.'); }
+    } catch (error) { setStatus(error instanceof Error ? error.message : 'Não foi possível criar a imagem. Tente imprimir.'); }
+    finally { setBusy(false); }
+  };
+  return <div className="space-y-8">
+    <section className="qv-no-print border-4 border-black bg-[#9BF6FF] p-5 space-y-4">
+      <h2 className="font-headline font-black text-2xl uppercase">Sua cola, na ordem da urna</h2>
+      <p className="font-body">São seis escolhas no 1º turno, incluindo <strong>dois senadores diferentes</strong>. A lista fica neste navegador. Você decide se quer mostrar suas escolhas.</p>
+      <label className="block font-body font-bold">Estado onde você vota
+        <select value={uf} disabled={ufSalva !== 'BR'} onChange={(e) => setEstado(e.target.value)} className="block w-full sm:w-auto mt-2 border-2 border-black bg-white p-3">
+          <option value="BR">Selecione seu estado</option>
+          {UF_LISTA.map((u) => <option key={u.sigla} value={u.sigla}>{u.sigla} — {u.nome}</option>)}
+        </select>
+      </label>
+      {ufSalva !== 'BR' && <p className="font-body text-sm">Para mudar de estado, remova as escolhas estaduais da cola.</p>}
+      <p className="font-body font-bold">{faltando === 0 ? 'As seis escolhas estão preenchidas.' : `${items.length} de 6 escolhas preenchidas. Você pode baixar a cola parcial.`}</p>
       <div className="flex flex-wrap gap-3">
-        <button
-          onClick={compartilhar}
-          className="bg-black text-white border-4 border-black px-6 py-3 font-headline font-black uppercase text-sm hover:bg-white hover:text-black transition-colors"
-        >
-          {copiado ? '✓ Copiado!' : '📤 Compartilhar minha urna'}
-        </button>
-        {items.length > 0 ? (
-          <button
-            onClick={() => limpar()}
-            className="border-4 border-black px-6 py-3 font-headline font-black uppercase text-sm hover:bg-red-100"
-          >
-            Limpar tudo
-          </button>
-        ) : null}
+        <button disabled={busy || !items.length} onClick={() => image(false)} className="border-4 border-black bg-black text-white px-5 py-3 font-headline font-black uppercase disabled:opacity-50">{busy ? 'Criando imagem…' : 'Baixar minha cola'}</button>
+        <button onClick={() => { sharingEvent('cola_print'); window.print(); }} className="border-4 border-black bg-white px-5 py-3 font-headline font-black uppercase">Imprimir em papel</button>
+        {items.length > 0 && <button onClick={limpar} className="border-2 border-black bg-white px-3 py-2 font-body font-bold">Limpar escolhas</button>}
       </div>
-
-      {items.length === 0 ? (
-        <section className="bg-white border-4 border-black p-12 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-          <span className="text-6xl block mb-4">🗳️</span>
-          <h2 className="font-headline font-black text-3xl uppercase mb-3">Sua urna está vazia</h2>
-          <p className="font-body font-bold uppercase text-sm opacity-70 mb-6">
-            Escolha seus candidatos no Match ou na vitrine — cada escolha entra na sua urna.
-          </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <Link href="/match/candidatos" className="bg-primary-container border-4 border-black px-6 py-3 font-headline font-black uppercase text-sm hover:bg-primary">
-              Fazer o Match 2026 →
-            </Link>
-            <Link href="/candidatos" className="border-4 border-black px-6 py-3 font-headline font-black uppercase text-sm hover:bg-surface-container-high">
-              Ver todos os candidatos
-            </Link>
-          </div>
-        </section>
-      ) : (
-        <div className="space-y-6">
-          {CARGOS_URNA.map((cargo) => {
-            const votos = votosPorCargo(cargo.codigo);
-            const escolhidos = items.filter((i) => i.cargoCodigo === cargo.codigo);
-            const completo = escolhidos.length >= votos;
-            const temAlgum = escolhidos.length > 0;
-            return (
-              <article key={cargo.codigo} className="bg-white border-4 border-black p-5 sm:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
-                <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
-                  <div>
-                    <p className="font-label font-bold uppercase text-[10px] opacity-60">
-                      {cargo.obrigatorio ? 'Voto obrigatório' : 'Voto'} · {votos} {votos === 1 ? 'escolha' : 'escolhas'}
-                    </p>
-                    <h2 className="font-headline font-black text-2xl sm:text-3xl uppercase">
-                      {cargo.rotulo}
-                      {votos > 1 ? <span className="text-sm align-middle ml-2 bg-primary-container border-2 border-black px-2 py-0.5">elege {votos} em 2026</span> : null}
-                    </h2>
-                  </div>
-                  {completo ? (
-                    <span className="font-headline font-black uppercase text-2xl text-emerald-700">✔ Completo {escolhidos.length}/{votos}</span>
-                  ) : temAlgum ? (
-                    <span className="font-headline font-black uppercase text-sm bg-amber-50 border-2 border-amber-300 text-amber-700 px-3 py-1">
-                      {escolhidos.length}/{votos} escolhidos
-                    </span>
-                  ) : (
-                    <span className="font-headline font-black uppercase text-sm bg-red-50 border-2 border-red-300 text-red-700 px-3 py-1">
-                      Falta escolher
-                    </span>
-                  )}
-                </div>
-
-                {escolhidos.length > 0 ? (
-                  <div className="space-y-3">
-                    {escolhidos.map((escolhido, index) => (
-                      <div key={escolhido.id} className="flex items-center gap-4 border-2 border-black bg-surface-container p-4 flex-wrap sm:flex-nowrap">
-                        {votos > 1 ? (
-                          <span className="font-headline font-black uppercase text-xs bg-black text-white px-2 py-1 shrink-0">
-                            {index + 1}º voto
-                          </span>
-                        ) : null}
-                        <div className="w-24 h-24 border-2 border-black bg-surface-container-high overflow-hidden shrink-0 flex items-center justify-center">
-                          <FotoCandidato sqEleicao={20322002026} id={escolhido.id} uf={escolhido.uf} nome={escolhido.nomeUrna} fotoAlta={escolhido.fotoAlta ?? null} iniciaisClassName="font-headline font-black text-xl" />
-                        </div>
-                        <div className="min-w-0 flex-1 space-y-1">
-                          <p className="font-headline font-black text-2xl uppercase leading-none">{escolhido.nomeUrna}</p>
-                          <p className="font-body font-bold uppercase text-xs opacity-70">
-                            {escolhido.partido ?? 'Sem partido'} · {escolhido.uf}
-                          </p>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="font-headline font-black uppercase text-lg border-2 border-black bg-white px-3 py-1">Nº {escolhido.numero}</span>
-                            {escolhido.eixo ? (
-                              <span className={`font-label font-bold uppercase text-[10px] ${EIXO_TEXTO[escolhido.eixo as keyof typeof EIXO_TEXTO] ?? ''}`}>
-                                {escolhido.eixo}
-                              </span>
-                            ) : null}
-                          </div>
-                        </div>
-                        <div className="flex gap-2 items-center shrink-0">
-                          <Link
-                            href={`/candidatos/2026/${escolhido.uf}/${escolhido.id}`}
-                            className="font-headline font-black uppercase text-xs border-2 border-black px-3 py-1.5 hover:bg-primary-container"
-                          >
-                            Ver perfil
-                          </Link>
-                          <button
-                            onClick={() => remover(escolhido.id)}
-                            className="font-headline font-black uppercase text-xs border-2 border-black px-3 py-1.5 text-red-700 hover:bg-red-100"
-                          >
-                            Remover
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-
-                {!completo ? (
-                  <div className="border-2 border-dashed border-black p-6 text-center mt-3">
-                    <Link href={`/match/candidatos?cargo=${cargo.codigo}`} className="font-headline font-black uppercase text-sm underline">
-                      Selecione {cargo.rotulo === 'Deputado Estadual' ? 'ou Distrital' : `seu candidato a ${cargo.rotulo.toLowerCase()}`}
-                    </Link>
-                    <p className="font-label font-bold uppercase text-[10px] opacity-60 mt-2">
-                      Dica: use o Match para achar quem combina com você
-                    </p>
-                  </div>
-                ) : null}
-              </article>
-            );
-          })}
+      <p role="status" className="font-body font-bold text-sm">{status}</p>
+      <p className="font-body text-sm"><strong>Na cabine, use papel.</strong> O celular deve ficar fora da cabine. Você também pode votar em branco ou anular; o checklist não exige escolher candidatos.</p>
+    </section>
+    <section className="qv-print-cola border-4 border-black bg-white p-4 sm:p-6 space-y-3">
+      <h2 className="font-headline font-black text-2xl uppercase">Minha cola eleitoral 2026 · {uf}</h2>
+      <p className="font-body text-sm">1º turno · 4 de outubro · siga esta ordem</p>
+      {slots.map((slot, index) => <article key={`${slot.codigo}-${slot.index}`} className="qv-cola-row border-2 border-black p-4 flex gap-4 items-center">
+        <span className="font-headline font-black text-2xl shrink-0">{index + 1}.</span>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-label font-bold uppercase text-xs">{slot.rotulo}{slot.codigo === 5 ? ` · ${slot.index + 1}º voto` : ''}</h3>
+          <p className="font-headline font-black text-lg sm:text-xl break-words">{slot.escolhido?.nomeUrna ?? 'Ainda não escolhido'}</p>
+          {slot.escolhido ? <><p className="font-body text-sm">{slot.escolhido.partido} · {slot.escolhido.uf}</p><div className="qv-no-print mt-2 flex flex-wrap gap-3 text-sm"><Link className="underline" href={`/candidatos/2026/${slot.escolhido.uf}/${slot.escolhido.id}`}>Conferir perfil</Link><button className="underline text-red-700" onClick={() => remover(slot.escolhido!.id)}>Remover</button></div></>
+            : <Link className="qv-no-print underline text-sm" href={`/candidatos?uf=${slot.codigo === 1 ? 'BR' : uf}&cargo=${slot.codigo}`}>Escolher candidato →</Link>}
         </div>
-      )}
-    </div>
-  );
+        <span className="font-headline font-black text-2xl sm:text-4xl shrink-0">{slot.escolhido?.numero ?? '—'}</span>
+      </article>)}
+      <p className="font-body text-xs">Escolhas pessoais · confira números e registro no TSE · quemvotar.com.br/minha-urna</p>
+    </section>
+    <section className="qv-no-print border-4 border-black bg-primary-container p-5 space-y-4">
+      <h2 className="font-headline font-black text-2xl uppercase">Ajude alguém a preparar o voto</h2>
+      <ShareTool path="/minha-urna" text="Já preparou sua cola eleitoral? Aqui dá para escolher os candidatos e imprimir na ordem da urna, com os dois senadores de 2026." />
+      {items.length > 0 && <details><summary className="font-body font-bold cursor-pointer">Quero compartilhar uma imagem das minhas escolhas</summary><p className="font-body text-sm mt-3">Esta imagem mostra os nomes e números que você escolheu. Só envie se quiser revelar essas preferências.</p><button disabled={busy} onClick={() => image(true)} className="mt-3 border-2 border-black bg-white px-4 py-3 font-body font-bold">Compartilhar minhas escolhas em imagem</button></details>}
+    </section>
+    <div className="qv-no-print flex flex-wrap gap-4 font-headline font-black"><Link href={`/match/candidatos?uf=${uf}`} className="underline">Descobrir candidatos no Match →</Link><Link href="/resultados" className="underline">Meu candidato foi eleito? →</Link></div>
+  </div>;
 }

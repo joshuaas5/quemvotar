@@ -6,6 +6,7 @@ import {
   adicionarNaUrna,
   removerDaUrna,
   limparMinhaUrna,
+  ufDaUrna,
   type MinhaUrnaItem,
 } from '@/lib/candidatos/minha-urna';
 
@@ -30,6 +31,11 @@ export function MinhaUrnaProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const adicionar = useCallback((item: Parameters<MinhaUrnaContextValue['adicionar']>[0]) => {
+    const uf = ufDaUrna(carregarMinhaUrna());
+    if (item.cargoCodigo !== 1 && uf !== 'BR' && item.uf !== uf) {
+      window.alert(`Sua cola já tem escolhas de ${uf}. Remova as escolhas desse estado na Minha Urna para montar uma cola de ${item.uf}.`);
+      return;
+    }
     setItems(adicionarNaUrna(item));
   }, []);
 

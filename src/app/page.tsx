@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
+import { PesquisasDestaque } from '@/components/pesquisas/PesquisasDestaque';
 import Highlights from '@/components/Highlights';
 import StatsDashboard from '@/components/StatsDashboard';
 import EditorialGuide from '@/components/EditorialGuide';
@@ -10,10 +11,12 @@ import { AdLeaderboard, AdNative, AdRectangle300x250 } from '@/components/ads/Ad
 import { buildWebSiteSchema } from '@/lib/jsonld';
 
 export const metadata: Metadata = {
-  title: 'Quem votar? Descubra quem combina com seu voto',
+  title: 'Eleições 2026: pesquisas eleitorais, Match e cola eleitoral',
   description:
-    'Fa\u00e7a o Match Eleitoral, compare pol\u00edticos e confira dados p\u00fablicos antes de votar.',
+    'Compare pesquisas eleitorais para presidente, governo e Senado. Faça o Match de candidatos 2026 e imprima sua cola eleitoral grátis.',
   alternates: { canonical: 'https://www.quemvotar.com.br/' },
+  openGraph: { title: 'Eleições 2026: pesquisas, Match e cola eleitoral', description: 'Compare pesquisas de presidente, governo e Senado, descubra seu Match e prepare sua cola.', url: 'https://www.quemvotar.com.br/', images: [{ url: '/pesquisas/opengraph-image', width: 1200, height: 630 }] },
+  twitter: { card: 'summary_large_image', title: 'Eleições 2026: pesquisas, Match e cola eleitoral', images: ['/pesquisas/opengraph-image'] },
 };
 
 export const revalidate = 1800;
@@ -22,8 +25,8 @@ export default function Home() {
   const websiteSchema = buildWebSiteSchema(
     'https://www.quemvotar.com.br',
     'QuemVotar',
-    'Fa\u00e7a o Match Eleitoral, compare pol\u00edticos e confira dados p\u00fablicos antes de votar.',
-    '/busca?q={q}',
+    'Compare pesquisas eleitorais para presidente, governo e Senado. Faça o Match de candidatos 2026 e imprima sua cola eleitoral grátis.',
+    '/candidatos?q={q}',
   );
 
   const faqSchema = {
@@ -43,7 +46,7 @@ export default function Home() {
         name: 'O Match Eleitoral funciona como?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Voc\u00ea responde perguntas sobre temas pol\u00edticos. O resultado mostra parlamentares com maior afinidade, usando votos p\u00fablicos quando localizados e refer\u00eancias partid\u00e1rias nos demais temas.',
+          text: 'Você responde 10 perguntas sobre temas políticos. O Match de candidatos 2026 estima afinidade pelo eixo político, com a base de cada candidato identificada: plano de governo, análise editorial ou posicionamento do partido. Não é recomendação de voto.',
         },
       },
       {
@@ -66,6 +69,7 @@ export default function Home() {
       <Header />
 
       <main className="flex-grow">
+        <PesquisasDestaque />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4" aria-label="Publicidade">
           <AdLeaderboard />
         </div>

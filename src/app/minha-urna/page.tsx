@@ -1,15 +1,12 @@
 import type { Metadata } from 'next';
+import { toolMetadata } from '@/lib/sharing/metadata';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import PageHero from '@/components/PageHero';
 import { MinhaUrnaView } from '@/components/candidatos/MinhaUrnaView';
 
-export const metadata: Metadata = {
-  title: 'Minha Urna 2026',
-  description: 'Sua lista de votos para as Eleições 2026: presidente, governador, senador, deputado federal e estadual.',
-  alternates: { canonical: 'https://www.quemvotar.com.br/minha-urna' },
-};
+export const metadata: Metadata = toolMetadata('Cola eleitoral 2026: monte, baixe e imprima', 'Monte sua cola grátis na ordem da urna: deputado federal, estadual ou distrital, dois senadores, governador e presidente.', '/minha-urna');
 
 export default function MinhaUrnaPage() {
   return (
@@ -22,8 +19,8 @@ export default function MinhaUrnaPage() {
 
           <PageHero
             eyebrow="Eleições Gerais · 04/10/2026"
-            title="Minha Urna"
-            description="Seus votos escolhidos, prontos para o dia da eleição. Um voto por cargo — fica salvo só no seu navegador."
+            title="Minha cola eleitoral"
+            description="Prepare as seis escolhas do 1º turno, baixe uma imagem e imprima para levar à votação. Sua lista fica neste navegador."
             accent="yellow"
             stat={{ value: 'Local', label: 'Nada é publicado; a lista fica apenas no navegador.' }}
           />

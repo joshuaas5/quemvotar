@@ -39,7 +39,7 @@ export function MinhaUrnaBar() {
           href="/minha-urna"
           className="bg-[#ffd709] text-black border-4 border-[#ffd709] px-4 py-2 font-headline font-black uppercase text-xs hover:bg-white hover:border-white transition-colors"
         >
-          Ver minha urna →
+          Baixar minha cola →
         </Link>
       </div>
     </div>
