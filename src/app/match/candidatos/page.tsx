@@ -1,20 +1,20 @@
 import type { Metadata } from 'next';
+import { toolMetadata } from '@/lib/sharing/metadata';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import PageHero from '@/components/PageHero';
 import { MatchCandidatos } from '@/components/match/MatchCandidatos';
 import { MatchTabs } from '@/components/match/MatchTabs';
+import { UF_LISTA } from '@/lib/candidatos/ufs';
 import { AdLeaderboard } from '@/components/ads/Adsterra';
 
-export const metadata: Metadata = {
-  title: 'Match Candidatos 2026',
-  description:
-    'Responda a um quiz rápido e descubra quais candidatos das Eleições 2026 combinam com o seu perfil: presidente, governador, senador e deputados.',
-  alternates: { canonical: 'https://www.quemvotar.com.br/match/candidatos' },
-};
+export const metadata: Metadata = toolMetadata('Match Candidatos 2026', 'Responda 10 perguntas, compare seu perfil com os candidatos e compartilhe seu resultado. Grátis e sem cadastro.', '/match/candidatos');
 
-export default function MatchCandidatosPage() {
+export default async function MatchCandidatosPage({ searchParams }: { searchParams: Promise<{ uf?: string; cargo?: string }> }) {
+  const params = await searchParams;
+  const uf = UF_LISTA.some((u) => u.sigla === params.uf?.toUpperCase()) ? params.uf!.toUpperCase() : 'BR';
+  const cargo = ['1', '3', '5', '6', '7', '8'].includes(params.cargo ?? '') ? params.cargo! : '0';
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -28,14 +28,14 @@ export default function MatchCandidatosPage() {
             title="Match Candidatos 2026"
             description="Descubra quais candidatos das Eleições Gerais de 2026 combinam com o seu perfil político. Candidato ainda não votou — o cruzamento usa plano de governo e posicionamento, com a base sempre declarada."
             accent="yellow"
-            stat={{ value: '19.7 mil', label: 'Candidatos sincronizados do TSE, atualizado a cada hora.' }}
+            stat={{ value: '10', label: 'Perguntas · sem cadastro · resultado calculado no navegador.' }}
           />
 
           <MatchTabs ativo="candidatos" />
 
           <AdLeaderboard />
 
-          <MatchCandidatos />
+          <MatchCandidatos initialUf={uf} initialCargo={cargo} />
         </div>
       </main>
 

@@ -3,11 +3,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { MatchQuiz } from './MatchQuiz';
+import { MatchCandidatosShareCard } from './MatchCandidatosShareCard';
 import { QUESTIONS } from '@/lib/match/questions';
 import type { UserAnswersMap } from '@/lib/match/calculator';
 import {
   calcularEixoUsuario,
-  EIXOS,
   ordenarMatches,
   type CandidatoMatchLite,
   type MatchCandidatoResultado,
@@ -43,10 +43,11 @@ function cargoBadge(cargoCodigo: number): string {
 }
 
 const SECOES_CARGO: Array<{ titulo: string; emoji: string; codigos: number[] }> = [
-  { titulo: 'Executivo', emoji: '🧭', codigos: [1, 3, 4] },
-  { titulo: 'Senador', emoji: '🇧🇷', codigos: [5] },
   { titulo: 'Deputado Federal', emoji: '🟢', codigos: [6] },
   { titulo: 'Deputado Estadual / Distrital', emoji: '🟠', codigos: [7, 8] },
+  { titulo: 'Senador', emoji: '🇧🇷', codigos: [5] },
+  { titulo: 'Governador', emoji: '🧭', codigos: [3] },
+  { titulo: 'Presidente', emoji: '🧭', codigos: [1] },
 ];
 
 const COMPARAR_KEY = 'quemvotar:comparar:v1';
@@ -60,30 +61,22 @@ function carregarComparar(): number[] {
   }
 }
 
-export function MatchCandidatos() {
+export function MatchCandidatos({ initialUf = 'BR', initialCargo = '0' }: { initialUf?: string; initialCargo?: string }) {
   const [answers, setAnswers] = useState<UserAnswersMap>({});
   const [showResults, setShowResults] = useState(false);
-  const [uf, setUf] = useState('BR');
-  const [cargoFiltro, setCargoFiltro] = useState('0');
+  const [uf, setUf] = useState(initialUf);
+  const [cargoFiltro, setCargoFiltro] = useState(initialCargo);
   const [partidoFiltro, setPartidoFiltro] = useState('');
   const [dados, setDados] = useState<CandidatoMatchLite[]>([]);
   const [carregando, setCarregando] = useState(false);
   const [semDados, setSemDados] = useState(false);
   const [verMais, setVerMais] = useState(8);
-  const [comparar, setComparar] = useState<number[]>([]);
+  const [comparar, setComparar] = useState<number[]>(carregarComparar);
   const { items, adicionar, remover, esta } = useMinhaUrna();
-
-  useEffect(() => {
-    setComparar(carregarComparar());
-  }, []);
 
   useEffect(() => {
     if (!showResults) return;
     let ativo = true;
-    setCarregando(true);
-    setSemDados(false);
-    setVerMais(8);
-
     fetch(dadosUrl(`index-${uf}.json`))
       .then((response) => {
         if (!response.ok) throw new Error('sem dados');
@@ -104,6 +97,13 @@ export function MatchCandidatos() {
       ativo = false;
     };
   }, [showResults, uf]);
+
+  const escolherUf = (value: string) => {
+    setUf(value); setPartidoFiltro('');
+    if (showResults) { setCarregando(true); setDados([]); setSemDados(false); setVerMais(8); }
+    if (value === 'BR' && cargoFiltro !== '0') setCargoFiltro('1');
+    if (cargoFiltro === '7' || cargoFiltro === '8') setCargoFiltro(value === 'DF' ? '8' : '7');
+  };
 
   const handleAnswer = (questionId: string, answer: { score: number; weight: number }) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
@@ -158,7 +158,7 @@ export function MatchCandidatos() {
             </label>
             <select
               value={uf}
-              onChange={(e) => setUf(e.target.value)}
+              onChange={(e) => escolherUf(e.target.value)}
               className="w-full border-4 border-black px-4 py-3 font-headline font-bold uppercase bg-white"
             >
               <option value="BR">Brasil (Presidente)</option>
@@ -196,10 +196,10 @@ export function MatchCandidatos() {
         <div className="flex justify-center bg-white border-4 border-black p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
           <div className="text-center w-full">
             <p className="font-label font-bold uppercase tracking-widest text-sm mb-4 opacity-70">
-              Responda todas para o melhor resultado
+              {Object.keys(answers).length < 3 ? 'Responda pelo menos 3 perguntas para continuar' : `${Object.keys(answers).length}/10 respondidas · responda todas para o melhor resultado`}
             </p>
             <button
-              onClick={() => setShowResults(true)}
+              onClick={() => { setCarregando(true); setDados([]); setSemDados(false); setVerMais(8); setShowResults(true); }}
               disabled={Object.keys(answers).length < 3}
               className="bg-black text-white font-headline font-black text-2xl sm:text-3xl uppercase px-8 sm:px-16 py-6 border-4 border-white hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:translate-x-0 disabled:hover:shadow-none transition-all w-full sm:w-auto"
             >
@@ -220,6 +220,7 @@ export function MatchCandidatos() {
             Seu perfil sugere o eixo <strong className="bg-white border-2 border-black px-2">{usuario.label}</strong>.
             Listamos por seção da urna — a base de cada posicionamento está no selo.
           </p>
+          <p className="font-body text-sm mt-3">Afinidade estimada, sem recomendação de voto. Não representa concordância em cada proposta.</p>
           <p className="font-label font-bold uppercase text-[10px] opacity-60 mt-2">
             {dados.length.toLocaleString('pt-BR')} candidatos avaliados em {uf === 'BR' ? 'Brasil' : uf}
           </p>
@@ -257,6 +258,8 @@ export function MatchCandidatos() {
         </div>
       </div>
 
+      {!carregando && !semDados && dados.length > 0 && <MatchCandidatosShareCard perfil={usuario.label} uf={uf} respondidas={Object.keys(answers).length} matches={matches} />}
+
       {/* Filtros */}
       {/* Escolha do cargo (seção da urna) */}
       <div className="bg-white border-4 border-black p-4 md:p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-3">
@@ -268,7 +271,7 @@ export function MatchCandidatos() {
             { codigo: '3', nome: 'Governador' },
             { codigo: '5', nome: 'Senador · elege 2' },
             { codigo: '6', nome: 'Dep. Federal' },
-            { codigo: '7', nome: 'Dep. Estadual' },
+            { codigo: uf === 'DF' ? '8' : '7', nome: uf === 'DF' ? 'Dep. Distrital' : 'Dep. Estadual' },
           ].map((cargo) => (
             <button
               key={cargo.codigo}
@@ -286,7 +289,7 @@ export function MatchCandidatos() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
         <select
           value={uf}
-          onChange={(e) => setUf(e.target.value)}
+          onChange={(e) => escolherUf(e.target.value)}
           className="border-4 border-black px-4 py-3 font-headline font-bold uppercase bg-white"
         >
           <option value="BR">Brasil</option>
@@ -316,11 +319,9 @@ export function MatchCandidatos() {
         <div className="bg-white border-4 border-black p-12 text-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
           <p className="font-headline font-black uppercase text-xl mb-3">Dados ainda não sincronizados</p>
           <p className="font-body font-medium text-sm opacity-70 mb-4">
-            O snapshot de candidatos para {uf} ainda não foi gerado. Rode o sincronizador ou escolha outra UF.
+            Não conseguimos carregar os candidatos de {uf} agora. Tente novamente em instantes ou escolha outro estado.
           </p>
-          <code className="bg-surface-container border-2 border-black px-3 py-2 font-mono text-xs">
-            npx tsx scripts/sync-candidatos.ts --uf {uf}
-          </code>
+          <button onClick={() => setShowResults(false)} className="border-2 border-black bg-primary-container px-4 py-2 font-body font-bold">Voltar às perguntas</button>
         </div>
       ) : (
         SECOES_CARGO.map((secao) => {

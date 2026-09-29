@@ -201,3 +201,13 @@ input[type="text"]:focus, input[type="search"]:focus, textarea:focus, select:foc
   outline: 3px solid #ffd709;
   outline-offset: 0;
 }
+
+@media print {
+  @page { size: A4; margin: 12mm; }
+  body:has(.qv-print-cola) { min-height: 0; margin: 0; background: #fff; }
+  body:has(.qv-print-cola) *:not(:has(.qv-print-cola)):not(.qv-print-cola):not(.qv-print-cola *) { display: none !important; }
+  body:has(.qv-print-cola) :has(.qv-print-cola) { margin: 0 !important; padding: 0 !important; min-height: 0 !important; max-width: none !important; border: 0 !important; box-shadow: none !important; }
+  body:has(.qv-print-cola) .qv-no-print { display: none !important; }
+  .qv-print-cola { position: static; width: 100%; color: #000; background: #fff; box-shadow: none; }
+  .qv-cola-row { break-inside: avoid; }
+}

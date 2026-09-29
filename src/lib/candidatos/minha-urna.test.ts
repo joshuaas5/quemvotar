@@ -48,3 +48,28 @@ describe('regra eleitoral de votos por cargo', () => {
     expect(senador?.faltando).toBe(2);
   });
 });
+
+describe('cola eleitoral com vários cargos', () => {
+  it('preserva as escolhas de outros cargos ao adicionar um novo candidato', () => {
+    adicionarNaUrna(item(10, 1)); adicionarNaUrna(item(11, 3));
+    adicionarNaUrna(item(12, 5)); adicionarNaUrna(item(13, 5));
+    adicionarNaUrna(item(14, 6)); adicionarNaUrna(item(15, 7));
+    expect(carregarMinhaUrna().map((i) => i.id)).toEqual([10, 11, 12, 13, 14, 15]);
+    expect(faltamNaUrna(carregarMinhaUrna())).toEqual([]);
+  });
+  it('não duplica um senador nem mistura estados', () => {
+    adicionarNaUrna(item(20, 5)); adicionarNaUrna(item(20, 5));
+    adicionarNaUrna({ ...item(21, 6), uf: 'SP' });
+    expect(carregarMinhaUrna().map((i) => i.id)).toEqual([20]);
+  });
+  it('conta estadual e distrital no checklist', () => {
+    expect(faltamNaUrna([]).find((c) => c.codigo === 7)?.faltando).toBe(1);
+    const urna = adicionarNaUrna({ ...item(30, 8), uf: 'DF' });
+    expect(faltamNaUrna(urna).some((c) => c.codigo === 7 || c.codigo === 8)).toBe(false);
+    expect(faltamNaUrna(urna).map((c) => c.codigo)).toEqual([6, 5, 3, 1]);
+  });
+  it('descarta dados corrompidos do armazenamento', () => {
+    window.localStorage.setItem('quemvotar:minha-urna:v1', JSON.stringify([null, { id: 'abc' }, { id: 1, numero: 3, nomeUrna: 'Vice', uf: 'BR', cargoCodigo: 2 }]));
+    expect(carregarMinhaUrna()).toEqual([]);
+  });
+});

@@ -2,8 +2,7 @@
  * Minha Urna — checklist pessoal de votos (localStorage, 100%
  * client-side, sem custo de servidor).
  *
- * Regra eleitoral: 1 voto por cargo — Presidente, Governador,
- * Senador, Deputado Federal e Deputado Estadual/Distrital.
+ * Eleições 2026: seis escolhas, incluindo dois senadores.
  * ──────────────────────────────────────────────────────────────── */
 
 export interface MinhaUrnaItem {
@@ -29,6 +28,7 @@ export const VOTOS_POR_CARGO: Record<number, number> = {
   5: 2, // Senador — 2026 elege 2 senadores por estado
   6: 1, // Dep. Federal
   7: 1, // Dep. Estadual
+  8: 1, // Dep. Distrital
 };
 
 export function votosPorCargo(cargoCodigo: number): number {
@@ -36,20 +36,25 @@ export function votosPorCargo(cargoCodigo: number): number {
 }
 
 /** Cargos da eleição geral, na ordem da urna. */
-export const CARGOS_URNA: Array<{ codigo: number; rotulo: string; obrigatorio: boolean }> = [
-  { codigo: 1, rotulo: 'Presidente', obrigatorio: true },
-  { codigo: 3, rotulo: 'Governador', obrigatorio: true },
-  { codigo: 5, rotulo: 'Senador', obrigatorio: true },
-  { codigo: 6, rotulo: 'Deputado Federal', obrigatorio: true },
-  { codigo: 7, rotulo: 'Deputado Estadual', obrigatorio: false },
+export const CARGOS_URNA: Array<{ codigo: number; rotulo: string }> = [
+  { codigo: 6, rotulo: 'Deputado Federal' },
+  { codigo: 7, rotulo: 'Deputado Estadual' },
+  { codigo: 5, rotulo: 'Senador' },
+  { codigo: 3, rotulo: 'Governador' },
+  { codigo: 1, rotulo: 'Presidente' },
 ];
 
-export function cargoObrigatorio(cargoCodigo: number): boolean {
-  return CARGOS_URNA.find((c) => c.codigo === cargoCodigo)?.obrigatorio ?? false;
+export function cargosDaUrna(uf = 'BR') {
+  return CARGOS_URNA.map((c) => c.codigo === 7 && uf === 'DF'
+    ? { codigo: 8, rotulo: 'Deputado Distrital' } : c);
+}
+
+export function ufDaUrna(items: MinhaUrnaItem[]): string {
+  return items.find((i) => i.cargoCodigo !== 1)?.uf ?? 'BR';
 }
 
 export function rotuloCargo(cargoCodigo: number): string {
-  return CARGOS_URNA.find((c) => c.codigo === cargoCodigo)?.rotulo ?? `Cargo ${cargoCodigo}`;
+  return cargoCodigo === 8 ? 'Deputado Distrital' : CARGOS_URNA.find((c) => c.codigo === cargoCodigo)?.rotulo ?? `Cargo ${cargoCodigo}`;
 }
 
 export function carregarMinhaUrna(): MinhaUrnaItem[] {
@@ -58,7 +63,8 @@ export function carregarMinhaUrna(): MinhaUrnaItem[] {
     const bruto = window.localStorage.getItem(MINHA_URNA_KEY);
     if (!bruto) return [];
     const items = JSON.parse(bruto) as MinhaUrnaItem[];
-    return Array.isArray(items) ? items : [];
+    return Array.isArray(items) ? items.filter((i) => i && Number.isSafeInteger(i.id) && Number.isFinite(i.numero)
+      && typeof i.nomeUrna === 'string' && typeof i.uf === 'string' && VOTOS_POR_CARGO[i.cargoCodigo]) : [];
   } catch {
     return [];
   }
@@ -79,6 +85,9 @@ export function adicionarNaUrna(
   item: Omit<MinhaUrnaItem, 'eixo' | 'base' | 'baseLabel'> & { eixo?: string | null; base?: string; baseLabel?: string },
 ): MinhaUrnaItem[] {
   const atual = carregarMinhaUrna();
+  if (atual.some((i) => i.id === item.id) || !VOTOS_POR_CARGO[item.cargoCodigo]) return atual;
+  const uf = ufDaUrna(atual);
+  if (item.cargoCodigo !== 1 && uf !== 'BR' && item.uf !== uf) return atual;
   const jaNoCargo = atual.filter((i) => i.cargoCodigo === item.cargoCodigo);
   const maxVotos = votosPorCargo(item.cargoCodigo);
 
@@ -100,7 +109,7 @@ export function adicionarNaUrna(
     baseLabel: item.baseLabel ?? 'Não avaliado',
     fotoAlta: item.fotoAlta ?? null,
   };
-  const resultado = [...jaNoCargo, novo];
+  const resultado = [...atual, novo];
   salvarMinhaUrna(resultado);
   return resultado;
 }
@@ -125,13 +134,12 @@ export function votosPreenchidos(items: MinhaUrnaItem[], cargoCodigo: number): n
 }
 
 /** Quantos votos faltam por cargo (Senado conta em dobro). */
-export function faltamNaUrna(items: MinhaUrnaItem[]): Array<{ codigo: number; rotulo: string; faltando: number }> {
+export function faltamNaUrna(items: MinhaUrnaItem[], uf = ufDaUrna(items)): Array<{ codigo: number; rotulo: string; faltando: number }> {
   const preenchidos: Record<number, number> = {};
   for (const item of items) {
     preenchidos[item.cargoCodigo] = (preenchidos[item.cargoCodigo] ?? 0) + 1;
   }
-  return CARGOS_URNA.filter((c) => {
-    if (!c.obrigatorio) return false;
+  return cargosDaUrna(uf).filter((c) => {
     const total = votosPorCargo(c.codigo);
     return (preenchidos[c.codigo] ?? 0) < total;
   }).map((c) => ({

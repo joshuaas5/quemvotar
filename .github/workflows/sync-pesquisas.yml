@@ -1,0 +1,94 @@
+name: Pesquisas eleitorais - validar e atualizar
+
+# Atualização editorial: não há API pública verificada de resultados com ficha
+# técnica completa. A data só avança quando um lote real altera a base.
+# Cole uma pesquisa JSON ou um array de pesquisas revisadas em polls_json.
+# O workflow valida o lote e abre um PR; a revisão das fontes antecede o merge.
+on:
+  pull_request:
+    paths:
+      - 'public/dados/pesquisas.json'
+      - 'scripts/sync-pesquisas.ts'
+      - '.github/workflows/sync-pesquisas.yml'
+  push:
+    branches: [main, master]
+    paths:
+      - 'public/dados/pesquisas.json'
+      - 'scripts/sync-pesquisas.ts'
+      - '.github/workflows/sync-pesquisas.yml'
+  workflow_dispatch:
+    inputs:
+      polls_json:
+        description: 'Lote JSON conferido na fonte, com registro TSE e ficha técnica (vazio: só validar)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pesquisas-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Testar regras de publicação
+        run: node --import tsx scripts/sync-pesquisas.ts --self-test
+      - name: Conferir ficha técnica e integridade da base
+        run: node --import tsx scripts/sync-pesquisas.ts --check
+
+  import:
+    if: github.event_name == 'workflow_dispatch' && inputs.polls_json != ''
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Receber lote editorial
+        env:
+          POLLS_IMPORT_JSON: ${{ inputs.polls_json }}
+        run: |
+          node -e 'const fs = require("node:fs"); const data = JSON.parse(process.env.POLLS_IMPORT_JSON); fs.writeFileSync("/tmp/pesquisas-import.json", JSON.stringify(data));'
+      - name: Validar e incorporar pesquisas
+        run: node --import tsx scripts/sync-pesquisas.ts --input /tmp/pesquisas-import.json
+      - name: Abrir PR para revisão das fontes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if git diff --quiet -- public/dados/pesquisas.json; then
+            echo 'Lote sem mudanças. A data editorial foi preservada.'
+            exit 0
+          fi
+          branch="dados/pesquisas-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git switch -c "$branch"
+          git config user.name 'quemvotar-bot[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/dados/pesquisas.json
+          git commit -m 'chore(dados): atualizar pesquisas eleitorais revisadas'
+          git push origin "$branch"
+          cat > /tmp/pesquisas-pr.md <<'EOF'
+          Atualiza o acervo de pesquisas a partir do lote editorial fornecido nesta execução. Todas as pesquisas passaram pelo validador de ficha técnica, datas, modalidade, percentuais e registro do PesqEle.
+
+          Antes do merge, conferir os números e metadados nos links `sourceUrl` do diff. A validação estrutural não substitui a revisão da fonte publicada. A média do site é recalculada a partir do acervo; este PR não altera a metodologia.
+          EOF
+          gh pr create --base "$DEFAULT_BRANCH" --head "$branch" --title 'Atualizar pesquisas eleitorais revisadas' --body-file /tmp/pesquisas-pr.md
