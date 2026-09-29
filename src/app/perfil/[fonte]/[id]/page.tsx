@@ -17,7 +17,7 @@ import { buildProfileResearchBrief } from '@/lib/seo/profile-brief';
 import { saneUrl } from '@/lib/utils/safe-url';
 import { getPerfilEditorial } from '@/lib/perfis-editorial-utils';
 import { SITE } from '@/lib/site-config';
-import { AdLeaderboard } from '@/components/ads/Adsterra';
+import { AdLeaderboard, AdRectangle300x250 } from '@/components/ads/Adsterra';
 
 export const revalidate = 1800;
 
@@ -964,6 +964,11 @@ export default async function PerfilPage({
               </div>
             </div>
           </section>
+
+          <div className="flex flex-col items-center gap-2" aria-label="Publicidade">
+            <span className="font-label text-[10px] font-bold uppercase opacity-60">Publicidade</span>
+            <AdRectangle300x250 />
+          </div>
 
           {editorial ? (
             <section className="bg-white border-4 border-black p-5 sm:p-8 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] sm:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-body">
