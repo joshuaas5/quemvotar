@@ -6,7 +6,7 @@ import StatsDashboard from '@/components/StatsDashboard';
 import EditorialGuide from '@/components/EditorialGuide';
 import CandidatosBand from '@/components/CandidatosBand';
 import Footer from '@/components/Footer';
-import { AdLeaderboard } from '@/components/ads/Adsterra';
+import { AdLeaderboard, AdNative, AdRectangle300x250 } from '@/components/ads/Adsterra';
 import { buildWebSiteSchema } from '@/lib/jsonld';
 
 export const metadata: Metadata = {
@@ -66,12 +66,19 @@ export default function Home() {
       <Header />
 
       <main className="flex-grow">
-        <Hero />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4" aria-label="Publicidade">
           <AdLeaderboard />
         </div>
+        <Hero />
         <CandidatosBand />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col items-center gap-2" aria-label="Publicidade">
+          <span className="font-label text-[10px] font-bold uppercase opacity-60">Publicidade</span>
+          <AdRectangle300x250 />
+        </div>
         <Highlights />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8" aria-label="Publicidade">
+          <AdNative />
+        </div>
         <EditorialGuide />
         <StatsDashboard />
       </main>
