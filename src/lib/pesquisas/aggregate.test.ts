@@ -27,6 +27,11 @@ describe('electoral polling aggregation', () => {
     expect(isVerifiedPoll(poll({ tseRegistrations: ['BR-12345/2026', 'SP-54321/2026'] }))).toBe(false);
   });
 
+  it('avoids binary floating-point artifacts at a displayed rounding boundary', () => {
+    const a = poll({ results: [{ id: 'a', name: 'A', percent: 45.8, kind: 'candidate' }] });
+    const b = poll({ id: 'b', institute: 'B', results: [{ id: 'a', name: 'A', percent: 46.1, kind: 'candidate' }] });
+    expect(aggregatePolls(dataset([a, b]), '2026-09-29')[0].results[0].percent).toBe(45.95);
+  });
   it('gives institutes equal weight rather than weighting by sample size', () => {
     const a = poll();
     const b = poll({ id: 'b', institute: 'Instituto B', sampleSize: 5000, results: [{ id: 'a', name: 'Candidato A', percent: 60, kind: 'candidate' }, { id: 'b', name: 'Candidato B', percent: 20, kind: 'candidate' }] });

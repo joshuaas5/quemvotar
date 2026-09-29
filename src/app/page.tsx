@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import HomeElectionHub from '@/components/HomeElectionHub';
+import { PollLeaderBanner } from '@/components/pesquisas/PollLeaderBanner';
 import { PesquisasDestaque } from '@/components/pesquisas/PesquisasDestaque';
 import Highlights from '@/components/Highlights';
 import StatsDashboard from '@/components/StatsDashboard';
@@ -71,6 +72,7 @@ export default function Home() {
 
       <main className="flex-grow">
         <HomeElectionHub />
+        <PollLeaderBanner />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4" aria-label="Publicidade">
           <AdLeaderboard />
         </div>
