@@ -3,7 +3,6 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Footer from '@/components/Footer';
-import Header from '@/components/Header';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ShareButtons from '@/components/ShareButtons';
 import BotaoFavoritar from '@/components/BotaoFavoritar';
@@ -848,7 +847,6 @@ export default async function PerfilPage({
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify([jsonLd, breadcrumbSchema]) }}

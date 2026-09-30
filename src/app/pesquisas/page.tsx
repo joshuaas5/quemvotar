@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PageHero from '@/components/PageHero';
 import { AdLeaderboard, AdRectangle300x250 } from '@/components/ads/Adsterra';
@@ -22,5 +21,5 @@ export default async function PesquisasPage({ searchParams }: { searchParams: Pr
   const initialOffice: PollOffice = params.cargo === 'governor' || params.cargo === 'senate' ? params.cargo : 'president';
   const initialUf = typeof params.uf === 'string' && POLL_UFS.some(([uf]) => uf === params.uf) ? params.uf : 'SP';
   const initialRound = params.turno === '2' && initialOffice !== 'senate' ? 2 : 1;
-  return <><Header /><main className="qv-grid-bg px-4 py-10 text-black sm:px-6"><div className="mx-auto max-w-6xl space-y-8"><PageHero eyebrow="Agregador · Eleições 2026" title="A corrida eleitoral, em um só lugar." description="Pesquisas com fonte e registro identificados. Presidente em destaque; governador e Senado nos 26 estados e no Distrito Federal." accent="yellow" stat={{ value: '27 UFs', label: 'Filtros por estado. Os dados aparecem somente após verificação.' }} /><AdLeaderboard /><PollsExplorer dataset={dataset} asOf={brazilToday()} initialOffice={initialOffice} initialUf={initialUf} initialRound={initialRound} /><div className="flex flex-col items-center gap-2"><span className="font-label text-xs uppercase">Publicidade</span><AdRectangle300x250 /></div></div></main><Footer /></>;
+  return <><main className="qv-grid-bg px-4 py-10 text-black sm:px-6"><div className="mx-auto max-w-6xl space-y-8"><PageHero eyebrow="Agregador · Eleições 2026" title="A corrida eleitoral, em um só lugar." description="Pesquisas com fonte e registro identificados. Presidente em destaque; governador e Senado nos 26 estados e no Distrito Federal." accent="yellow" stat={{ value: '27 UFs', label: 'Filtros por estado. Os dados aparecem somente após verificação.' }} /><AdLeaderboard /><PollsExplorer dataset={dataset} asOf={brazilToday()} initialOffice={initialOffice} initialUf={initialUf} initialRound={initialRound} /><div className="flex flex-col items-center gap-2"><span className="font-label text-xs uppercase">Publicidade</span><AdRectangle300x250 /></div></div></main><Footer /></>;
 }

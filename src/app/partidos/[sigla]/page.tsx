@@ -3,7 +3,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Footer from '@/components/Footer';
-import Header from '@/components/Header';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import ShareButtons from '@/components/ShareButtons';
 import { getPartidoPorSigla } from '@/lib/api';
@@ -122,8 +121,6 @@ export default async function PartidoDetailPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify([orgSchema, breadcrumbSchema]) }}
       />
-      <Header />
-
       <main className="flex-grow qv-grid-bg py-10 md:py-12 px-4 md:px-6">
         <div className="max-w-7xl mx-auto space-y-8 md:space-y-10">
           <AdLeaderboard />

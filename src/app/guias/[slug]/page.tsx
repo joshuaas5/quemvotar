@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getActiveGuides, getGuideBySlug, getGuideCardStyle, getGuideCategory, getGuideReadingTime, getGuideSources, getGuideWordCount } from '@/lib/guides';
@@ -116,7 +115,6 @@ export default async function GuiaPage({ params }: { params: Promise<{ slug: str
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
       />
-      <Header />
       <main className="flex-grow bg-[#F7F2DE] py-10 md:py-16 px-4 md:px-6 overflow-hidden">
         <article className="max-w-7xl mx-auto space-y-8 md:space-y-10">
           <Breadcrumbs items={[{ label: 'Guias', href: '/guias' }, { label: article.title }]} />

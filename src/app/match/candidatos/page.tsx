@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { toolMetadata } from '@/lib/sharing/metadata';
 import Footer from '@/components/Footer';
-import Header from '@/components/Header';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import PageHero from '@/components/PageHero';
 import { MatchCandidatos } from '@/components/match/MatchCandidatos';
@@ -17,8 +16,6 @@ export default async function MatchCandidatosPage({ searchParams }: { searchPara
   const cargo = ['1', '3', '5', '6', '7', '8'].includes(params.cargo ?? '') ? params.cargo! : '0';
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-
       <main className="flex-grow qv-grid-bg py-16 px-4 sm:px-6 overflow-x-clip">
         <div className="max-w-7xl mx-auto space-y-10">
           <Breadcrumbs items={[{ label: 'Match', href: '/match' }, { label: 'Candidatos 2026' }]} />

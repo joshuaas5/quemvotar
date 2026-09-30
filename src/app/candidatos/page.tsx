@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import Footer from '@/components/Footer';
-import Header from '@/components/Header';
 import { listarCandidatos } from '@/lib/candidatos/tse';
 import { CARGO_CODIGOS, CARGO_LABELS, type CargoTse } from '@/lib/candidatos/types';
 import { getPartidoEspectro } from '@/lib/candidatos/posicionamento';
@@ -60,8 +59,6 @@ export default async function CandidatosPage({
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-
       <main className="flex-grow bg-surface-container py-10 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto space-y-8 md:space-y-10">
           <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
