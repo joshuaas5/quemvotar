@@ -71,7 +71,7 @@ export default function Home() {
       <Header />
 
       <main className="flex-grow">
-        <div className="hidden md:block max-w-7xl mx-auto px-4 sm:px-6 py-4" aria-label="Publicidade">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4" aria-label="Publicidade">
           <AdLeaderboard />
         </div>
         <HomeElectionHub />
@@ -86,6 +86,10 @@ export default function Home() {
         </div>
         <CandidatosBand />
         <Highlights />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col items-center gap-2" aria-label="Publicidade">
+          <span className="font-label text-[10px] font-bold uppercase opacity-60">Publicidade</span>
+          <AdRectangle300x250 />
+        </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8" aria-label="Publicidade">
           <AdNative />
         </div>

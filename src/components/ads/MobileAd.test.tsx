@@ -29,9 +29,9 @@ it.each(['/minha-urna', '/match', '/match/resultado'])('preserva a navegação e
   expect(render(<MobileAd />).container.querySelector('iframe')).toBeNull();
 });
 
-it('remove o banner quando a barra de escolhas passa a ocupar o rodapé', () => {
+it('mantém o banner mesmo com escolhas salvas na colinha', () => {
   const view = render(<MobileAd />);
   state.items = [{ id: 'candidato' }];
   view.rerender(<MobileAd />);
-  expect(view.container.querySelector('aside')).toBeNull();
+  expect(view.container.querySelector('iframe')).not.toBeNull();
 });
