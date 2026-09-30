@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { TSE_SITE_BASE } from '@/lib/candidatos/urls';
+import { carregarFotoArquivoTse } from '@/lib/candidatos/foto-arquivo';
 
 // NOTA: `sharp` é importado LAZY (dentro da rota) para que, se o binário
 // nativo falhar no ambiente de deploy, a rota não derrube 100% nas 500.
@@ -40,6 +41,23 @@ export async function GET(request: NextRequest) {
       if (url.protocol !== 'https:' || url.port || url.username || url.password || url.search || url.hash || !(camera || senate)) throw new Error('source');
       urlTse = url.href;
     } catch { return NextResponse.json({ erro: 'Fonte de foto inválida.' }, { status: 400 }); }
+  }
+
+  if (sqEleicao === 20322002026 && !alta) {
+    try {
+      const photo = await carregarFotoArquivoTse(uf, id);
+      return new NextResponse(photo, {
+        status: 200,
+        headers: {
+          'Content-Type': 'image/jpeg',
+          'Cache-Control': 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
+          'X-Origem': 'tse-dados-abertos-fotos',
+          'X-Foto-Melhorada': '0',
+        },
+      });
+    } catch {
+      // Se o pacote ainda não incluir esta foto, tenta o serviço individual.
+    }
   }
 
   try {
