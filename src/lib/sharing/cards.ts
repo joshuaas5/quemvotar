@@ -1,9 +1,38 @@
-export interface CardRow { label: string; title: string; detail: string; value: string }
+export interface CardRow { label: string; title: string; detail: string; value: string; photoUrls?: string[] }
 export interface ShareCard { title: string; subtitle: string; rows: CardRow[]; notes: string[]; path: string }
+
+/** Only same-origin assets are drawn, so downloads never taint the canvas. */
+export async function carregarFotoCartao(sources: string[]): Promise<HTMLImageElement> {
+  for (const source of sources) {
+    const url = new URL(source, window.location.href);
+    if (url.origin !== window.location.origin) continue;
+    try {
+      return await new Promise<HTMLImageElement>((resolve, reject) => {
+        const image = new Image();
+        const timer = setTimeout(() => { image.onload = null; image.onerror = null; reject(new Error('timeout')); }, 10_000);
+        image.onload = () => { clearTimeout(timer); image.onload = null; image.onerror = null; if (image.naturalWidth) resolve(image); else reject(new Error('empty')); };
+        image.onerror = () => { clearTimeout(timer); image.onload = null; image.onerror = null; reject(new Error('image')); };
+        image.src = url.href;
+      });
+    } catch { /* Try the next real, same-origin source. */ }
+  }
+  throw new Error('Foto indisponível');
+}
+
+export function desenharRetrato(ctx: CanvasRenderingContext2D, image: HTMLImageElement, x: number, y: number, width: number, height: number) {
+  const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+  const sourceWidth = width / scale, sourceHeight = height / scale;
+  ctx.drawImage(image, (image.naturalWidth - sourceWidth) / 2, 0, sourceWidth, sourceHeight, x, y, width, height);
+}
 
 /** Rendered locally: vote choices and quiz answers never go to an image service. */
 export async function criarCartao(card: ShareCard): Promise<Blob> {
   await document.fonts.ready;
+  const photos = await Promise.all(card.rows.map(async (row) => {
+    if (!row.photoUrls?.length) return null;
+    try { return await carregarFotoCartao(row.photoUrls); }
+    catch { throw new Error(`A foto de ${row.title} não carregou. Tente baixar novamente em alguns instantes.`); }
+  }));
   const canvas = document.createElement('canvas');
   canvas.width = 1080;
   canvas.height = 490 + card.rows.length * 160 + card.notes.length * 38;
@@ -28,9 +57,12 @@ export async function criarCartao(card: ShareCard): Promise<Blob> {
     ctx.fillStyle = '#111'; ctx.fillRect(68, y + 8, 948, 140);
     ctx.fillStyle = '#fff'; ctx.fillRect(60, y, 948, 140);
     ctx.strokeStyle = '#111'; ctx.lineWidth = 4; ctx.strokeRect(60, y, 948, 140);
-    text(row.label.toUpperCase(), 82, y + 30, 20, 610);
-    text(row.title, 82, y + 78, 34, 610);
-    text(row.detail, 82, y + 112, 21, 610, '#444');
+    const photo = photos[index];
+    if (photo) desenharRetrato(ctx, photo, 76, y + 12, 92, 116);
+    const x = photo ? 188 : 82, availableWidth = photo ? 510 : 610;
+    text(row.label.toUpperCase(), x, y + 30, 20, availableWidth);
+    text(row.title, x, y + 78, 34, availableWidth);
+    text(row.detail, x, y + 112, 21, availableWidth, '#444');
     text(row.value, 730, y + 88, 52, 254);
   });
   const bottom = 345 + card.rows.length * 160;

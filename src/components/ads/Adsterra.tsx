@@ -9,7 +9,7 @@ export const ADSTERRA_SOCIAL_BAR_SRC =
 /** Leaderboard: 728x90 no desktop, 320x50 no mobile (mesma faixa). */
 export function AdLeaderboard() {
   return (
-    <div className="flex justify-center w-full overflow-hidden">
+    <div data-advertisement className="qv-advertisement flex justify-center w-full overflow-hidden">
       {/* 728x90 — desktop */}
       <div className="hidden md:block">
         <script
@@ -51,7 +51,7 @@ export function AdLeaderboard() {
 /** Retângulo 300x250 — bom para meio de conteúdo. */
 export function AdRectangle300x250() {
   return (
-    <div className="flex justify-center w-full overflow-hidden">
+    <div data-advertisement className="qv-advertisement flex justify-center w-full overflow-hidden">
       <script
         dangerouslySetInnerHTML={{
           __html: `
@@ -73,7 +73,7 @@ export function AdRectangle300x250() {
 /** Native banner — se mistura com o conteúdo. */
 export function AdNative() {
   return (
-    <div className="flex justify-center w-full overflow-hidden">
+    <div data-advertisement className="qv-advertisement flex justify-center w-full overflow-hidden">
       <script
         async
         data-cfasync="false"
