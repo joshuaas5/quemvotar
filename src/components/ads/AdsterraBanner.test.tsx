@@ -12,13 +12,11 @@ function screen(width: number) {
   }));
 }
 
-it('carrega somente o banner mobile e não solicita o lateral em tela pequena', () => {
+it('não duplica o banner mobile no topo nem solicita lateral em tela pequena', () => {
   screen(390);
   const view = render(<><AdLeaderboard /><AdSidebar /></>);
   const frames = view.container.querySelectorAll('iframe');
-  expect(frames).toHaveLength(1);
-  expect(frames[0].srcdoc).toContain('876aa82b74c7ba612f7e65595c0ca3b7');
-  expect(frames[0].width).toBe('320');
+  expect(frames).toHaveLength(0);
 });
 
 it('isola as configurações do topo e da lateral no desktop e mantém a marcação de impressão', () => {

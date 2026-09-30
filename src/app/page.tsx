@@ -71,7 +71,7 @@ export default function Home() {
       <Header />
 
       <main className="flex-grow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4" aria-label="Publicidade">
+        <div className="hidden md:block max-w-7xl mx-auto px-4 sm:px-6 py-4" aria-label="Publicidade">
           <AdLeaderboard />
         </div>
         <HomeElectionHub />

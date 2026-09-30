@@ -10,9 +10,8 @@ export const ADSTERRA_SOCIAL_BAR_SRC =
 
 /** Leaderboard: loads only the size supported by the current screen. */
 export function AdLeaderboard() {
-  return <div data-advertisement className="qv-advertisement flex justify-center w-full overflow-hidden">
+  return <div data-advertisement className="qv-advertisement hidden md:flex justify-center w-full overflow-hidden">
     <div className="hidden md:block"><AdsterraBanner adKey="b9861387958db10ac9330cab0e89166e" width={728} height={90} media="(min-width: 768px)" /></div>
-    <div className="block md:hidden"><AdsterraBanner adKey="876aa82b74c7ba612f7e65595c0ca3b7" width={320} height={50} media="(max-width: 767px)" /></div>
   </div>;
 }
 
