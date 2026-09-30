@@ -9,6 +9,7 @@ import { MinhaUrnaProvider } from "@/components/candidatos/MinhaUrnaProvider";
 import { MinhaUrnaBar } from "@/components/candidatos/MinhaUrnaBar";
 import { LoadingFeedback } from "@/components/LoadingFeedback";
 import { Analytics } from "@vercel/analytics/next";
+import { AdSidebar } from '@/components/ads/Adsterra';
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -140,7 +141,10 @@ export default function RootLayout({
         <MinhaUrnaProvider>
           <NavigationProvider>
             <ToastProvider>
-              {children}
+              <div className="qv-ad-layout">
+                <div className="qv-page-content">{children}</div>
+                <AdSidebar />
+              </div>
               <LoadingFeedback />
               <MinhaUrnaBar />
               <NavigationOverlay />
