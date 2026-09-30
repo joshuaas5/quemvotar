@@ -1,3 +1,5 @@
+import { carregarFotoArquivoTse } from '@/lib/candidatos/foto-arquivo';
+
 export interface CardRow { label: string; title: string; detail: string; value: string; photoUrls?: string[] }
 export interface ShareCard { title: string; subtitle: string; rows: CardRow[]; notes: string[]; path: string }
 
@@ -15,6 +17,14 @@ export async function carregarFotoCartao(sources: string[]): Promise<HTMLImageEl
         image.src = url.href;
       });
     } catch { /* Try the next real, same-origin source. */ }
+  }
+  // The official static archive also works in the browser if the server is unavailable.
+  const proxy = sources.map((source) => new URL(source, window.location.href)).find((url) => url.origin === window.location.origin && url.pathname === '/api/fontes/tse/foto' && url.searchParams.get('sqEleicao') === '20322002026');
+  if (proxy) {
+    const blob = await carregarFotoArquivoTse(proxy.searchParams.get('uf') ?? '', Number(proxy.searchParams.get('id')));
+    const url = URL.createObjectURL(blob);
+    try { return await carregarFotoCartao([url]); }
+    finally { URL.revokeObjectURL(url); }
   }
   throw new Error('Foto indisponível');
 }
