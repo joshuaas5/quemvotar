@@ -10,6 +10,8 @@ import { ShareTool } from '@/components/sharing/ShareTool';
 import { ColaCandidatePicker } from './ColaCandidatePicker';
 import { FotoCandidato } from './FotoCandidato';
 import { SQ_ELEICAO_2026 } from '@/lib/candidatos/snapshot';
+import { fotosParaExportar } from '@/lib/candidatos/foto-export';
+import { printCartao } from '@/lib/sharing/print';
 
 const subscribeUf = (notify: () => void) => { window.addEventListener('storage', notify); return () => window.removeEventListener('storage', notify); };
 const savedUf = () => { try { const uf = window.localStorage.getItem('quemvotar:cola-uf:v1'); return UF_LISTA.some((state) => state.sigla === uf) ? uf! : 'BR'; } catch { return 'BR'; } };
@@ -30,8 +32,17 @@ export function MinhaUrnaView() {
   const card: ShareCard = {
     title: 'MINHA COLA ELEITORAL', subtitle: `1º turno • 04/10/2026 • ${uf === 'BR' ? 'Escolha seu estado' : uf} • ordem de votação`,
     rows: slots.map((slot, index) => ({ label: `${index + 1}. ${slot.rotulo}${slot.codigo === 5 ? ` (${slot.index + 1}º voto)` : ''}`,
-      title: slot.escolhido?.nomeUrna ?? 'Ainda não escolhido', detail: slot.escolhido ? `${slot.escolhido.partido ?? 'Sem partido'} • ${slot.escolhido.uf}` : 'Confira antes de votar', value: slot.escolhido ? String(slot.escolhido.numero) : '—' })),
+      title: slot.escolhido?.nomeUrna ?? 'Ainda não escolhido', detail: slot.escolhido ? `${slot.escolhido.partido ?? 'Sem partido'} • ${slot.escolhido.uf}` : 'Confira antes de votar', value: slot.escolhido ? String(slot.escolhido.numero) : '—', photoUrls: slot.escolhido ? fotosParaExportar(SQ_ELEICAO_2026, slot.escolhido.id, slot.escolhido.uf, slot.escolhido.fotoAlta) : undefined })),
     notes: ['Escolhas pessoais. Confira os números e o registro no TSE.', 'Leve a cola em papel. Celular não pode ser usado na cabine.'], path: '/minha-urna',
+  };
+  const print = async () => {
+    setBusy(true); setStatus('Carregando fotos para impressão…');
+    try {
+      const blob = await criarCartao(card);
+      await printCartao(blob);
+      sharingEvent('cola_print'); setStatus('');
+    } catch (error) { setStatus(error instanceof Error ? error.message : 'Não foi possível preparar a impressão.'); }
+    finally { setBusy(false); }
   };
   const image = async (share: boolean) => {
     setBusy(true); setStatus('');
@@ -59,7 +70,7 @@ export function MinhaUrnaView() {
       <p className="font-body font-bold">{faltando === 0 ? 'As seis escolhas estão preenchidas.' : `${items.length} de 6 escolhas preenchidas. Você pode baixar a cola parcial.`}</p>
       <div className="flex flex-wrap gap-3">
         <button disabled={busy || !items.length} onClick={() => image(false)} className="border-4 border-black bg-black text-white px-5 py-3 font-headline font-black uppercase disabled:opacity-50">{busy ? 'Criando imagem…' : 'Baixar minha cola'}</button>
-        <button onClick={() => { sharingEvent('cola_print'); window.print(); }} className="border-4 border-black bg-white px-5 py-3 font-headline font-black uppercase">Imprimir em papel</button>
+        <button disabled={busy} onClick={print} className="border-4 border-black bg-white px-5 py-3 font-headline font-black uppercase disabled:opacity-50">Imprimir em papel</button>
         {items.length > 0 && <button onClick={limpar} className="border-2 border-black bg-white px-3 py-2 font-body font-bold">Limpar escolhas</button>}
       </div>
       <p role="status" className="font-body font-bold text-sm">{status}</p>
@@ -70,7 +81,7 @@ export function MinhaUrnaView() {
       <p className="font-body text-sm">1º turno · 4 de outubro · siga esta ordem</p>
       {slots.map((slot, index) => <div key={`${slot.codigo}-${slot.index}`} className="space-y-2"><article className="qv-cola-row border-2 border-black p-3 sm:p-4 flex gap-2 sm:gap-4 items-center">
         <span className={`font-headline font-black text-2xl shrink-0 ${slot.escolhido ? 'hidden sm:block print:block' : ''}`}>{index + 1}.</span>
-        {slot.escolhido && <span className="qv-no-print w-11 h-14 shrink-0 overflow-hidden border border-black"><FotoCandidato sqEleicao={SQ_ELEICAO_2026} id={slot.escolhido.id} uf={slot.escolhido.uf} nome={slot.escolhido.nomeUrna} fotoAlta={slot.escolhido.fotoAlta} iniciaisClassName="font-headline font-bold text-base" /></span>}
+        {slot.escolhido && <span className="qv-cola-photo w-11 h-14 shrink-0 overflow-hidden border border-black"><FotoCandidato loading="eager" sqEleicao={SQ_ELEICAO_2026} id={slot.escolhido.id} uf={slot.escolhido.uf} nome={slot.escolhido.nomeUrna} fotoAlta={slot.escolhido.fotoAlta} iniciaisClassName="font-headline font-bold text-base" /></span>}
         <div className="flex-1 min-w-0">
           <h3 className="font-label font-bold uppercase text-xs">{slot.rotulo}{slot.codigo === 5 ? ` · ${slot.index + 1}º voto` : ''}</h3>
           <p className="font-headline font-black text-lg sm:text-xl break-words">{slot.escolhido?.nomeUrna ?? 'Ainda não escolhido'}</p>

@@ -29,7 +29,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ erro: 'Parâmetros inválidos. Use sqEleicao, id e uf.' }, { status: 400 });
   }
 
-  const urlTse = `${TSE_SITE_BASE}/divulga/rest/arquivo/img/${sqEleicao}/${id}/${uf}`;
+  let urlTse = `${TSE_SITE_BASE}/divulga/rest/arquivo/img/${sqEleicao}/${id}/${uf}`;
+  const alta = params.get('alta');
+  if (alta) {
+    try {
+      const url = new URL(alta);
+      const camera = url.hostname === 'www.camara.leg.br' && /^\/internet\/deputado\/bandep\/pagina_do_deputado\/\d+\.jpg$/.test(url.pathname);
+      const senate = url.hostname === 'legis.senado.leg.br' && /^\/senadores\/fotos-oficiais\/\d+$/.test(url.pathname);
+      if (url.protocol !== 'https:' || url.port || url.username || url.password || url.search || url.hash || !(camera || senate)) throw new Error('source');
+      urlTse = url.href;
+    } catch { return NextResponse.json({ erro: 'Fonte de foto inválida.' }, { status: 400 }); }
+  }
 
   try {
     // Timeout rígido: o TSE é instável e um upstream travado NÃO pode segurar o
@@ -44,6 +54,7 @@ export async function GET(request: NextRequest) {
         signal: controller.signal,
         next: { revalidate: 86400 },
         cache: 'force-cache',
+        redirect: 'error',
       });
     } finally {
       clearTimeout(timer);
@@ -101,7 +112,7 @@ export async function GET(request: NextRequest) {
       headers: {
         'Content-Type': tipoFinal,
         'Cache-Control': 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
-        'X-Origem': 'tse-divulgacandcontas',
+        'X-Origem': alta ? 'parlamento-foto-oficial' : 'tse-divulgacandcontas',
         'X-Foto-Melhorada': saida.length !== buffer.length ? '1' : '0',
       },
     });

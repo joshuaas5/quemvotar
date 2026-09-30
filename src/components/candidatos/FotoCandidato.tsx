@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { fotoProxiUrl, fotoUrlCandidato } from '@/lib/candidatos/urls';
 import { iniciais } from '@/lib/candidatos/ui';
+import { fotoLocalCandidato } from '@/lib/candidatos/foto-export';
 
 /**
  * Foto do candidato com fallback em cascata:
@@ -40,6 +41,7 @@ function FotoComFallback({
   iniciaisClassName = '',
 }: FotoCandidatoProps) {
   const sources = [...new Set([
+    fotoLocalCandidato(id),
     fotoAlta,
     fotoProxiUrl(sqEleicao, id, uf),
     fotoUrlCandidato(sqEleicao, id, uf),

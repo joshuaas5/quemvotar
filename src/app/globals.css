@@ -203,6 +203,8 @@ input[type="text"]:focus, input[type="search"]:focus, textarea:focus, select:foc
 }
 
 @media print {
+  /* Hide display ads and externally injected ad frames only on paper. */
+  [data-advertisement], .qv-advertisement, iframe, ins.adsbygoogle { display: none !important; visibility: hidden !important; }
   @page { size: A4; margin: 12mm; }
   body:has(.qv-print-cola) { min-height: 0; margin: 0; background: #fff; }
   body:has(.qv-print-cola) *:not(:has(.qv-print-cola)):not(.qv-print-cola):not(.qv-print-cola *) { display: none !important; }
