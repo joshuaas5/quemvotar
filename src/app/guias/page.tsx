@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { getActiveGuides, GUIDE_CATEGORIES, getGuideCardStyle, getGuideCategory, getGuideReadingTime, getGuideWordCount } from '@/lib/guides';
@@ -19,7 +18,6 @@ export default function GuiasPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
       <main className="flex-grow bg-[#F7F2DE] py-10 md:py-16 px-4 md:px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto space-y-8 md:space-y-12">
           <Breadcrumbs items={[{ label: 'Guias' }]} />

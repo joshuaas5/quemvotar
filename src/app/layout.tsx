@@ -11,6 +11,7 @@ import { LoadingFeedback } from "@/components/LoadingFeedback";
 import { Analytics } from "@vercel/analytics/next";
 import { AdSidebar } from '@/components/ads/Adsterra';
 import { MobileAd } from '@/components/ads/MobileAd';
+import Header from '@/components/Header';
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -142,6 +143,7 @@ export default function RootLayout({
         <MinhaUrnaProvider>
           <NavigationProvider>
             <ToastProvider>
+              <Header />
               <div className="qv-ad-layout">
                 <AdSidebar side="left" />
                 <div className="qv-page-content">{children}</div>

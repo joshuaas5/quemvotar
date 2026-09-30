@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Footer from '@/components/Footer';
-import Header from '@/components/Header';
 import { buscarCandidato, normalizarCandidatoDetalhe } from '@/lib/candidatos/tse';
 import { buscarBiografia, buscarMandatoParlamentar, type MandatoParlamentar } from '@/lib/candidatos/mandato';
 import { buscarNoSnapshot, buscarDetalheSnapshot, posicionamentoDoLite, type CandidatoSnapshotLite, type DetalheSnapshot } from '@/lib/candidatos/snapshot';
@@ -557,7 +556,6 @@ function renderPerfilCompletoSnap(
   const logo = getPartyLogoBySigla(candidato.partido ?? '');
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
       <main className="flex-grow bg-surface-container py-10 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto space-y-10 md:space-y-12">
           <AdLeaderboard />
@@ -678,7 +676,6 @@ export default async function CandidatoDetalhePage({
     const logo = getPartyLogoBySigla(liteSnap.partido ?? '');
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
         <main className="flex-grow qv-grid-bg py-10 md:py-16 px-4 md:px-6">
           <div className="max-w-5xl mx-auto space-y-8">
             <section className="bg-white border-4 border-black p-6 md:p-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
@@ -744,7 +741,6 @@ export default async function CandidatoDetalhePage({
     // Página amigável (HTTP 200) em vez de 404 — o candidato existe, o TSE é que está fora.
     return (
       <div className="min-h-screen flex flex-col">
-        <Header />
         <main className="flex-grow qv-grid-bg py-16 px-4 md:px-6">
           <div className="max-w-3xl mx-auto">
             <section className="bg-white border-4 border-black p-8 md:p-12 text-center shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
@@ -791,8 +787,6 @@ export default async function CandidatoDetalhePage({
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-
       <main className="flex-grow bg-surface-container py-10 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto space-y-10 md:space-y-12">
           <AdLeaderboard />

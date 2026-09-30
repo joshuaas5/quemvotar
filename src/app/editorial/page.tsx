@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import PageHero from '@/components/PageHero';
@@ -19,7 +18,6 @@ export const metadata: Metadata = {
 export default function EditorialPage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
       <main className="flex-grow bg-[#F7F2DE] py-10 md:py-16 px-4 md:px-6">
         <div className="max-w-6xl mx-auto space-y-8 md:space-y-10">
           <Breadcrumbs items={[{ label: 'Análises' }]} />

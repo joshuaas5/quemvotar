@@ -27,17 +27,17 @@ export default function Header() {
 
   return (
     <>
-      <nav className="flex justify-between items-center w-full px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-50 bg-[#f5f6f7] border-b-4 border-black neo-brutalist-shadow">
-        <Link href="/" className="flex items-center gap-2 active:scale-95 transition-transform">
+      <nav aria-label="Navegação principal" className="qv-site-header flex justify-between items-center w-full gap-3 px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-50 bg-[#f5f6f7] border-b-4 border-black shadow-[0_8px_0_0_#000]">
+        <Link href="/" className="flex min-w-0 items-center gap-2 active:scale-95 transition-transform">
           <Image
             src="/logo-header.webp"
             alt="QuemVotar"
             width={64}
             height={64}
-            className="w-14 h-14 sm:w-16 sm:h-16"
+            className="w-10 h-10 shrink-0 sm:w-16 sm:h-16"
             priority
           />
-          <span className="text-2xl sm:text-3xl font-black text-black tracking-tighter font-headline uppercase">
+          <span className="whitespace-nowrap text-xl sm:text-3xl font-black text-black tracking-tighter font-headline uppercase">
             QUEM VOTAR.
           </span>
         </Link>
@@ -57,7 +57,7 @@ export default function Header() {
           })}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-3">
           <Link
             href="/match/candidatos"
             className="hidden sm:block bg-primary-container text-black border-4 border-black px-6 py-2 font-headline font-black uppercase tracking-tighter hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all duration-75 active:scale-95 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
