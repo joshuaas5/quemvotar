@@ -2,7 +2,6 @@
 
 import { useState, useSyncExternalStore } from 'react';
 import { usePathname } from 'next/navigation';
-import { useMinhaUrna } from '@/components/candidatos/MinhaUrnaProvider';
 import { AdsterraBanner } from './AdsterraBanner';
 
 const key = 'qv-mobile-ad-closed:v1';
@@ -11,10 +10,9 @@ const saved = () => { try { return window.sessionStorage.getItem(key) === '1'; }
 
 export function MobileAd() {
   const pathname = usePathname();
-  const { items } = useMinhaUrna();
   const [closed, setClosed] = useState(false);
   const previouslyClosed = useSyncExternalStore(subscribe, saved, () => false);
-  if (closed || previouslyClosed || items.length > 0 || pathname === '/minha-urna' || pathname.startsWith('/match')) return null;
+  if (closed || previouslyClosed || pathname === '/minha-urna' || pathname.startsWith('/match')) return null;
   const close = () => { setClosed(true); try { window.sessionStorage.setItem(key, '1'); } catch { /* Close still works. */ } };
   return <aside data-advertisement className="qv-advertisement qv-mobile-ad fixed inset-x-0 bottom-0 z-30 border-t-2 border-black bg-white md:hidden" aria-label="Publicidade">
     <div className="relative mx-auto flex h-11 max-w-lg items-center justify-center">

@@ -209,9 +209,12 @@ input[type="text"]:focus, input[type="search"]:focus, textarea:focus, select:foc
   .qv-mobile-ad { padding-bottom: env(safe-area-inset-bottom, 0px); }
   body:has(.qv-mobile-ad) { padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)); }
   body:has([role="dialog"][aria-modal="true"]) .qv-mobile-ad { display: none; }
+  body:has(.qv-mobile-ad) .qv-urna-bar { bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+  body:has(.qv-mobile-ad):has(.qv-urna-bar) { padding-bottom: calc(170px + env(safe-area-inset-bottom, 0px)); }
+  body:has([role="dialog"][aria-modal="true"]) .qv-urna-bar { bottom: 0; }
 }
 @media (min-width: 1280px) {
-  .qv-ad-layout { display: grid; grid-template-columns: minmax(0, 1fr) 160px; gap: 24px; max-width: 1488px; margin-inline: auto; padding-inline: 16px; }
+  .qv-ad-layout { display: grid; grid-template-columns: 160px minmax(0, 1fr) 160px; gap: 24px; max-width: 1680px; margin-inline: auto; padding-inline: 16px; }
   .qv-desktop-ad { display: block; position: sticky; top: 96px; align-self: start; margin-top: 112px; width: 160px; }
 }
 

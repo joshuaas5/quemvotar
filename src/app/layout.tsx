@@ -143,6 +143,7 @@ export default function RootLayout({
           <NavigationProvider>
             <ToastProvider>
               <div className="qv-ad-layout">
+                <AdSidebar side="left" />
                 <div className="qv-page-content">{children}</div>
                 <AdSidebar />
               </div>
