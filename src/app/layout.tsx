@@ -10,6 +10,7 @@ import { MinhaUrnaBar } from "@/components/candidatos/MinhaUrnaBar";
 import { LoadingFeedback } from "@/components/LoadingFeedback";
 import { Analytics } from "@vercel/analytics/next";
 import { AdSidebar } from '@/components/ads/Adsterra';
+import { MobileAd } from '@/components/ads/MobileAd';
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -147,6 +148,7 @@ export default function RootLayout({
               </div>
               <LoadingFeedback />
               <MinhaUrnaBar />
+              <MobileAd />
               <NavigationOverlay />
               <BackToTop />
             </ToastProvider>
