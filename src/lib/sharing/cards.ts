@@ -9,7 +9,7 @@ export async function carregarFotoCartao(sources: string[]): Promise<HTMLImageEl
     try {
       return await new Promise<HTMLImageElement>((resolve, reject) => {
         const image = new Image();
-        const timer = setTimeout(() => { image.onload = null; image.onerror = null; reject(new Error('timeout')); }, 10_000);
+        const timer = setTimeout(() => { image.onload = null; image.onerror = null; reject(new Error('timeout')); }, 25_000);
         image.onload = () => { clearTimeout(timer); image.onload = null; image.onerror = null; if (image.naturalWidth) resolve(image); else reject(new Error('empty')); };
         image.onerror = () => { clearTimeout(timer); image.onload = null; image.onerror = null; reject(new Error('image')); };
         image.src = url.href;

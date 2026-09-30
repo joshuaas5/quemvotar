@@ -6,6 +6,7 @@ import { TSE_SITE_BASE } from '@/lib/candidatos/urls';
 // Sem import estático no topo.
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 30;
 
 /**
  * GET /api/fontes/tse/foto?sqEleicao=20322002026&id=160002547661&uf=PR
@@ -45,7 +46,7 @@ export async function GET(request: NextRequest) {
     // Timeout rígido: o TSE é instável e um upstream travado NÃO pode segurar o
     // servidor (foi o que derrubou fotos e até o manifest.json em rajada).
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 8000);
+    const timer = setTimeout(() => controller.abort(), 20_000);
 
     let response: Response;
     try {
@@ -65,7 +66,7 @@ export async function GET(request: NextRequest) {
       // Bloqueio/indisponibilidade do upstream não significa ausência da foto.
       return new NextResponse(null, {
         status: response.status === 404 ? 404 : 502,
-        headers: { 'Cache-Control': response.status === 404 ? 'public, max-age=600, s-maxage=600' : 'no-store' },
+        headers: { 'Cache-Control': response.status === 404 ? 'public, max-age=600, s-maxage=600' : 'no-store', 'X-Foto-Erro': `upstream-${response.status}` },
       });
     }
 
@@ -116,11 +117,11 @@ export async function GET(request: NextRequest) {
         'X-Foto-Melhorada': saida.length !== buffer.length ? '1' : '0',
       },
     });
-  } catch {
+  } catch (error) {
     // Falha de rede/timeout: permite nova tentativa e o fallback oficial no cliente.
     return new NextResponse(null, {
       status: 502,
-      headers: { 'Cache-Control': 'no-store' },
+      headers: { 'Cache-Control': 'no-store', 'X-Foto-Erro': error instanceof Error && error.name === 'AbortError' ? 'timeout' : 'network' },
     });
   }
 }
