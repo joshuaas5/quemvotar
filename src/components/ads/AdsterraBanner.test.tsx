@@ -32,5 +32,5 @@ it('isola as configurações do topo e da lateral no desktop e mantém a marcaç
   expect(frames[2].title).toBe('Publicidade lateral direita');
   expect(frames[2].srcdoc).toContain('c9bf45f4747c8fa088adcb1889774660');
   expect(frames.every((frame) => frame.closest('[data-advertisement]'))).toBe(true);
-  expect(document.querySelectorAll('script[src*="highrevenueformat"]')).toHaveLength(0);
+  expect(document.querySelectorAll('script[src*="bauval.org"]')).toHaveLength(0);
 });
