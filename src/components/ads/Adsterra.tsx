@@ -6,7 +6,7 @@ import { AdsterraBanner } from './AdsterraBanner';
  * ──────────────────────────────────────────────────────────────── */
 
 export const ADSTERRA_SOCIAL_BAR_SRC =
-  'https://pl30928280.profitableratecpmnetwork.com/81/ff/3f/81ff3fee2b95fa3a26279fe6cc12ee23.js';
+  'https://bauval.org/14/81ff3fee2b95fa3a26279fe6cc12ee23';
 
 /** Leaderboard: loads only the size supported by the current screen. */
 export function AdLeaderboard() {
@@ -36,7 +36,7 @@ export function AdNative() {
       <script
         async
         data-cfasync="false"
-        src="https://pl30928282.profitableratecpmnetwork.com/527d185ff1ad1d190a497c8519cc522c/invoke.js"
+        src="https://bauval.org/21/527d185ff1ad1d190a497c8519cc522c"
       />
       <div id="container-527d185ff1ad1d190a497c8519cc522c" />
     </div>

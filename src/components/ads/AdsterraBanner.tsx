@@ -21,7 +21,7 @@ export function AdsterraBanner({ adKey, width, height, media, title = 'Publicida
       frame.style.cssText = 'display:block;border:0;overflow:hidden;';
       frame.setAttribute('scrolling', 'no');
       const options = JSON.stringify({ key: adKey, format: 'iframe', height, width, params: {} });
-      frame.srcdoc = `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;padding:0;overflow:hidden;width:${width}px;height:${height}px}iframe{border:0}</style></head><body><script>window.atOptions=${options};</script><script src="https://www.highrevenueformat.com/${adKey}/invoke.js"></script></body></html>`;
+      frame.srcdoc = `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;padding:0;overflow:hidden;width:${width}px;height:${height}px}iframe{border:0}</style></head><body><script>window.atOptions=${options};</script><script src="https://bauval.org/22/${adKey}"></script></body></html>`;
       host.appendChild(frame);
     };
     mount();
